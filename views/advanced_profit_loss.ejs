@@ -1,0 +1,122 @@
+<%- include('partials/header') %>
+
+<div class="form-card">
+    <h3 class="mb-5">Advanced Profit & Loss Analysis</h3>
+    <div class="row g-5">
+        <!-- Left Column: Inputs (এই অংশটি ঠিক আছে) -->
+        <div class="col-lg-7">
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="spInput" class="form-label mb-0">Selling Price per Unit</label></div><div class="col-md-7"><div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="spInput" min="0" step="1" placeholder="e.g., 200"></div></div></div><input type="range" min="0" max="10000" step="1" class="form-range mt-2" id="spSlider"></div>
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="unitsInput" class="form-label mb-0">Number of Units Sold</label></div><div class="col-md-7"><input type="number" class="form-control" id="unitsInput" min="0" step="1" placeholder="e.g., 100"></div></div><input type="range" min="0" max="5000" step="1" class="form-range mt-2" id="unitsSlider"></div>
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="cpInput" class="form-label mb-0">Cost Price per Unit</label></div><div class="col-md-7"><div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="cpInput" min="0" step="1" placeholder="e.g., 120"></div></div></div><input type="range" min="0" max="10000" step="1" class="form-range mt-2" id="cpSlider"></div>
+            <hr class="my-4"><div class="mb-3 row align-items-center"><label for="marketingInput" class="col-sm-5 col-form-label">Marketing & Ads</label><div class="col-sm-7"><div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="marketingInput" min="0" placeholder="Total amount"></div></div></div>
+            <div class="mb-3 row align-items-center"><label for="shippingInput" class="col-sm-5 col-form-label">Shipping & Handling</label><div class="col-sm-7"><div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="shippingInput" min="0" placeholder="Total amount"></div></div></div>
+            <div class="mb-3 row align-items-center"><label for="overheadsInput" class="col-sm-5 col-form-label">Other Overheads</label><div class="col-sm-7"><div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="overheadsInput" min="0" placeholder="Total amount"></div></div></div>
+        </div>
+
+        <!-- Right Column: Results (এই অংশটি ঠিক আছে) -->
+        <div class="col-lg-5 d-flex flex-column">
+            <div id="initialState" class="d-flex flex-grow-1 align-items-center justify-content-center h-100 text-center text-muted p-4" style="background-color: #f8f9fa; border-radius: 12px;"><h4>Enter your figures to see the live analysis.</h4></div>
+            <div id="resultsState" class="flex-grow-1" style="display: none;">
+                <div class="chart-container mb-3"><h4 class="chart-title">Financial Summary</h4><canvas id="plBarChart"></canvas></div>
+                <div class="chart-container"><h4 class="chart-title">Cost Breakdown</h4><canvas id="plPieChart"></canvas><ul id="plPieLegend" class="custom-legend"></ul></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="analysisSection" class="mt-5" style="display: none;">
+        <h3 class="text-center mb-4">Financial Analysis</h3>
+        <div class="row"><div class="col-md-4"><div class="summary-card"><div class="label">Total Revenue</div><div class="value" id="totalRevenue">₹0</div></div></div><div class="col-md-4"><div class="summary-card"><div class="label">Total Costs</div><div class="value" id="totalCosts">₹0</div></div></div><div class="col-md-4"><div class="summary-card"><div class="label">Net Profit / Loss</div><div class="value" id="netProfitLoss">₹0</div></div></div><div class="col-md-6"><div class="summary-card"><div class="label">Profit Margin</div><div class="value" id="profitMargin">0%</div></div></div><div class="col-md-6"><div class="summary-card"><div class="label">Break-Even Point</div><div class="value" id="breakEven">0 Units</div></div></div></div>
+        <div class="highlight-box">
+            <h3 class="text-center mb-4">Profit Growth Scenarios</h3>
+            <p class="text-center">To avoid loss, your selling price per unit should be at least: <strong id="breakEvenSP">₹0.00</strong></p>
+            <div class="row mt-4"><div class="col-md-6"><h5 class="text-center">Option 1: Adjust Selling Price</h5><table class="table table-bordered table-striped mt-3"><thead class="table-dark"><tr><th>Target Profit</th><th>Required Price per Unit</th></tr></thead><tbody id="priceScenariosBody"></tbody></table></div><div class="col-md-6"><h5 class="text-center">Option 2: Reduce Cost Price</h5><table class="table table-bordered table-striped mt-3"><thead class="table-dark"><tr><th>Target Profit</th><th>Required Cost per Unit</th></tr></thead><tbody id="costScenariosBody"></tbody></table></div></div>
+        </div>
+    </div>
+
+    <!-- তথ্য সেকশন (চূড়ান্তভাবে পরিবর্তিত) -->
+    <div class="info-accordion">
+        <div class="accordion" id="calculatorInfoAccordion">
+            <!-- Item 1: How to Use -->
+            <div class="accordion-item"><h2 class="accordion-header" id="headingOne"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">How to Use This Calculator</button></h2><div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#calculatorInfoAccordion"><div class="accordion-body"><ol><li><strong>Enter Revenue Details:</strong> Use the sliders or input boxes to enter the Selling Price per Unit and the Number of Units Sold.</li><li><strong>Enter Cost Details:</strong> Input your Cost Price per Unit (direct cost of one item) and other fixed business costs like Marketing, Shipping, and Overheads.</li><li><strong>Analyze in Real-Time:</strong> The charts, summary cards, and growth scenarios will update instantly, giving you a live view of your business's financial health.</li><li><strong>Explore Scenarios:</strong> Use the "Profit Growth Scenarios" to understand how changing your pricing or reducing costs can help you achieve specific profit targets.</li></ol></div></div></div>
+            
+            <!-- Item 2: Understanding the Metrics -->
+            <div class="accordion-item"><h2 class="accordion-header" id="headingTwo"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Understanding the Metrics</button></h2><div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#calculatorInfoAccordion"><div class="accordion-body"><p><strong>Total Revenue:</strong> The total amount of money generated from sales (Selling Price × Units Sold).</p><p><strong>Total Costs:</strong> The sum of all your expenses. This includes <strong>Variable Costs</strong> (costs that change with the number of units, like Cost Price) and <strong>Fixed Costs</strong> (costs that remain the same regardless of sales, like Marketing).</p><p><strong>Net Profit / Loss:</strong> The ultimate measure of profitability. It's what's left after you subtract Total Costs from Total Revenue. A positive number is a profit, a negative number is a loss.</p><p><strong>Profit Margin:</strong> A key indicator of efficiency, calculated as (Net Profit / Total Revenue) × 100. A higher margin means your business is more profitable for every rupee of sale.</p><p><strong>Break-Even Point:</strong> The number of units you need to sell to cover all your costs, resulting in zero profit and zero loss. Selling more than this point means you're making a profit.</p></div></div></div>
+            
+            <!-- ### নতুন: বিস্তারিত গাইড ### -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        A Business Owner's Guide to Profit & Loss
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#calculatorInfoAccordion">
+                    <div class="accordion-body">
+                        <p class="lead">Understanding Profit and Loss (P&L) is like reading the financial report card of your business. It tells you whether you're winning or losing the game of commerce and is essential for making smart, strategic decisions.</p>
+                        <hr>
+                        <h4>Key Components of a P&L Analysis</h4>
+                        <p>This calculator simplifies a full P&L statement into its core components:</p>
+                        <ol>
+                            <li><strong>Revenue (The Top Line):</strong> This is the total income generated from selling your products or services. It's the starting point of all profitability calculations.</li>
+                            <li><strong>Variable Costs (or COGS):</strong> These are costs directly related to producing each unit. In our calculator, this is your "Cost Price per Unit". If you sell more, these costs go up.</li>
+                            <li><strong>Fixed Costs (or Operating Expenses):</strong> These are the costs required to run your business, regardless of how many units you sell. In our calculator, these include Marketing, Shipping, and Other Overheads.</li>
+                            <li><strong>Net Profit (The Bottom Line):</strong> This is what everyone cares about. It's the money left over after all expenses (both variable and fixed) have been paid. <code>Net Profit = Revenue - (Variable Costs + Fixed Costs)</code></li>
+                        </ol>
+                        
+                        <h4>Why is the Break-Even Point So Important?</h4>
+                        <p>Your Break-Even Point is arguably the most critical number for a new business or product launch. It answers the fundamental question: "How much do I need to sell to not lose money?"</p>
+                        <blockquote class="blockquote bg-light p-3 rounded">Knowing your break-even point helps you set realistic sales goals, create effective pricing strategies, and understand your business's risk profile. It's the baseline for survival.</blockquote>
+
+                        <h4>Using "What-If" Scenarios for Strategic Growth</h4>
+                        <p>The "Profit Growth Scenarios" section of this calculator is a powerful strategic tool. It allows you to perform "what-if" analysis:</p>
+                        <ul>
+                            <li><strong>Pricing Strategy:</strong> The "Adjust Selling Price" table shows you exactly what price you need to set to achieve a certain profit margin (e.g., 20%, 30%). This is crucial for value-based pricing.</li>
+                            <li><strong>Cost Management:</strong> The "Reduce Cost Price" table shows you how much you need to lower your production costs to hit your profit targets if you can't or don't want to change your selling price. This helps in negotiating with suppliers or improving production efficiency.</li>
+                        </ul>
+                        <p>By playing with these numbers, you move from simply calculating your current situation to actively planning for a more profitable future.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript (এই অংশটি ঠিক আছে) -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ids = ['sp', 'units', 'cp', 'marketing', 'shipping', 'overheads']; const inputs = {}, sliders = {};
+        ids.forEach(id => { inputs[id] = document.getElementById(id + 'Input'); sliders[id] = document.getElementById(id + 'Slider'); });
+        const initialState = document.getElementById('initialState'), resultsState = document.getElementById('resultsState'), analysisSection = document.getElementById('analysisSection');
+        const barCanvas = document.getElementById('plBarChart'), pieCanvas = document.getElementById('plPieChart'); let barChart, pieChart;
+        const formatCurrency = (num) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
+        function calculateAndDisplay() {
+            const sp_unit = parseFloat(inputs.sp.value) || 0, units = parseFloat(inputs.units.value) || 0, cp_unit = parseFloat(inputs.cp.value) || 0;
+            const marketing = parseFloat(inputs.marketing.value) || 0, shipping = parseFloat(inputs.shipping.value) || 0, overheads = parseFloat(inputs.overheads.value) || 0;
+            if (sp_unit === 0 || units === 0 || cp_unit === 0) { initialState.style.display = 'flex'; resultsState.style.display = 'none'; analysisSection.style.display = 'none'; if (barChart) barChart.destroy(); if (pieChart) pieChart.destroy(); return; }
+            initialState.style.display = 'none'; resultsState.style.display = 'block'; analysisSection.style.display = 'block';
+            const totalRevenue = sp_unit * units, totalVariableCost = cp_unit * units, totalFixedCost = marketing + shipping + overheads;
+            const totalCost = totalVariableCost + totalFixedCost, netProfitLoss = totalRevenue - totalCost;
+            const profitMargin = totalRevenue === 0 ? 0 : (netProfitLoss / totalRevenue) * 100; const breakEvenUnits = (sp_unit > cp_unit) ? totalFixedCost / (sp_unit - cp_unit) : Infinity;
+            document.getElementById('totalRevenue').textContent = formatCurrency(totalRevenue); document.getElementById('totalCosts').textContent = formatCurrency(totalCost);
+            const netProfitEl = document.getElementById('netProfitLoss'); netProfitEl.textContent = formatCurrency(netProfitLoss); netProfitEl.className = `value ${netProfitLoss >= 0 ? 'profit' : 'loss'}`;
+            const profitMarginEl = document.getElementById('profitMargin'); profitMarginEl.textContent = `${profitMargin.toFixed(2)}%`; profitMarginEl.className = `value ${profitMargin >= 0 ? 'profit' : 'loss'}`;
+            document.getElementById('breakEven').textContent = isFinite(breakEvenUnits) ? `${Math.ceil(breakEvenUnits).toLocaleString('en-IN')} Units` : 'Unachievable';
+            const breakEvenSP = (units === 0) ? 0 : (totalFixedCost / units) + cp_unit; document.getElementById('breakEvenSP').textContent = formatCurrency(breakEvenSP);
+            const targets = [10, 20, 30, 40, 50]; let priceHtml = '', costHtml = '';
+            targets.forEach(p => { const reqRev = totalCost / (1 - (p/100)); const reqSP = units === 0 ? 0 : reqRev / units; priceHtml += `<tr><td>${p}%</td><td>${formatCurrency(reqSP)}</td></tr>`; const targetTC = totalRevenue * (1 - (p/100)); const reqVC = targetTC - totalFixedCost; let reqCP = "Unachievable"; if (reqVC >= 0 && units > 0) { reqCP = formatCurrency(reqVC / units); } costHtml += `<tr><td>${p}%</td><td>${reqCP}</td></tr>`; });
+            document.getElementById('priceScenariosBody').innerHTML = priceHtml; document.getElementById('costScenariosBody').innerHTML = costHtml;
+            if(barChart) barChart.destroy(); if(pieChart) pieChart.destroy();
+            Chart.defaults.color = 'rgba(255, 255, 255, 0.7)'; Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.2)';
+            barChart = new Chart(barCanvas, { type: 'bar', data: { labels: ['Revenue', 'Costs', 'Profit/Loss'], datasets: [{ data: [totalRevenue, totalCost, netProfitLoss], backgroundColor: ['#2196F3', '#F44336', netProfitLoss >= 0 ? '#4CAF50' : '#F44336'] }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: (v) => v.toLocaleString('en-IN') } }, x: { grid: { display: false } } } } });
+            const pieColors = ['#3F51B5', '#FF9800', '#009688', '#607D8B']; const pieData = [totalVariableCost, marketing, shipping, overheads]; const pieLabels = ['Product Cost', 'Marketing', 'Shipping', 'Overheads'];
+            pieChart = new Chart(pieCanvas, { type: 'pie', data: { labels: pieLabels, datasets: [{ data: pieData, backgroundColor: pieColors, borderWidth: 2, borderColor: '#1e1e1e' }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => `${c.label}: ${formatCurrency(c.raw)}` } } } } });
+            const legend = document.getElementById('plPieLegend'); legend.innerHTML = ''; pieLabels.forEach((label, i) => { legend.innerHTML += `<li class="legend-item"><span class="legend-color-box" style="background-color: ${pieColors[i]}"></span> ${label}</li>`; });
+        }
+        function syncAndCalculate(source, target) { if(target) target.value = source.value; calculateAndDisplay(); }
+        ['sp', 'units', 'cp'].forEach(id => { sliders[id].addEventListener('input', () => syncAndCalculate(sliders[id], inputs[id])); inputs[id].addEventListener('input', () => syncAndCalculate(inputs[id], sliders[id])); });
+        ['marketing', 'shipping', 'overheads'].forEach(id => { inputs[id].addEventListener('input', calculateAndDisplay); });
+        calculateAndDisplay();
+    });
+</script>
+
+<%- include('partials/footer') %>

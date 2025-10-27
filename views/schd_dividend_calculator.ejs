@@ -1,0 +1,126 @@
+<%- include('partials/header') %>
+
+<div class="form-card">
+    <h3 class="mb-5">SCHD Dividend Growth Calculator</h3>
+    <div class="row g-5">
+        <!-- Left Column: Inputs (এই অংশটি ঠিক আছে) -->
+        <div class="col-lg-7">
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="initialInput" class="form-label mb-0">Initial Investment</label></div><div class="col-md-7"><div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="initialInput" min="0" step="1000" placeholder="e.g., 50,000"></div></div></div><input type="range" min="0" max="5000000" step="1000" class="form-range mt-2" id="initialSlider"></div>
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="monthlyInput" class="form-label mb-0">Monthly Contribution</label></div><div class="col-md-7"><div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="monthlyInput" min="0" step="500" placeholder="e.g., 10,000"></div></div></div><input type="range" min="0" max="100000" step="500" class="form-range mt-2" id="monthlySlider"></div>
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="yearsInput" class="form-label mb-0">Investment Period</label></div><div class="col-md-7"><div class="input-group"><input type="number" class="form-control" id="yearsInput" min="1" max="50" step="1" placeholder="e.g., 15"><span class="input-group-text">Years</span></div></div></div><input type="range" min="1" max="50" step="1" class="form-range mt-2" id="yearsSlider"></div>
+            <hr class="my-4"><p class="text-muted text-center fw-bold">Advanced Assumptions (Adjust if needed)</p>
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="dividendYieldInput" class="form-label mb-0">Starting Dividend Yield</label></div><div class="col-md-7"><div class="input-group"><input type="number" class="form-control" id="dividendYieldInput" min="0" max="10" step="0.1" value="3.5"><span class="input-group-text">%</span></div></div></div><input type="range" min="0" max="10" step="0.1" value="3.5" class="form-range mt-2" id="dividendYieldSlider"></div>
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="shareGrowthInput" class="form-label mb-0">Annual Share Growth</label></div><div class="col-md-7"><div class="input-group"><input type="number" class="form-control" id="shareGrowthInput" min="0" max="20" step="0.1" value="7.0"><span class="input-group-text">%</span></div></div></div><input type="range" min="0" max="20" step="0.1" value="7.0" class="form-range mt-2" id="shareGrowthSlider"></div>
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="dividendGrowthInput" class="form-label mb-0">Annual Dividend Growth</label></div><div class="col-md-7"><div class="input-group"><input type="number" class="form-control" id="dividendGrowthInput" min="0" max="20" step="0.1" value="10.0"><span class="input-group-text">%</span></div></div></div><input type="range" min="0" max="20" step="0.1" value="10.0" class="form-range mt-2" id="dividendGrowthSlider"></div>
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="taxRateInput" class="form-label mb-0">Tax on Dividends</label></div><div class="col-md-7"><div class="input-group"><input type="number" class="form-control" id="taxRateInput" min="0" max="50" step="1" value="15"><span class="input-group-text">%</span></div></div></div><input type="range" min="0" max="50" step="1" value="15" class="form-range mt-2" id="taxRateSlider"></div>
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="expenseRatioInput" class="form-label mb-0">Expense Ratio</label></div><div class="col-md-7"><div class="input-group"><input type="number" class="form-control" id="expenseRatioInput" min="0" max="2" step="0.01" value="0.06"><span class="input-group-text">%</span></div></div></div><input type="range" min="0" max="2" step="0.01" value="0.06" class="form-range mt-2" id="expenseRatioSlider"></div>
+        </div>
+        
+        <!-- Right Column: Results (এই অংশটি ঠিক আছে) -->
+        <div class="col-lg-5 d-flex flex-column">
+            <div id="initialState" class="d-flex flex-grow-1 align-items-center justify-content-center h-100 text-center text-muted p-4" style="background-color: #f8f9fa; border-radius: 12px;"><h4>Enter your investment plan to project future growth.</h4></div>
+            <div id="resultsState" class="flex-grow-1" style="display: none;">
+                <div class="emi-result-display mb-4"><div class="label">Future Portfolio Value</div><div class="amount" id="futureValue">₹0</div></div>
+                <div class="row h-100 align-items-center"><div class="col-12"><div class="emi-summary-card"><div class="summary-item"><div><span class="dot" style="background-color: #0d6efd;"></span><span class="label">Total Contributions</span></div><div class="value" id="totalContributions">₹0</div></div><div class="summary-item"><div><span class="dot" style="background-color: #198754;"></span><span class="label">Net Dividends Earned</span></div><div class="value" id="totalDividends">₹0</div></div><div class="summary-item"><div><span class="dot" style="background-color: #ffca28;"></span><span class="label">Capital Gains</span></div><div class="value" id="capitalGains">₹0</div></div><div class="summary-item"><div><span class="dot" style="background-color: #ef5350;"></span><span class="label">Taxes Paid</span></div><div class="value" id="taxesPaid">₹0</div></div></div><div class="d-flex align-items-center justify-content-center mt-4"><canvas id="schdPieChart"></canvas></div></div></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Yearly Breakdown -->
+    <div id="yearlyBreakdownSection" class="mt-5" style="display: none;">
+        <h4 class="text-center mb-4">Year-by-Year Growth Projection</h4>
+        <div class="table-responsive"><table class="table table-striped table-bordered text-center"><thead class="table-dark"><tr><th>Year</th><th>Starting Balance</th><th>Contributions</th><th>Net Dividends</th><th>Share Growth</th><th>Ending Balance</th></tr></thead><tbody id="yearlyBreakdownBody"></tbody></table></div>
+    </div>
+    
+    <!-- তথ্য সেকশন ( চূড়ান্তভাবে পরিবর্তিত) -->
+    <div class="info-accordion">
+        <div class="accordion" id="calculatorInfoAccordion">
+            <!-- Item 1: How to Use -->
+            <div class="accordion-item"><h2 class="accordion-header" id="headingOne"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">How to Use This Calculator</button></h2><div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#calculatorInfoAccordion"><div class="accordion-body"><ol><li><strong>Enter Your Investment Plan:</strong> Input your Initial Investment, Monthly Contribution, and the total Investment Period in years.</li><li><strong>Adjust Advanced Assumptions:</strong> For a more realistic projection, you can fine-tune the numbers. The pre-filled values are based on historical averages for SCHD, but you can change them.</li><li><strong>Analyze the Results:</strong> The calculator instantly projects your future portfolio value and provides a detailed breakdown of your contributions, dividends, capital gains, and taxes.</li><li><strong>Review the Projection Table:</strong> The year-by-year table shows how your investment snowballs over time, detailing the impact of contributions, dividends, and growth each year.</li></ol></div></div></div>
+            
+            <!-- Item 2: Understanding the Metrics -->
+            <div class="accordion-item"><h2 class="accordion-header" id="headingTwo"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Understanding the Metrics</button></h2><div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#calculatorInfoAccordion"><div class="accordion-body"><p><strong>Total Contributions:</strong> The total amount of money you invested from your pocket (Initial Investment + all Monthly Contributions).</p><p><strong>Net Dividends Earned:</strong> The total cash dividends received from your investment after paying taxes. This calculator assumes all net dividends are reinvested.</p><p><strong>Capital Gains:</strong> The increase in the value of your shares over time, separate from dividends.</p><p><strong>Future Portfolio Value:</strong> The final projected value of your investment, which is the sum of your contributions, net dividends, and capital gains.</p></div></div></div>
+            
+            <!-- ### নতুন: বিস্তারিত গাইড ### -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        A Deep Dive into SCHD & Dividend Growth Investing
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#calculatorInfoAccordion">
+                    <div class="accordion-body">
+                        <p class="lead">Dividend Growth Investing is a powerful strategy focused on buying stocks or ETFs (like SCHD) that not only pay dividends but also consistently increase those dividends over time. This calculator is specifically designed to model the growth of an investment in a fund like the Schwab U.S. Dividend Equity ETF™ (SCHD).</p>
+                        <hr>
+                        <h4>What is SCHD?</h4>
+                        <p>SCHD is an Exchange-Traded Fund (ETF) that tracks the Dow Jones U.S. Dividend 100™ Index. This index is composed of high-quality, large-cap U.S. companies with a strong record of paying dividends and the financial strength to continue doing so.</p>
+                        <p>It's popular among investors for its:</p>
+                        <ul>
+                            <li><strong>Focus on Quality:</strong> It selects fundamentally strong companies.</li>
+                            <li><strong>Strong Dividend Growth:</strong> Historically, the companies in the index have consistently increased their dividends.</li>
+                            <li><strong>Low Cost:</strong> It has a very low expense ratio, which means more of your money stays invested.</li>
+                        </ul>
+                        
+                        <h4>The Two Engines of Growth in this Calculator</h4>
+                        <p>Your investment grows from two primary sources, which you can control in the "Advanced Assumptions":</p>
+                        <ol>
+                            <li><strong>Dividends (and their growth):</strong> This is the cash paid out by the companies. The "Annual Dividend Growth" rate is crucial because it means your dividend income stream grows on its own each year, creating a powerful compounding effect.</li>
+                            <li><strong>Share Price Appreciation (Capital Gains):</strong> This is the growth in the value of the shares themselves. As the companies in the ETF perform well, their stock prices tend to rise over time.</li>
+                        </ol>
+                        <blockquote class="blockquote bg-light p-3 rounded">The true magic happens when you reinvest your growing dividends to buy more shares, which then pay you even more dividends. This calculator models that exact snowball effect.</blockquote>
+                        
+                        <h4>Why We Include Taxes and Expense Ratio</h4>
+                        <p>For a realistic projection, it's crucial to consider costs:</p>
+                        <ul>
+                            <li><strong>Tax on Dividends:</strong> Dividend income is usually taxable. Factoring this in gives you a better estimate of your actual (net) returns.</li>
+                            <li><strong>Expense Ratio:</strong> This is the small annual fee charged by the fund manager (like Schwab) to operate the ETF. While SCHD's is very low, it still has a long-term impact on your final corpus.</li>
+                        </ul>
+                        <p>By including these factors, this calculator provides a more conservative and realistic forecast of your potential wealth, moving beyond simple, optimistic projections.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript (এই অংশটি ঠিক আছে) -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ids = ['initial', 'monthly', 'years', 'dividendYield', 'shareGrowth', 'dividendGrowth', 'taxRate', 'expenseRatio'];
+        const inputs = {}, sliders = {};
+        ids.forEach(id => { inputs[id] = document.getElementById(id + 'Input'); sliders[id] = document.getElementById(id + 'Slider'); });
+        const initialState = document.getElementById('initialState'), resultsState = document.getElementById('resultsState'), yearlyBreakdownSection = document.getElementById('yearlyBreakdownSection');
+        const futureValue = document.getElementById('futureValue'), totalContributions = document.getElementById('totalContributions'), totalDividends = document.getElementById('totalDividends'), capitalGains = document.getElementById('capitalGains'), taxesPaid = document.getElementById('taxesPaid');
+        const yearlyBreakdownBody = document.getElementById('yearlyBreakdownBody'), pieChartCanvas = document.getElementById('schdPieChart');
+        let schdPieChart;
+        const formatCurrency = (num) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(num);
+        function calculateAndDisplay() {
+            const P = parseFloat(inputs.initial.value) || 0; const M = parseFloat(inputs.monthly.value) || 0; const T = parseInt(inputs.years.value) || 0;
+            let currentDivYield = parseFloat(inputs.dividendYield.value) / 100 || 0;
+            const G_rate = parseFloat(inputs.shareGrowth.value) / 100 || 0; const Div_growth = parseFloat(inputs.dividendGrowth.value) / 100 || 0;
+            const Tax_rate = parseFloat(inputs.taxRate.value) / 100 || 0; const Expense_ratio = parseFloat(inputs.expenseRatio.value) / 100 || 0;
+            if (T === 0) { initialState.style.display = 'flex'; resultsState.style.display = 'none'; yearlyBreakdownSection.style.display = 'none'; if (schdPieChart) schdPieChart.destroy(); return; }
+            initialState.style.display = 'none'; resultsState.style.display = 'block'; yearlyBreakdownSection.style.display = 'block';
+            let currentBalance = P; let totalNetDivs = 0, totalPaidTaxes = 0, totalConts = P; yearlyBreakdownBody.innerHTML = '';
+            for (let year = 1; year <= T; year++) {
+                const startOfYear = currentBalance; const contributionsThisYear = M * 12; currentBalance += contributionsThisYear; totalConts += contributionsThisYear;
+                const grossDividends = currentBalance * currentDivYield; const taxesForYear = grossDividends * Tax_rate; const netDividends = grossDividends - taxesForYear;
+                totalNetDivs += netDividends; totalPaidTaxes += taxesForYear; currentBalance += netDividends;
+                const growthThisYear = currentBalance * G_rate; currentBalance += growthThisYear;
+                const expenseForYear = currentBalance * Expense_ratio; currentBalance -= expenseForYear;
+                const row = `<tr><td>${year}</td><td>${formatCurrency(startOfYear)}</td><td>${formatCurrency(contributionsThisYear)}</td><td>${formatCurrency(netDividends)}</td><td>${formatCurrency(growthThisYear)}</td><td>${formatCurrency(currentBalance)}</td></tr>`;
+                yearlyBreakdownBody.innerHTML += row; currentDivYield *= (1 + Div_growth);
+            }
+            const totalGains = currentBalance - totalConts; const capitalGainsValue = totalGains - totalNetDivs;
+            futureValue.textContent = formatCurrency(currentBalance); totalContributions.textContent = formatCurrency(totalConts);
+            totalDividends.textContent = formatCurrency(totalNetDivs); capitalGains.textContent = formatCurrency(capitalGainsValue); taxesPaid.textContent = formatCurrency(totalPaidTaxes);
+            if (schdPieChart) schdPieChart.destroy();
+            schdPieChart = new Chart(pieChartCanvas, { type: 'doughnut', data: { labels: ['Contributions', 'Net Dividends', 'Capital Gains', 'Taxes Paid'], datasets: [{ data: [totalConts, totalNetDivs, capitalGainsValue, totalPaidTaxes], backgroundColor: ['#0d6efd', '#198754', '#ffca28', '#ef5350'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } } });
+        }
+        function syncAndCalculate(source, target) { if (target) target.value = source.value; calculateAndDisplay(); }
+        ids.forEach(id => { if (sliders[id]) sliders[id].addEventListener('input', () => syncAndCalculate(sliders[id], inputs[id])); if (inputs[id]) inputs[id].addEventListener('input', () => syncAndCalculate(inputs[id], sliders[id])); });
+        calculateAndDisplay();
+    });
+</script>
+
+<%- include('partials/footer') %>

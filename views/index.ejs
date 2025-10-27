@@ -1,0 +1,94 @@
+<!-- views/index.ejs -->
+
+<%- include('partials/header') %>
+
+<div class="hero-section">
+    <h1>Welcome to Financial Hub</h1>
+    <p>Your one-stop destination for all financial calculations.</p>
+</div>
+
+<div class="row g-4">
+    <!-- EMI Calculator Card -->
+    <div class="col-lg-4 col-md-6">
+        <div class="calculator-card">
+            <h5 class="card-title">EMI Calculator</h5>
+            <p class="card-text">Calculate your Equated Monthly Installment for loans.</p>
+            <a href="/emi-calculator" class="btn btn-custom">Go to Calculator</a>
+        </div>
+    </div>
+
+    <!-- Simple Interest Card -->
+    <div class="col-lg-4 col-md-6">
+        <div class="calculator-card">
+            <h5 class="card-title">Simple Interest</h5>
+            <p class="card-text">Calculate simple interest on your principal amount.</p>
+            <a href="/simple-interest" class="btn btn-custom">Go to Calculator</a>
+        </div>
+    </div>
+    
+    <!-- Compound Interest Card -->
+    <div class="col-lg-4 col-md-6">
+        <div class="calculator-card">
+            <h5 class="card-title">Compound Interest</h5>
+            <p class="card-text">Calculate the power of compounding on your investment.</p>
+            <a href="/compound-interest" class="btn btn-custom">Go to Calculator</a>
+        </div>
+    </div>
+
+    <!-- Advanced Profit & Loss Card -->
+    <div class="col-lg-4 col-md-6">
+        <div class="calculator-card">
+            <h5 class="card-title">Profit & Loss</h5>
+            <p class="card-text">Advanced analysis with charts and growth scenarios.</p>
+            <a href="/advanced-profit-loss" class="btn btn-custom">Go to Calculator</a>
+        </div>
+    </div>
+
+    <!-- GST Calculator Card -->
+    <div class="col-lg-4 col-md-6">
+        <div class="calculator-card">
+        <h5 class="card-title">GST Calculator</h5>
+        <p class="card-text">Add or remove GST from any amount with a detailed breakdown.</p>
+        <a href="/gst-calculator" class="btn btn-custom">Go to Calculator</a>
+    </div>
+</div>
+
+	<!-- SCHD Dividend Calculator Card -->
+	<div class="col-lg-4 col-md-6">
+    	<div class="calculator-card">
+        	<h5 class="card-title">SCHD Dividend Calculator</h5>
+        	<p class="card-text">Project future portfolio growth with reinvested SCHD dividends.</p>
+        	<a href="/schd-dividend-calculator" class="btn btn-custom">Go to Calculator</a>
+    	</div>
+      </div>
+
+<!-- SIP Calculator Card -->
+<div class="col-lg-4 col-md-6">
+    <div class="calculator-card">
+        <h5 class="card-title">SIP Calculator</h5>
+        <p class="card-text">Calculate the future value of your monthly investments.</p>
+        <a href="/sip-calculator" class="btn btn-custom">Go to Calculator</a>
+    </div>
+</div>
+
+<!-- Retirement Calculator Card -->
+<div class="col-lg-4 col-md-6">
+    <div class="calculator-card">
+        <h5 class="card-title">Retirement Calculator</h5>
+        <p class="card-text">Plan your retirement corpus and see if you are on track.</p>
+        <a href="/retirement-calculator" class="btn btn-custom">Go to Calculator</a>
+    </div>
+</div>
+
+<!-- Loan Prepayment Calculator Card -->
+<div class="col-lg-4 col-md-6">
+    <div class="calculator-card">
+        <h5 class="card-title">Loan Prepayment</h5>
+        <p class="card-text">See how much interest you can save by prepaying your loan.</p>
+        <a href="/loan-prepayment-calculator" class="btn btn-custom">Go to Calculator</a>
+    </div>
+</div>
+
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,131 @@
+<%- include('partials/header') %>
+
+<div class="form-card">
+    <h3 class="mb-5">Loan EMI Calculator</h3>
+    <div class="row g-5">
+        <!-- Left Column: Inputs (এই অংশটি ঠিক আছে) -->
+        <div class="col-lg-6">
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="principalInput" class="form-label mb-0">Loan Amount</label></div><div class="col-md-7"><div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="principalInput" min="50000" max="10000000" step="10000" placeholder="e.g., 5,00,000"></div></div></div><input type="range" min="50000" max="10000000" step="10000" class="form-range mt-2" id="principalSlider"></div>
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="rateInput" class="form-label mb-0">Annual Interest Rate</label></div><div class="col-md-7"><div class="input-group"><input type="number" class="form-control" id="rateInput" min="5" max="20" step="0.1" placeholder="e.g., 8.5"><span class="input-group-text">%</span></div></div></div><input type="range" min="5" max="20" step="0.1" class="form-range mt-2" id="rateSlider"></div>
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label class="form-label mb-0">Loan Tenure</label></div><div class="col-md-7"><div class="btn-group w-100" role="group"><input type="radio" class="btn-check" name="tenureType" id="tenureTypeYears" autocomplete="off" checked><label class="btn btn-outline-primary" for="tenureTypeYears">Years</label><input type="radio" class="btn-check" name="tenureType" id="tenureTypeMonths" autocomplete="off"><label class="btn btn-outline-primary" for="tenureTypeMonths">Months</label></div></div></div><div class="input-group mt-2"><input type="number" class="form-control" id="tenureInput" min="1" max="30" step="1" placeholder="e.g., 5"><span class="input-group-text" id="tenureUnitLabel">Years</span></div><input type="range" min="1" max="30" step="1" class="form-range mt-2" id="tenureSlider"></div>
+        </div>
+
+        <!-- Right Column: Results (এই অংশটি ঠিক আছে) -->
+        <div class="col-lg-6 d-flex flex-column">
+            <div id="initialState" class="d-flex flex-grow-1 align-items-center justify-content-center h-100 text-center text-muted p-4" style="background-color: #f8f9fa; border-radius: 12px;"><h4>Enter your loan details to see the calculation and breakdown.</h4></div>
+            <div id="resultsState" class="flex-grow-1" style="display: none;">
+                <div class="emi-result-display"><div class="label">Monthly EMI</div><div class="amount" id="emiResult">₹0</div></div>
+                <div class="row g-3 align-items-center"><div class="col-md-7"><div class="emi-summary-card"><div class="summary-item"><div><span class="dot" style="background-color: #0d6efd;"></span><span class="label">Principal Amount</span></div><div class="value" id="totalPrincipal">₹0</div></div><div class="summary-item"><div><span class="dot" style="background-color: #ef5350;"></span><span class="label">Total Interest</span></div><div class="value" id="totalInterest">₹0</div></div><hr><div class="summary-item fw-bold"><div><span class="label">Total Payment</span></div><div class="value" id="totalPayment">₹0</div></div></div></div><div class="col-md-5 d-flex align-items-center justify-content-center"><canvas id="emiPieChart"></canvas></div></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Amortization Schedule -->
+    <div id="amortizationSection" class="mt-5" style="display: none;">
+        <h4 class="text-center mb-4" id="amortizationTitle">Amortization Schedule</h4>
+        <div class="table-responsive"><table class="table table-striped table-bordered text-center"><thead class="table-dark" id="amortizationHead"></thead><tbody id="amortizationBody"></tbody></table></div>
+    </div>
+
+    <!-- তথ্য সেকশন (চূড়ান্তভাবে পরিবর্তিত) -->
+    <div class="info-accordion">
+        <div class="accordion" id="calculatorInfoAccordion">
+            <!-- Item 1: How to Use -->
+            <div class="accordion-item"><h2 class="accordion-header" id="headingOne"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">How to Use This Calculator</button></h2><div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#calculatorInfoAccordion"><div class="accordion-body"><ol><li><strong>Enter Loan Details:</strong> Use the sliders or input boxes to enter your desired Loan Amount, Annual Interest Rate, and Loan Tenure.</li><li><strong>Select Tenure Unit:</strong> Choose whether you want to enter the tenure in "Years" or "Months" using the toggle buttons.</li><li><strong>Analyze in Real-Time:</strong> As you adjust the values, the calculator will instantly update the Monthly EMI, payment breakdown, pie chart, and the amortization schedule below.</li><li><strong>Review the Schedule:</strong> The amortization schedule shows a detailed year-by-year (or month-by-month) breakdown of your payments, helping you understand how your loan principal reduces over time.</li></ol></div></div></div>
+            
+            <!-- Item 2: Understanding the Metrics -->
+            <div class="accordion-item"><h2 class="accordion-header" id="headingTwo"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Understanding the Metrics</button></h2><div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#calculatorInfoAccordion"><div class="accordion-body"><p><strong>Monthly EMI:</strong> This is the fixed amount you will pay to the bank every month until your loan is fully repaid.</p><p><strong>Principal Amount:</strong> This is the original loan amount you borrowed. The pie chart visually shows how much of your total payment goes towards this principal.</p><p><strong>Total Interest:</strong> This is the "cost" of borrowing money. It's the total extra amount you pay to the bank over the loan tenure, on top of the principal. A key goal is to minimize this figure.</p><p><strong>Total Payment:</strong> This is the sum of the Principal Amount and Total Interest, representing the entire amount you will pay back over the life of the loan.</p><p><strong>Amortization Schedule:</strong> This table breaks down each payment into its principal and interest components. You will notice that in the early years, a larger portion of your EMI goes towards interest, while in the later years, more goes towards reducing the principal.</p></div></div></div>
+            
+            <!-- ### নতুন: বিস্তারিত গাইড ### -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        A Detailed Guide to EMIs
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#calculatorInfoAccordion">
+                    <div class="accordion-body">
+                        <p class="lead">Taking a loan is a major financial decision, and understanding your Equated Monthly Installment (EMI) is the first step toward managing it effectively. This guide will help you understand what an EMI is and how this calculator can empower you.</p>
+                        <hr>
+                        <h4>What is an EMI?</h4>
+                        <p>An EMI (Equated Monthly Installment) is a fixed payment amount made by a borrower to a lender at a specified date each calendar month. EMIs are used to pay off both interest and principal each month so that over a specified number of years, the loan is paid off in full.</p>
+                        
+                        <h4>How Does an EMI Calculator Work?</h4>
+                        <p>This tool simplifies complex calculations based on three key factors:</p>
+                        <ul>
+                            <li><strong>Loan Amount (Principal):</strong> The total amount of money borrowed. A higher principal leads to a higher EMI.</li>
+                            <li><strong>Interest Rate:</strong> The rate at which the lender charges interest on the loan. A higher interest rate increases your EMI.</li>
+                            <li><strong>Loan Tenure:</strong> The duration over which the loan needs to be repaid. A longer tenure reduces your monthly EMI but significantly increases the total interest you pay over the loan's lifetime.</li>
+                        </ul>
+                        <blockquote class="blockquote bg-light p-3 rounded">The biggest trade-off in any loan is between the <strong>Tenure</strong> and the <strong>Total Interest Paid</strong>. A shorter tenure means higher EMIs but less overall interest. Use this calculator to find the perfect balance for your budget.</blockquote>
+
+                        <h4>Benefits of Using an EMI Calculator</h4>
+                        <ol>
+                            <li><strong>Financial Planning & Budgeting:</strong> Know your exact monthly outflow before taking a loan, allowing you to plan your budget effectively.</li>
+                            <li><strong>Loan Comparison:</strong> Easily compare loan offers from different banks by changing the interest rate and tenure to see which one is more affordable.</li>
+                            <li><strong>Time-Saving & Accuracy:</strong> Avoid complex manual calculations and get instant, error-free results.</li>
+                            <li><strong>Better Negotiation Power:</strong> When you understand the numbers, you can negotiate better terms with the lender.</li>
+                        </ol>
+
+                        <h4 class="mt-4">Smart Tips for Managing Your Loan</h4>
+                        <ul>
+                            <li><strong>Choose the Shortest Possible Tenure:</strong> Always opt for the shortest tenure whose EMI you can comfortably afford. This will save you a huge amount in interest.</li>
+                            <li><strong>Improve Your Credit Score:</strong> A better credit score can help you secure a lower interest rate.</li>
+                            <li><strong>Consider Prepayment:</strong> Use our <a href="/loan-prepayment-calculator">Loan Prepayment Calculator</a> to see how making extra payments can drastically reduce your interest and loan duration.</li>
+                        </ul>
+                        <hr>
+                        <h5 class="text-muted">Formula Behind the Calculator</h5>
+                        <p><small>The calculator uses the standard EMI formula: <code>EMI = [P × R × (1 + R)^N] / [(1 + R)^N – 1]</code>, where P is the Principal, R is the monthly interest rate, and N is the number of months.</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript (এই অংশটি ঠিক আছে) -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const principalSlider = document.getElementById('principalSlider'), rateSlider = document.getElementById('rateSlider'), tenureSlider = document.getElementById('tenureSlider');
+        const principalInput = document.getElementById('principalInput'), rateInput = document.getElementById('rateInput'), tenureInput = document.getElementById('tenureInput');
+        const tenureTypeYears = document.getElementById('tenureTypeYears'), tenureTypeMonths = document.getElementById('tenureTypeMonths');
+        const tenureUnitLabel = document.getElementById('tenureUnitLabel');
+        const initialState = document.getElementById('initialState'), resultsState = document.getElementById('resultsState'), amortizationSection = document.getElementById('amortizationSection');
+        const emiResult = document.getElementById('emiResult'), totalPrincipal = document.getElementById('totalPrincipal'), totalInterest = document.getElementById('totalInterest'), totalPayment = document.getElementById('totalPayment');
+        const amortizationTitle = document.getElementById('amortizationTitle'), amortizationHead = document.getElementById('amortizationHead'), amortizationBody = document.getElementById('amortizationBody'), pieChartCanvas = document.getElementById('emiPieChart');
+        let emiPieChart;
+        const formatCurrency = (num) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(num);
+        function calculateAndDisplayEMI() {
+            const P = parseFloat(principalInput.value); const R = parseFloat(rateInput.value) / 100 / 12; const tenureValue = parseFloat(tenureInput.value); const isYears = tenureTypeYears.checked; const N = isYears ? tenureValue * 12 : tenureValue;
+            if (isNaN(P) || isNaN(R) || isNaN(N) || P <= 0 || R < 0 || N <= 0) { initialState.style.display = 'flex'; resultsState.style.display = 'none'; amortizationSection.style.display = 'none'; if(emiPieChart) emiPieChart.destroy(); return; }
+            initialState.style.display = 'none'; resultsState.style.display = 'block'; amortizationSection.style.display = 'block';
+            const emi = (P * R * Math.pow(1 + R, N)) / (Math.pow(1 + R, N) - 1);
+            const totalAmountPayable = emi * N; const interestAmount = totalAmountPayable - P;
+            emiResult.textContent = formatCurrency(emi); totalPrincipal.textContent = formatCurrency(P); totalInterest.textContent = formatCurrency(interestAmount); totalPayment.textContent = formatCurrency(totalAmountPayable);
+            if (emiPieChart) emiPieChart.destroy();
+            emiPieChart = new Chart(pieChartCanvas, { type: 'doughnut', data: { labels: ['Principal Amount', 'Total Interest'], datasets: [{ data: [P, interestAmount], backgroundColor: ['#0d6efd', '#ef5350'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } } });
+            let balance = P; amortizationBody.innerHTML = '';
+            if (isYears) {
+                amortizationTitle.textContent = 'Amortization Schedule (Yearly)'; amortizationHead.innerHTML = `<tr><th>Year</th><th>Principal Paid</th><th>Interest Paid</th><th>Total Payment</th><th>Balance at Year End</th></tr>`; let yearlyData = {};
+                for (let i = 1; i <= N; i++) { const year = Math.ceil(i / 12); if (!yearlyData[year]) { yearlyData[year] = { principal: 0, interest: 0 }; } const interestForMonth = balance * R; const principalForMonth = emi - interestForMonth; balance -= principalForMonth; yearlyData[year].principal += principalForMonth; yearlyData[year].interest += interestForMonth; yearlyData[year].balance = balance < 0 ? 0 : balance; }
+                for (const year in yearlyData) { const data = yearlyData[year]; const row = `<tr><td>${year}</td><td>${formatCurrency(data.principal)}</td><td>${formatCurrency(data.interest)}</td><td>${formatCurrency(data.principal + data.interest)}</td><td>${formatCurrency(data.balance)}</td></tr>`; amortizationBody.innerHTML += row; }
+            } else {
+                amortizationTitle.textContent = 'Amortization Schedule (Monthly)'; amortizationHead.innerHTML = `<tr><th>Month</th><th>Principal Paid</th><th>Interest Paid</th><th>Total Payment</th><th>Balance at Month End</th></tr>`;
+                for (let i = 1; i <= N; i++) { const interestForMonth = balance * R; const principalForMonth = emi - interestForMonth; balance -= principalForMonth; const row = `<tr><td>${i}</td><td>${formatCurrency(principalForMonth)}</td><td>${formatCurrency(interestForMonth)}</td><td>${formatCurrency(emi)}</td><td>${formatCurrency(balance < 0 ? 0 : balance)}</td></tr>`; amortizationBody.innerHTML += row; }
+            }
+        }
+        function updateTenureControls() {
+            const isYears = tenureTypeYears.checked; let currentValue = parseFloat(tenureInput.value) || (isYears ? 1 : 12);
+            if (isYears) { tenureSlider.min = 1; tenureSlider.max = 30; tenureInput.min = 1; tenureInput.max = 30; tenureUnitLabel.textContent = 'Years'; if (currentValue > 30) { tenureInput.value = Math.round(currentValue / 12); } else if (currentValue === 0) { tenureInput.value = 1; } }
+            else { tenureSlider.min = 1; tenureSlider.max = 360; tenureInput.min = 1; tenureInput.max = 360; tenureUnitLabel.textContent = 'Months'; if (currentValue <= 30) { tenureInput.value = currentValue * 12; } else if (currentValue === 0) { tenureInput.value = 12; } }
+            syncAndCalculate(tenureInput, tenureSlider);
+        }
+        tenureTypeYears.addEventListener('change', updateTenureControls); tenureTypeMonths.addEventListener('change', updateTenureControls);
+        function syncAndCalculate(source, target) { target.value = source.value; calculateAndDisplayEMI(); }
+        principalSlider.addEventListener('input', () => syncAndCalculate(principalSlider, principalInput)); principalInput.addEventListener('input', () => syncAndCalculate(principalInput, principalSlider));
+        rateSlider.addEventListener('input', () => syncAndCalculate(rateSlider, rateInput)); rateInput.addEventListener('input', () => syncAndCalculate(rateInput, rateSlider));
+        tenureSlider.addEventListener('input', () => syncAndCalculate(tenureSlider, tenureInput)); tenureInput.addEventListener('input', () => syncAndCalculate(tenureInput, tenureSlider));
+        calculateAndDisplayEMI();
+    });
+</script>
+
+<%- include('partials/footer') %>

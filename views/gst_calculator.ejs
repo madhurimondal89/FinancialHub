@@ -1,0 +1,127 @@
+<%- include('partials/header') %>
+
+<div class="form-card">
+    <h3 class="mb-5">GST Calculator</h3>
+    <div class="row g-5">
+        <!-- Left Column: Inputs (এই অংশটি ঠিক আছে) -->
+        <div class="col-lg-7">
+            <div class="mb-4"><label class="form-label fw-bold">Calculation Type</label><div class="btn-group w-100" role="group"><input type="radio" class="btn-check" name="gstType" id="gstTypeAdd" autocomplete="off" checked><label class="btn btn-outline-primary" for="gstTypeAdd">Add GST</label><input type="radio" class="btn-check" name="gstType" id="gstTypeRemove" autocomplete="off"><label class="btn btn-outline-primary" for="gstTypeRemove">Remove GST</label></div></div>
+            <div class="mb-4"><label for="amountInput" class="form-label fw-bold" id="amountLabel">Amount (without GST)</label><div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="amountInput" placeholder="e.g., 1000"></div></div>
+            <div>
+                <label for="gstRate" class="form-label fw-bold">GST Rate (%)</label>
+                <div class="d-flex flex-wrap gap-2"><button class="btn btn-light border gst-rate-btn" data-rate="3">3%</button><button class="btn btn-light border gst-rate-btn active" data-rate="5">5%</button><button class="btn btn-light border gst-rate-btn" data-rate="12">12%</button><button class="btn btn-light border gst-rate-btn" data-rate="18">18%</button><button class="btn btn-light border gst-rate-btn" data-rate="28">28%</button><div class="input-group" style="flex: 1 1 120px;"><input type="number" class="form-control" id="gstRateInput" value="5" min="0"><span class="input-group-text">%</span></div></div>
+            </div>
+        </div>
+
+        <!-- Right Column: Results (এই অংশটি ঠিক আছে) -->
+        <div class="col-lg-5 d-flex flex-column">
+             <div id="initialState" class="d-flex flex-grow-1 align-items-center justify-content-center h-100 text-center text-muted p-4" style="background-color: #f8f9fa; border-radius: 12px;"><h4>Enter an amount and select a GST rate to see the calculation.</h4></div>
+            <div id="resultsState" class="emi-summary-card flex-grow-1" style="display: none;">
+                <div class="summary-item"><div class="label" id="baseAmountLabel">Base Amount</div><div class="value" id="baseAmountValue">₹0</div></div><hr>
+                <div class="summary-item"><div class="label">CGST (at <span id="cgstRate">0</span>%)</div><div class="value" id="cgstValue">₹0</div></div>
+                <div class="summary-item"><div class="label">SGST (at <span id="sgstRate">0</span>%)</div><div class="value" id="sgstValue">₹0</div></div><hr>
+                <div class="summary-item fw-bold text-success"><div class="label">Total GST</div><div class="value" id="totalGstValue">₹0</div></div><hr>
+                <div class="summary-item fw-bold fs-5 text-primary"><div class="label" id="finalAmountLabel">Final Amount</div><div class="value" id="finalAmountValue">₹0</div></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- তথ্য সেকশন (চূড়ান্তভাবে পরিবর্তিত) -->
+    <div class="info-accordion">
+        <div class="accordion" id="calculatorInfoAccordion">
+            <!-- Item 1: How to Use -->
+            <div class="accordion-item"><h2 class="accordion-header" id="headingOne"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">How to Use This Calculator</button></h2><div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#calculatorInfoAccordion"><div class="accordion-body"><ol><li><strong>Choose Calculation Type:</strong> Select "Add GST" to calculate the final price from a base amount, or "Remove GST" to find the original price from a GST-inclusive amount.</li><li><strong>Enter the Amount:</strong> Input the relevant amount in the box. The label will change based on your selection in step 1.</li><li><strong>Select GST Rate:</strong> Click on one of the common GST rate buttons (e.g., 5%, 18%) or enter a custom rate in the input box.</li><li><strong>Analyze the Results:</strong> The calculator will instantly provide a detailed breakdown of the base amount, CGST, SGST, and the final price.</li></ol></div></div></div>
+            
+            <!-- Item 2: Understanding the Metrics -->
+            <div class="accordion-item"><h2 class="accordion-header" id="headingTwo"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Understanding the Metrics</button></h2><div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#calculatorInfoAccordion"><div class="accordion-body"><p><strong>Base Amount / Original Amount:</strong> This is the price of the goods or services before any tax is applied.</p><p><strong>CGST & SGST:</strong> GST is divided into two components for intra-state (within the same state) transactions. CGST (Central GST) goes to the central government, and SGST (State GST) goes to the state government. Each is exactly half of the total GST rate.</p><p><strong>Total GST:</strong> The total tax amount applied to the base price (CGST + SGST).</p><p><strong>Final Amount / Gross Amount:</strong> This is the total price that a customer pays, which includes the base price plus the total GST.</p></div></div></div>
+            
+            <!-- ### নতুন: বিস্তারিত গাইড ### -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        A Simple Guide to GST
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#calculatorInfoAccordion">
+                    <div class="accordion-body">
+                        <p class="lead">Goods and Services Tax (GST) is a comprehensive, multi-stage, destination-based tax that is levied on every value addition. Understanding it is crucial for both consumers and business owners in India.</p>
+                        <hr>
+                        <h4>What is GST?</h4>
+                        <p>GST is an indirect tax that has replaced many other indirect taxes in India such as excise duty, VAT, services tax, etc. It is a single tax on the supply of goods and services, right from the manufacturer to the consumer.</p>
+                        
+                        <h4>Key Features of this GST Calculator</h4>
+                        <p>This tool is designed to be simple yet powerful. Its two primary functions are:</p>
+                        <ul>
+                            <li><strong>Add GST (Forward Calculation):</strong> This is the most common scenario. You have a product's base price and want to know the final selling price after adding GST. <br><em>Example: A product costs ₹1,000 + 18% GST. The calculator will show a final price of ₹1,180.</em></li>
+                            <li><strong>Remove GST (Reverse Calculation):</strong> This is incredibly useful when you have a final price (MRP) and want to know how much of it was the original price and how much was tax. <br><em>Example: A product's MRP is ₹1,180 (including 18% GST). The calculator will show that the original price was ₹1,000 and the GST amount was ₹180.</em></li>
+                        </ul>
+                        
+                        <h4>Understanding CGST, SGST, and IGST</h4>
+                        <p>The type of GST applied depends on where the transaction takes place:</p>
+                        <ul>
+                            <li><strong>CGST (Central GST):</strong> Collected by the Central Government on an intra-state sale (e.g., transaction within West Bengal).</li>
+                            <li><strong>SGST (State GST):</strong> Collected by the State Government on an intra-state sale (e.g., transaction within West Bengal).</li>
+                            <li><strong>IGST (Integrated GST):</strong> Collected by the Central Government on an inter-state sale (e.g., from West Bengal to Maharashtra).</li>
+                        </ul>
+                        <blockquote class="blockquote bg-light p-3 rounded">For any intra-state transaction, the total GST is split equally between CGST and SGST. For example, if the GST rate is 18%, the CGST will be 9% and the SGST will be 9%. This calculator shows this breakdown for you.</blockquote>
+
+                        <h4>The Main GST Slabs in India</h4>
+                        <p>Goods and services are categorized under different GST slabs. The primary slabs are:</p>
+                        <ul>
+                            <li><strong>5%:</strong> Common household necessities.</li>
+                            <li><strong>12%:</strong> Processed foods, mobile phones.</li>
+                            <li><strong>18%:</strong> Most services, electronics, etc. (This is the most common slab).</li>
+                            <li><strong>28%:</strong> Luxury items, cars, etc.</li>
+                            <li>Some items, like essential foods, are exempt (0%), while others, like gold, have special rates (3%).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript (এই অংশটি ঠিক আছে) -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const gstTypeAdd = document.getElementById('gstTypeAdd'), gstTypeRemove = document.getElementById('gstTypeRemove');
+        const amountLabel = document.getElementById('amountLabel'), amountInput = document.getElementById('amountInput');
+        const gstRateButtons = document.querySelectorAll('.gst-rate-btn'), gstRateInput = document.getElementById('gstRateInput');
+        const initialState = document.getElementById('initialState'), resultsState = document.getElementById('resultsState');
+        const baseAmountLabel = document.getElementById('baseAmountLabel'), finalAmountLabel = document.getElementById('finalAmountLabel');
+        const baseAmountValue = document.getElementById('baseAmountValue'), cgstRate = document.getElementById('cgstRate'), sgstRate = document.getElementById('sgstRate');
+        const cgstValue = document.getElementById('cgstValue'), sgstValue = document.getElementById('sgstValue'), totalGstValue = document.getElementById('totalGstValue'), finalAmountValue = document.getElementById('finalAmountValue');
+        const allControls = [amountInput, gstRateInput, gstTypeAdd, gstTypeRemove, ...gstRateButtons];
+        const formatCurrency = (num) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
+        function calculateAndDisplay() {
+            const isAddMode = gstTypeAdd.checked; const amount = parseFloat(amountInput.value); const gstRate = parseFloat(gstRateInput.value);
+            if (isNaN(amount) || isNaN(gstRate) || amount <= 0 || gstRate < 0) { initialState.style.display = 'flex'; resultsState.style.display = 'none'; return; }
+            initialState.style.display = 'none'; resultsState.style.display = 'block';
+            let baseAmount, gstAmount, finalAmount;
+            if (isAddMode) {
+                baseAmount = amount; gstAmount = baseAmount * (gstRate / 100); finalAmount = baseAmount + gstAmount;
+                baseAmountLabel.textContent = 'Base Amount'; finalAmountLabel.textContent = 'Final Amount (Inc. GST)';
+            } else {
+                finalAmount = amount; baseAmount = finalAmount / (1 + (gstRate / 100)); gstAmount = finalAmount - baseAmount;
+                baseAmountLabel.textContent = 'Original Amount'; finalAmountLabel.textContent = 'Gross Amount (Input)';
+            }
+            const halfGstRate = (gstRate / 2).toFixed(2); const halfGstAmount = gstAmount / 2;
+            baseAmountValue.textContent = formatCurrency(baseAmount); cgstRate.textContent = halfGstRate; sgstRate.textContent = halfGstRate;
+            cgstValue.textContent = formatCurrency(halfGstAmount); sgstValue.textContent = formatCurrency(halfGstAmount);
+            totalGstValue.textContent = formatCurrency(gstAmount); finalAmountValue.textContent = formatCurrency(finalAmount);
+        }
+        function updateGstType() { amountLabel.textContent = gstTypeAdd.checked ? 'Amount (without GST)' : 'Amount (including GST)'; calculateAndDisplay(); }
+        gstRateButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                gstRateButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active'); gstRateInput.value = button.dataset.rate; calculateAndDisplay();
+            });
+        });
+        gstRateInput.addEventListener('input', () => { gstRateButtons.forEach(btn => { if(btn.dataset.rate === gstRateInput.value) { btn.classList.add('active'); } else { btn.classList.remove('active'); } }); });
+        allControls.forEach(control => { control.addEventListener('input', calculateAndDisplay); control.addEventListener('change', calculateAndDisplay); });
+        gstTypeAdd.addEventListener('change', updateGstType); gstTypeRemove.addEventListener('change', updateGstType);
+        calculateAndDisplay();
+    });
+</script>
+
+<%- include('partials/footer') %>

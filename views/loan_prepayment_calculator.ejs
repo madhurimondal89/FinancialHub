@@ -1,0 +1,167 @@
+<%- include('partials/header') %>
+
+<div class="form-card">
+    <h3 class="mb-5">Loan Prepayment Calculator</h3>
+    <div class="row g-5">
+        <!-- Left Column: Inputs (এই অংশটি ঠিক আছে) -->
+        <div class="col-lg-5">
+            <h5 class="mb-3">Original Loan Details</h5>
+            <div class="mb-3"><label for="loanAmountInput" class="form-label">Loan Amount (₹)</label><input type="number" class="form-control" id="loanAmountInput" placeholder="e.g., 25,00,000"></div>
+            <div class="mb-3"><label for="interestRateInput" class="form-label">Annual Interest Rate (%)</label><input type="number" class="form-control" id="interestRateInput" placeholder="e.g., 8.5"></div>
+            <div class="mb-3"><label for="loanTenureInput" class="form-label">Loan Tenure (Years)</label><input type="number" class="form-control" id="loanTenureInput" placeholder="e.g., 20"></div>
+
+            <hr class="my-4">
+            <h5 class="mb-3">Prepayment Details</h5>
+            <div class="btn-group w-100 mb-3" role="group">
+                <input type="radio" class="btn-check" name="prepaymentType" id="typeRecurring" autocomplete="off" checked><label class="btn btn-outline-primary" for="typeRecurring">Recurring Monthly</label>
+                <input type="radio" class="btn-check" name="prepaymentType" id="typeOneTime" autocomplete="off"><label class="btn btn-outline-primary" for="typeOneTime">One-Time</label>
+            </div>
+            <div class="mb-3"><label for="prepaymentAmountInput" class="form-label">Prepayment Amount (₹)</label><input type="number" class="form-control" id="prepaymentAmountInput" placeholder="e.g., 5,000"></div>
+            <div class="mb-3" id="oneTimePaymentMonthWrapper" style="display: none;"><label for="oneTimePaymentMonthInput" class="form-label">Pay after (months)</label><input type="number" class="form-control" id="oneTimePaymentMonthInput" value="12"></div>
+        </div>
+        
+        <!-- Right Column: Results (এই অংশটি ঠিক আছে) -->
+        <div class="col-lg-7 d-flex flex-column">
+            <div id="initialState" class="d-flex flex-grow-1 align-items-center justify-content-center h-100 text-center text-muted p-4" style="background-color: #f8f9fa; border-radius: 12px;">
+                <h4>Enter your loan and prepayment details to see how much you can save.</h4>
+            </div>
+            <div id="resultsState" class="flex-grow-1" style="display: none;">
+                <h4 class="text-center mb-4">Your Savings Summary</h4>
+                <div class="row">
+                    <div class="col-md-4"><div class="summary-card"><div class="label">Interest Saved</div><div class="value text-success" id="interestSaved">₹0</div></div></div>
+                    <div class="col-md-4"><div class="summary-card"><div class="label">EMIs Reduced</div><div class="value text-primary" id="emisReduced">0</div></div></div>
+                    <div class="col-md-4"><div class="summary-card"><div class="label">New Loan End Date</div><div class="value fs-5" id="newEndDate">-</div></div></div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-6"><div class="chart-container"><h4 class="chart-title">Interest Payable Comparison</h4><canvas id="interestChart"></canvas></div></div>
+                    <div class="col-md-6"><div class="chart-container"><h4 class="chart-title">Loan Tenure Comparison</h4><canvas id="tenureChart"></canvas></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Comparison Table -->
+    <div id="comparisonSection" class="mt-5" style="display: none;">
+        <h4 class="text-center mb-4">Loan Summary Comparison</h4>
+        <div class="table-responsive"><table class="table table-bordered text-center"><thead class="table-dark"><tr><th>Details</th><th>Original Plan</th><th>New Plan (with Prepayment)</th></tr></thead><tbody>
+            <tr><td>Monthly EMI</td><td id="originalEMI"></td><td id="newEMI"></td></tr>
+            <tr><td>Loan Tenure</td><td id="originalTenure"></td><td id="newTenure"></td></tr>
+            <tr><td>Total Interest</td><td id="originalInterest"></td><td id="newInterest"></td></tr>
+            <tr><td>Total Payment</td><td id="originalTotal"></td><td id="newTotal"></td></tr>
+        </tbody></table></div>
+    </div>
+
+    <!-- তথ্য সেকশন (চূড়ান্তভাবে পরিবর্তিত) -->
+    <div class="info-accordion">
+        <div class="accordion" id="calculatorInfoAccordion">
+            <!-- Item 1: How to Use -->
+            <div class="accordion-item"><h2 class="accordion-header" id="headingOne"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">How to Use This Calculator</button></h2><div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#calculatorInfoAccordion"><div class="accordion-body"><ol><li><strong>Enter Original Loan Details:</strong> Fill in your total loan amount, annual interest rate, and original loan tenure in years.</li><li><strong>Choose Prepayment Type:</strong> Select whether you want to make a "Recurring Monthly" extra payment or a "One-Time" lumpsum payment.</li><li><strong>Enter Prepayment Amount:</strong> Input the extra amount you wish to pay. If you chose "One-Time", also specify after how many months you'll make this payment.</li><li><strong>Analyze the Results:</strong> The calculator will instantly show you how much interest you've saved, how many EMIs are reduced, and provide a visual comparison of your old and new loan plans.</li></ol></div></div></div>
+            <!-- Item 2: Understanding the Metrics -->
+            <div class="accordion-item"><h2 class="accordion-header" id="headingTwo"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Understanding the Metrics</button></h2><div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#calculatorInfoAccordion"><div class="accordion-body"><p><strong>Interest Saved:</strong> This is the most important number. It shows the total amount of interest money you will avoid paying to the bank by making prepayments.</p><p><strong>EMIs Reduced:</strong> This tells you how many monthly installments are cut from your original loan schedule. It shows how much faster you will become debt-free.</p><p><strong>New Loan End Date:</strong> The new calendar date when your loan will be fully paid off, thanks to your prepayments.</p><p><strong>Comparison Charts:</strong> The visual charts help you quickly compare the total interest and loan tenure between your original plan and the new, improved plan.</p></div></div></div>
+            
+            <!-- ### নতুন: বিস্তারিত গাইড ### -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        A Detailed Guide to Loan Prepayment
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#calculatorInfoAccordion">
+                    <div class="accordion-body">
+                        <p class="lead">Managing a loan is a big financial responsibility. Whether it’s a home loan, car loan, or personal loan, most borrowers dream of one thing — becoming debt-free as early as possible. That’s where a Loan Prepayment Calculator comes into play.</p>
+                        <hr>
+                        <h4>What is a Loan Prepayment Calculator?</h4>
+                        <p>A Loan Prepayment Calculator is an online tool that helps borrowers calculate the impact of prepaying their loans. When you pay more than your scheduled monthly EMI, the additional amount goes toward the principal balance. This reduces both the remaining principal and the total interest payable.</p>
+                        <p>The calculator shows you:</p>
+                        <ul>
+                            <li>How much interest you can save by making partial prepayments.</li>
+                            <li>How your loan tenure will reduce.</li>
+                            <li>The new EMI amount if you choose to keep the same tenure.</li>
+                            <li>The total financial benefits of prepaying your loan early.</li>
+                        </ul>
+                        <blockquote class="blockquote bg-light p-3 rounded">In simple words, it helps you make smart financial decisions by showing the real impact of prepayment on your overall loan cost.</blockquote>
+                        
+                        <h4>📈 Example: How Loan Prepayment Saves Money</h4>
+                        <p>Let’s take a simple example: a loan of ₹10,00,000 at 9% for 10 years (EMI: ₹12,668). If you make a one-time prepayment of ₹2,00,000 after 2 years, you'll find:</p>
+                        <ul>
+                            <li>Loan tenure reduces by around <strong>25 months</strong>.</li>
+                            <li>Total interest saved ≈ <strong>₹1,45,000</strong>.</li>
+                        </ul>
+                        <p>That’s a significant saving for a one-time prepayment! You become debt-free over 2 years earlier.</p>
+                        
+                        <h4>Benefits of Using a Loan Prepayment Calculator</h4>
+                        <ol>
+                            <li><strong>Instant Interest Savings Insight:</strong> Quickly calculate how much interest you’ll save.</li>
+                            <li><strong>Helps in Financial Planning:</strong> Test multiple prepayment scenarios to see which one fits your budget best.</li>
+                            <li><strong>Faster Debt Clearance:</strong> Motivates you to close your loan early, reducing long-term financial stress.</li>
+                            <li><strong>Improved Credit Score:</strong> Timely EMIs and prepayments reflect positively on your credit report.</li>
+                        </ol>
+                        
+                        <h4>Things to Check Before Making a Prepayment</h4>
+                        <ul>
+                            <li><strong>Prepayment Charges:</strong> Some banks charge 1–3% as a penalty.</li>
+                            <li><strong>Timing:</strong> Prepayment has the biggest impact in the early years of your loan.</li>
+                            <li><strong>Emergency Fund:</strong> Don’t exhaust your savings completely. Always keep a 3–6 month emergency fund.</li>
+                            <li><strong>Investment Alternatives:</strong> Compare potential returns from other investments versus interest saved.</li>
+                        </ul>
+                        
+                        <h4 class="mt-4">Smart Tips for Loan Prepayment</h4>
+                        <ul>
+                            <li>Use annual bonuses or tax refunds for partial prepayment.</li>
+                            <li>Even small, regular prepayments can significantly shorten your tenure.</li>
+                            <li>Plan with the calculator before every prepayment decision to track exact benefits.</li>
+                        </ul>
+                        <hr>
+                        <h5 class="text-muted">Formula Behind the Calculator</h5>
+                        <p><small>The calculator uses the standard EMI formula: <code>EMI = [P × R × (1 + R)^N] / [(1 + R)^N – 1]</code>. When you make a prepayment, it reduces 'P' (principal) and recalculates the remaining EMI schedule instantly.</small></p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript (এই অংশটি ঠিক আছে) -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const inputs = { amount: document.getElementById('loanAmountInput'), rate: document.getElementById('interestRateInput'), tenure: document.getElementById('loanTenureInput'), prepTypeRecurring: document.getElementById('typeRecurring'), prepTypeOneTime: document.getElementById('typeOneTime'), prepAmount: document.getElementById('prepaymentAmountInput'), prepMonth: document.getElementById('oneTimePaymentMonthInput') };
+        const oneTimeWrapper = document.getElementById('oneTimePaymentMonthWrapper'); const initialState = document.getElementById('initialState'), resultsState = document.getElementById('resultsState'), comparisonSection = document.getElementById('comparisonSection');
+        let interestChart, tenureChart;
+        const formatCurrency = (num) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(num);
+        function calculateAndDisplay() {
+            const P = parseFloat(inputs.amount.value); const r_annual = parseFloat(inputs.rate.value); const t_years = parseFloat(inputs.tenure.value);
+            if (isNaN(P) || isNaN(r_annual) || isNaN(t_years) || P <= 0 || r_annual <= 0 || t_years <= 0) { initialState.style.display = 'flex'; resultsState.style.display = 'none'; comparisonSection.style.display = 'none'; return; }
+            initialState.style.display = 'none'; resultsState.style.display = 'block'; comparisonSection.style.display = 'block';
+            const R = r_annual / 100 / 12; const N = t_years * 12; const emi = (P * R * Math.pow(1 + R, N)) / (Math.pow(1 + R, N) - 1);
+            const originalTotalInterest = (emi * N) - P; const originalTotalPayment = P + originalTotalInterest;
+            let newBalance = P; let totalInterestPaidNew = 0; let monthsPaid = 0;
+            const prepAmount = parseFloat(inputs.prepAmount.value) || 0; const isRecurring = inputs.prepTypeRecurring.checked; const oneTimeMonth = parseInt(inputs.prepMonth.value);
+            for (let i = 1; i <= N; i++) {
+                const interestForMonth = newBalance * R; let principalForMonth = emi - interestForMonth; totalInterestPaidNew += interestForMonth;
+                if (isRecurring && prepAmount > 0) principalForMonth += prepAmount;
+                if (!isRecurring && i === oneTimeMonth && prepAmount > 0) principalForMonth += prepAmount;
+                newBalance -= principalForMonth; monthsPaid = i;
+                if (newBalance <= 0) break;
+            }
+            const newTotalPayment = P + totalInterestPaidNew; const interestSaved = originalTotalInterest - totalInterestPaidNew; const emisReduced = N - monthsPaid;
+            const endDate = new Date(); endDate.setMonth(endDate.getMonth() + monthsPaid); const newEndDate = endDate.toLocaleString('default', { month: 'short', year: 'numeric' });
+            document.getElementById('interestSaved').textContent = formatCurrency(interestSaved); document.getElementById('emisReduced').textContent = `${emisReduced} months`; document.getElementById('newEndDate').textContent = newEndDate;
+            if (interestChart) interestChart.destroy(); if (tenureChart) tenureChart.destroy();
+            const interestCtx = document.getElementById('interestChart').getContext('2d');
+            interestChart = new Chart(interestCtx, { type: 'bar', data: { labels: ['Original', 'New'], datasets: [{ label: 'Total Interest', data: [originalTotalInterest, totalInterestPaidNew], backgroundColor: ['#ef5350', '#66bb6a'] }] }, options: { plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => formatCurrency(v).replace('₹', '') } } } } });
+            const tenureCtx = document.getElementById('tenureChart').getContext('2d');
+            tenureChart = new Chart(tenureCtx, { type: 'bar', data: { labels: ['Original', 'New'], datasets: [{ label: 'Tenure in Years', data: [t_years, monthsPaid / 12], backgroundColor: ['#42a5f5', '#9ccc65'] }] }, options: { plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => `${v.toFixed(1)} Yrs` } } } } });
+            document.getElementById('originalEMI').textContent = formatCurrency(emi); document.getElementById('newEMI').textContent = isRecurring ? formatCurrency(emi + prepAmount) : formatCurrency(emi);
+            document.getElementById('originalTenure').textContent = `${t_years} Years (${N} months)`; document.getElementById('newTenure').textContent = `${(monthsPaid/12).toFixed(1)} Years (${monthsPaid} months)`;
+            document.getElementById('originalInterest').textContent = formatCurrency(originalTotalInterest); document.getElementById('newInterest').textContent = formatCurrency(totalInterestPaidNew);
+            document.getElementById('originalTotal').textContent = formatCurrency(originalTotalPayment); document.getElementById('newTotal').textContent = formatCurrency(newTotalPayment);
+        }
+        function togglePrepaymentType() { oneTimeWrapper.style.display = inputs.prepTypeOneTime.checked ? 'block' : 'none'; calculateAndDisplay(); }
+        Object.values(inputs).forEach(input => { input.addEventListener('input', calculateAndDisplay); input.addEventListener('change', calculateAndDisplay); });
+        inputs.prepTypeRecurring.addEventListener('change', togglePrepaymentType); inputs.prepTypeOneTime.addEventListener('change', togglePrepaymentType);
+        calculateAndDisplay();
+    });
+</script>
+
+<%- include('partials/footer') %>

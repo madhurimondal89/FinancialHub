@@ -1,0 +1,144 @@
+<%- include('partials/header') %>
+
+<div class="form-card">
+    <h3 class="mb-5">SIP (Systematic Investment Plan) Calculator</h3>
+    <div class="row g-5">
+        <!-- Left Column: Inputs (এই অংশটি ঠিক আছে) -->
+        <div class="col-lg-7">
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="monthlyInput" class="form-label mb-0">Monthly Investment</label></div><div class="col-md-7"><div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="monthlyInput" min="500" max="100000" step="500" placeholder="e.g., 10,000"></div></div></div><input type="range" min="500" max="100000" step="500" class="form-range mt-2" id="monthlySlider"></div>
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="rateInput" class="form-label mb-0">Expected Return Rate</label></div><div class="col-md-7"><div class="input-group"><input type="number" class="form-control" id="rateInput" min="1" max="30" step="0.5" placeholder="e.g., 12"><span class="input-group-text">% p.a.</span></div></div></div><input type="range" min="1" max="30" step="0.5" class="form-range mt-2" id="rateSlider"></div>
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label class="form-label mb-0">Time Period</label></div><div class="col-md-7"><div class="btn-group w-100" role="group"><input type="radio" class="btn-check" name="periodType" id="periodTypeYears" autocomplete="off" checked><label class="btn btn-outline-primary" for="periodTypeYears">Years</label><input type="radio" class="btn-check" name="periodType" id="periodTypeMonths" autocomplete="off"><label class="btn btn-outline-primary" for="periodTypeMonths">Months</label></div></div></div><div class="input-group mt-2"><input type="number" class="form-control" id="periodInput" min="1" max="40" step="1" placeholder="e.g., 15"><span class="input-group-text" id="periodUnitLabel">Years</span></div><input type="range" min="1" max="40" step="1" class="form-range mt-2" id="periodSlider"></div>
+        </div>
+        
+        <!-- Right Column: Results (এই অংশটি ঠিক আছে) -->
+        <div class="col-lg-5 d-flex flex-column">
+            <div id="initialState" class="d-flex flex-grow-1 align-items-center justify-content-center h-100 text-center text-muted p-4" style="background-color: #f8f9fa; border-radius: 12px;"><h4>Enter your investment details to see the future value.</h4></div>
+            <div id="resultsState" class="flex-grow-1" style="display: none;"><div class="emi-result-display mb-4"><div class="label">Estimated Future Value</div><div class="amount" id="futureValue">₹0</div></div><div class="row h-100 align-items-center"><div class="col-12"><div class="emi-summary-card"><div class="summary-item"><div><span class="dot" style="background-color: #0d6efd;"></span><span class="label">Invested Amount</span></div><div class="value" id="investedAmount">₹0</div></div><div class="summary-item"><div><span class="dot" style="background-color: #198754;"></span><span class="label">Est. Returns</span></div><div class="value" id="estimatedReturns">₹0</div></div></div><div class="d-flex align-items-center justify-content-center mt-4"><canvas id="sipPieChart"></canvas></div></div></div></div>
+        </div>
+    </div>
+    
+    <!-- Yearly/Monthly Breakdown -->
+    <div id="yearlyBreakdownSection" class="mt-5" style="display: none;">
+        <h4 class="text-center mb-4" id="projectionTitle">Projection</h4>
+        <div class="table-responsive"><table class="table table-striped table-bordered text-center"><thead class="table-dark" id="projectionHead"></thead><tbody id="projectionBody"></tbody></table></div>
+    </div>
+
+    <!-- তথ্য সেকশন (চূড়ান্তভাবে পরিবর্তিত) -->
+    <div class="info-accordion">
+        <div class="accordion" id="calculatorInfoAccordion">
+            <!-- Item 1: How to Use -->
+            <div class="accordion-item"><h2 class="accordion-header" id="headingOne"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">How to Use This Calculator</button></h2><div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#calculatorInfoAccordion"><div class="accordion-body"><ol><li><strong>Enter Monthly Investment:</strong> Use the slider or input box to set the amount you wish to invest every month.</li><li><strong>Set Expected Return Rate:</strong> Input the annual return rate you expect from your investment (e.g., 12% for equity mutual funds).</li><li><strong>Define Time Period:</strong> Choose how long you want to invest for, either in "Years" or "Months".</li><li><strong>Analyze the Results:</strong> The calculator will instantly project the future value of your investment, showing how much you invested versus how much you earned, along with a detailed projection table.</li></ol></div></div></div>
+            
+            <!-- Item 2: Understanding the Metrics -->
+            <div class="accordion-item"><h2 class="accordion-header" id="headingTwo"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Understanding the Metrics</button></h2><div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#calculatorInfoAccordion"><div class="accordion-body"><p><strong>Invested Amount:</strong> This is the total capital you put in from your pocket over the entire investment period (Monthly Investment × Total Months).</p><p><strong>Est. Returns (Wealth Gained):</strong> This is where the magic happens! It's the total profit you earn from the power of compounding on your monthly investments.</p><p><strong>Estimated Future Value:</strong> This is the final projected value of your portfolio at the end of the investment period. It's the sum of your Invested Amount and the Est. Returns.</p></div></div></div>
+            
+            <!-- ### নতুন: বিস্তারিত গাইড ### -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        The Ultimate Guide to SIP Investing
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#calculatorInfoAccordion">
+                    <div class="accordion-body">
+                        <p class="lead">A Systematic Investment Plan (SIP) is one of the most popular and effective ways for individuals to invest in mutual funds and build wealth over time. It makes investing disciplined, accessible, and powerful.</p>
+                        <hr>
+                        <h4>What is a SIP?</h4>
+                        <p>A SIP is a method of investing a fixed amount of money in a mutual fund scheme at regular intervals (usually monthly). Instead of investing a large lumpsum amount at once, you invest smaller amounts periodically. This approach instills a habit of disciplined investing.</p>
+                        
+                        <h4>The Two Superpowers of SIP:</h4>
+                        <ol>
+                            <li>
+                                <strong>The Power of Compounding:</strong>
+                                <p>Just like with our <a href="/compound-interest">Compound Interest Calculator</a>, SIPs harness the power of compounding. The returns you earn are reinvested, and over time, your returns start earning their own returns. This creates a powerful snowball effect, leading to exponential growth in the long run.</p>
+                            </li>
+                            <li>
+                                <strong>Rupee Cost Averaging:</strong>
+                                <p>This is a unique advantage of SIPs. Since you invest a fixed amount regularly, you automatically buy more units when the market is down (prices are low) and fewer units when the market is up (prices are high). Over time, this averages out your purchase cost and can reduce the impact of market volatility on your investment.</p>
+                            </li>
+                        </ol>
+                        
+                        <blockquote class="blockquote bg-light p-3 rounded">SIPs help you navigate market ups and downs without trying to "time the market," which is a strategy that often fails. Your consistency becomes your strength.</blockquote>
+
+                        <h4>Benefits of SIP Investing</h4>
+                        <ul>
+                            <li><strong>Financial Discipline:</strong> Automates your savings and investment process.</li>
+                            <li><strong>Accessibility:</strong> You can start investing with an amount as low as ₹500 per month.</li>
+                            <li><strong>Flexibility:</strong> You can increase, decrease, or stop your SIP anytime you want.</li>
+                            <li><strong>Long-Term Wealth Creation:</strong> Ideal for long-term financial goals like retirement, children's education, or buying a house.</li>
+                        </ul>
+
+                        <h4 class="mt-4">Smart Tips for SIP Investors</h4>
+                        <ul>
+                            <li><strong>Start Early:</strong> The earlier you start, the more time your money gets to compound and grow.</li>
+                            <li><strong>Stay Consistent:</strong> Don't stop your SIPs during market downturns. Those are the best times to accumulate more units at a lower cost.</li>
+                            <li><strong>Step-Up Your SIP:</strong> Try to increase your monthly SIP amount annually (e.g., by 10%) as your income grows. This can dramatically boost your final corpus.</li>
+                            <li><strong>Be Patient:</strong> Wealth creation is a marathon, not a sprint. Stay invested for the long term (7+ years) to see the best results.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript (এই অংশটি ঠিক আছে) -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const monthlyInput = document.getElementById('monthlyInput'), monthlySlider = document.getElementById('monthlySlider');
+        const rateInput = document.getElementById('rateInput'), rateSlider = document.getElementById('rateSlider');
+        const periodInput = document.getElementById('periodInput'), periodSlider = document.getElementById('periodSlider');
+        const periodTypeYears = document.getElementById('periodTypeYears'), periodTypeMonths = document.getElementById('periodTypeMonths');
+        const periodUnitLabel = document.getElementById('periodUnitLabel');
+        const initialState = document.getElementById('initialState'), resultsState = document.getElementById('resultsState'), yearlyBreakdownSection = document.getElementById('yearlyBreakdownSection');
+        const futureValue = document.getElementById('futureValue'), investedAmount = document.getElementById('investedAmount'), estimatedReturns = document.getElementById('estimatedReturns');
+        const projectionTitle = document.getElementById('projectionTitle'), projectionHead = document.getElementById('projectionHead'), projectionBody = document.getElementById('projectionBody'), pieChartCanvas = document.getElementById('sipPieChart');
+        let sipPieChart;
+        const formatCurrency = (num) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(num);
+        function calculateAndDisplay() {
+            const P = parseFloat(monthlyInput.value); const r = parseFloat(rateInput.value) / 100; const periodValue = parseInt(periodInput.value);
+            const isYears = periodTypeYears.checked; const n = isYears ? periodValue * 12 : periodValue;
+            if (isNaN(P) || isNaN(r) || isNaN(n) || P <= 0 || r < 0 || n <= 0) { initialState.style.display = 'flex'; resultsState.style.display = 'none'; yearlyBreakdownSection.style.display = 'none'; if (sipPieChart) sipPieChart.destroy(); return; }
+            initialState.style.display = 'none'; resultsState.style.display = 'block'; yearlyBreakdownSection.style.display = 'block';
+            const i = r / 12; const totalValue = P * ((Math.pow(1 + i, n) - 1) / i) * (1 + i);
+            const totalInvested = P * n; const totalReturns = totalValue - totalInvested;
+            futureValue.textContent = formatCurrency(totalValue); investedAmount.textContent = formatCurrency(totalInvested); estimatedReturns.textContent = formatCurrency(totalReturns);
+            if (sipPieChart) sipPieChart.destroy();
+            sipPieChart = new Chart(pieChartCanvas, { type: 'doughnut', data: { labels: ['Invested Amount', 'Est. Returns'], datasets: [{ data: [totalInvested, totalReturns], backgroundColor: ['#0d6efd', '#198754'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } } });
+            projectionBody.innerHTML = ''; let balance = 0, totalInvestmentToDate = 0;
+            if (isYears) {
+                projectionTitle.textContent = 'Year-by-Year Projection'; projectionHead.innerHTML = `<tr><th>Year</th><th>Invested Amount</th><th>Est. Returns</th><th>Ending Balance</th></tr>`;
+                for (let year = 1; year <= periodValue; year++) {
+                    for (let month = 1; month <= 12; month++) { balance = (balance + P) * (1 + i); }
+                    totalInvestmentToDate += P * 12;
+                    const returnsToDate = balance - totalInvestmentToDate;
+                    const row = `<tr><td>${year}</td><td>${formatCurrency(totalInvestmentToDate)}</td><td>${formatCurrency(returnsToDate)}</td><td>${formatCurrency(balance)}</td></tr>`;
+                    projectionBody.innerHTML += row;
+                }
+            } else {
+                projectionTitle.textContent = 'Month-by-Month Projection'; projectionHead.innerHTML = `<tr><th>Month</th><th>Invested Amount</th><th>Est. Returns</th><th>Ending Balance</th></tr>`;
+                for (let month = 1; month <= n; month++) {
+                    balance = (balance + P) * (1 + i);
+                    totalInvestmentToDate += P;
+                    const returnsToDate = balance - totalInvestmentToDate;
+                    const row = `<tr><td>${month}</td><td>${formatCurrency(totalInvestmentToDate)}</td><td>${formatCurrency(returnsToDate)}</td><td>${formatCurrency(balance)}</td></tr>`;
+                    projectionBody.innerHTML += row;
+                }
+            }
+        }
+        function updatePeriodControls() {
+            const isYears = periodTypeYears.checked; let currentValue = parseFloat(periodInput.value) || (isYears ? 1 : 12);
+            if (isYears) { periodSlider.min = 1; periodSlider.max = 40; periodInput.min = 1; periodInput.max = 40; periodUnitLabel.textContent = 'Years'; if (currentValue > 40) periodInput.value = Math.round(currentValue / 12); }
+            else { periodSlider.min = 1; periodSlider.max = 480; periodInput.min = 1; periodInput.max = 480; periodUnitLabel.textContent = 'Months'; if (currentValue <= 40) periodInput.value = currentValue * 12; }
+            syncAndCalculate(periodInput, periodSlider);
+        }
+        function syncAndCalculate(source, target) { if (target) target.value = source.value; calculateAndDisplay(); }
+        monthlySlider.addEventListener('input', () => syncAndCalculate(monthlySlider, monthlyInput)); monthlyInput.addEventListener('input', () => syncAndCalculate(monthlyInput, monthlySlider));
+        rateSlider.addEventListener('input', () => syncAndCalculate(rateSlider, rateInput)); rateInput.addEventListener('input', () => syncAndCalculate(rateInput, rateSlider));
+        periodSlider.addEventListener('input', () => syncAndCalculate(periodSlider, periodInput)); periodInput.addEventListener('input', () => syncAndCalculate(periodInput, periodSlider));
+        periodTypeYears.addEventListener('change', updatePeriodControls); periodTypeMonths.addEventListener('change', updatePeriodControls);
+        calculateAndDisplay();
+    });
+</script>
+
+<%- include('partials/footer') %>
