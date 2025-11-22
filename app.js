@@ -1,4 +1,4 @@
-// app.js (সম্পূর্ণ এবং সর্বশেষ সংস্করণ)
+// app.js (Schema.org সহ সম্পূর্ণ সংস্করণ)
 
 const express = require('express');
 const path = require('path');
@@ -10,69 +10,161 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// --- Schema Generator Helper ---
+function generateSchema(title, description, url, isApp = true) {
+    const baseUrl = "https://financialhub.calculatorfree.in";
+    const fullUrl = url === '/' ? baseUrl : baseUrl + url;
+    
+    const schema = {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "Organization",
+                "name": "Financial Hub",
+                "url": baseUrl,
+                "logo": "https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png"
+            },
+            {
+                "@type": "BreadcrumbList",
+                "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": baseUrl }]
+            }
+        ]
+    };
+
+    if (url !== '/') {
+        schema["@graph"][1].itemListElement.push({
+            "@type": "ListItem",
+            "position": 2,
+            "name": title.split(' - ')[0], // Take the main part of the title
+            "item": fullUrl
+        });
+    }
+
+    if (isApp) {
+        schema["@graph"].push({
+            "@type": "SoftwareApplication",
+            "name": title.split(' - ')[0],
+            "operatingSystem": "Any",
+            "applicationCategory": "FinanceApplication",
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "INR"
+            },
+            "description": description
+        });
+    } else {
+        schema["@graph"].push({
+            "@type": "WebPage",
+            "name": title,
+            "description": description
+        });
+    }
+
+    return JSON.stringify(schema);
+}
+
 // --- রাউটিং ---
 
-app.get('/', (req, res) => res.render('index', { 
-    title: 'Financial Hub - Free & Interactive Financial Calculators',
-    isHomePage: true,
-    description: 'A collection of free, world-class financial calculators for your investment, loan, tax, and retirement planning needs. Interactive tools with charts and guides.'
-}));
+app.get('/', (req, res) => {
+    const title = 'Financial Hub - Free & Interactive Financial Calculators';
+    const desc = 'A collection of free, world-class financial calculators for your investment, loan, tax, and retirement planning needs.';
+    res.render('index', { 
+        title: title,
+        isHomePage: true,
+        description: desc,
+        schema: generateSchema('Financial Hub', desc, '/', false) // Homepage isn't a single app, it's a collection
+    });
+});
 
-app.get('/emi-calculator', (req, res) => res.render('emi_calculator', { 
-    title: 'Interactive EMI Calculator with Charts & Schedule',
-    isHomePage: false,
-    description: 'Calculate your Equated Monthly Installment (EMI) for home, car, or personal loans instantly with our interactive calculator, charts, and amortization schedule.'
-}));
+app.get('/emi-calculator', (req, res) => {
+    const title = 'Interactive EMI Calculator';
+    const desc = 'Calculate your Equated Monthly Installment (EMI) for home, car, or personal loans instantly with our interactive calculator.';
+    res.render('emi_calculator', { 
+        title: title, isHomePage: false, description: desc,
+        schema: generateSchema(title, desc, '/emi-calculator')
+    });
+});
 
-app.get('/simple-interest', (req, res) => res.render('simple_interest', { 
-    title: 'Simple Interest Calculator with Yearly Breakdown',
-    isHomePage: false,
-    description: 'Calculate simple interest on your investments or loans in real-time. Our tool provides a detailed year-by-year breakdown and visual charts.'
-}));
+app.get('/simple-interest', (req, res) => {
+    const title = 'Simple Interest Calculator';
+    const desc = 'Calculate simple interest on your investments or loans in real-time with yearly breakdown.';
+    res.render('simple_interest', { 
+        title: title, isHomePage: false, description: desc,
+        schema: generateSchema(title, desc, '/simple-interest')
+    });
+});
 
-app.get('/compound-interest', (req, res) => res.render('compound_interest', { 
-    title: 'Compound Interest Calculator with Charts & EAR',
-    isHomePage: false,
-    description: 'Visualize the power of compounding with our advanced calculator. See year-by-year growth, pie charts, and the Effective Annual Rate (EAR) of your investment.'
-}));
+app.get('/compound-interest', (req, res) => {
+    const title = 'Compound Interest Calculator';
+    const desc = 'Visualize the power of compounding with our advanced calculator. See year-by-year growth and EAR.';
+    res.render('compound_interest', { 
+        title: title, isHomePage: false, description: desc,
+        schema: generateSchema(title, desc, '/compound-interest')
+    });
+});
 
-app.get('/advanced-profit-loss', (req, res) => res.render('advanced_profit_loss', { 
-    title: 'Advanced Profit & Loss Calculator with Scenarios',
-    isHomePage: false,
-    description: 'Analyze your business profitability with our advanced P&L calculator. Get real-time charts, break-even analysis, and profit growth scenarios.'
-}));
+app.get('/advanced-profit-loss', (req, res) => {
+    const title = 'Advanced Profit & Loss Calculator';
+    const desc = 'Analyze business profitability, break-even points, and profit growth scenarios.';
+    res.render('advanced_profit_loss', { 
+        title: title, isHomePage: false, description: desc,
+        schema: generateSchema(title, desc, '/advanced-profit-loss')
+    });
+});
 
-app.get('/gst-calculator', (req, res) => res.render('gst_calculator', { 
-    title: 'GST Calculator - Add or Remove GST with Breakdown',
-    isHomePage: false,
-    description: 'Easily calculate GST amounts for any product or service. Our tool lets you add or remove GST from a price and provides a detailed CGST/SGST breakdown.'
-}));
+app.get('/gst-calculator', (req, res) => {
+    const title = 'GST Calculator';
+    const desc = 'Add or remove GST from any price. Get detailed CGST and SGST breakdowns instantly.';
+    res.render('gst_calculator', { 
+        title: title, isHomePage: false, description: desc,
+        schema: generateSchema(title, desc, '/gst-calculator')
+    });
+});
 
-app.get('/schd-dividend-calculator', (req, res) => res.render('schd_dividend_calculator', { 
-    title: 'Advanced SCHD Dividend Growth Calculator',
-    isHomePage: false,
-    description: 'Project the future value of your SCHD investment with our advanced calculator, considering dividend growth, taxes, and expense ratios.'
-}));
+app.get('/schd-dividend-calculator', (req, res) => {
+    const title = 'SCHD Dividend Growth Calculator';
+    const desc = 'Project future portfolio value with dividend reinvestment, tax considerations, and expense ratios.';
+    res.render('schd_dividend_calculator', { 
+        title: title, isHomePage: false, description: desc,
+        schema: generateSchema(title, desc, '/schd-dividend-calculator')
+    });
+});
 
-app.get('/sip-calculator', (req, res) => res.render('sip_calculator', { 
-    title: 'SIP Calculator with Monthly & Yearly Projections',
-    isHomePage: false,
-    description: 'Calculate the future value of your Systematic Investment Plan (SIP) in mutual funds. See detailed monthly or yearly projections with charts.'
-}));
+app.get('/sip-calculator', (req, res) => {
+    const title = 'SIP Calculator';
+    const desc = 'Calculate the future value of your Systematic Investment Plan (SIP) with detailed projections.';
+    res.render('sip_calculator', { 
+        title: title, isHomePage: false, description: desc,
+        schema: generateSchema(title, desc, '/sip-calculator')
+    });
+});
 
-app.get('/retirement-calculator', (req, res) => res.render('retirement_calculator', { 
-    title: 'Retirement Planning Calculator with Shortfall Analysis',
-    isHomePage: false,
-    description: 'Plan for your retirement with our comprehensive calculator. Find out your required corpus, projected savings, and get actionable suggestions to bridge any shortfall.'
-}));
+app.get('/retirement-calculator', (req, res) => {
+    const title = 'Retirement Planning Calculator';
+    const desc = 'Plan for your retirement corpus, analyze shortfalls, and get actionable investment advice.';
+    res.render('retirement_calculator', { 
+        title: title, isHomePage: false, description: desc,
+        schema: generateSchema(title, desc, '/retirement-calculator')
+    });
+});
 
-app.get('/loan-prepayment-calculator', (req, res) => res.render('loan_prepayment_calculator', { 
-    title: 'Loan Prepayment Calculator - See Your Savings',
-    isHomePage: false,
-    description: 'Calculate how much interest and time you can save by prepaying your home, car, or personal loan. Compare scenarios with our interactive charts.'
-}));
+app.get('/loan-prepayment-calculator', (req, res) => {
+    const title = 'Loan Prepayment Calculator';
+    const desc = 'See how much interest and time you can save by prepaying your loans with interactive charts.';
+    res.render('loan_prepayment_calculator', { 
+        title: title, isHomePage: false, description: desc,
+        schema: generateSchema(title, desc, '/loan-prepayment-calculator')
+    });
+});
 
-// সার্ভার চালু করা
+// Static Pages (No 'Application' schema needed, just Breadcrumbs)
+app.get('/about', (req, res) => res.render('about', { title: 'About Us', isHomePage: false, description: 'About Financial Hub', schema: generateSchema('About Us', 'About Financial Hub', '/about', false) }));
+app.get('/contact', (req, res) => res.render('contact', { title: 'Contact Us', isHomePage: false, description: 'Contact Financial Hub', schema: generateSchema('Contact Us', 'Contact Financial Hub', '/contact', false) }));
+app.get('/privacy-policy', (req, res) => res.render('privacy', { title: 'Privacy Policy', isHomePage: false, description: 'Privacy Policy', schema: generateSchema('Privacy Policy', 'Privacy Policy', '/privacy-policy', false) }));
+app.get('/disclaimer', (req, res) => res.render('disclaimer', { title: 'Disclaimer', isHomePage: false, description: 'Disclaimer', schema: generateSchema('Disclaimer', 'Disclaimer', '/disclaimer', false) }));
+
+// 5. সার্ভার চালু করা
 app.listen(port, () => {
     console.log(`Financial Hub server is running at http://localhost:${port}`);
 });

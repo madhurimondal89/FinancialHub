@@ -4,13 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- ### SEO ট্যাগ ### -->
+    <!-- SEO Meta Tags -->
     <title><%= title %></title>
     <meta name="description" content="<%= locals.description || 'A collection of free and easy-to-use financial calculators for your investment, loan, and retirement planning needs.' %>">
     
+    <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png">
     
-    <!-- Google Fonts & CSS -->
+    <!-- Schema.org Structured Data -->
+    <% if (locals.schema) { %>
+    <script type="application/ld+json">
+        <%- schema %>
+    </script>
+    <% } %>
+    
+    <!-- Fonts & CSS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
