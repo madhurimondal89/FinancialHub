@@ -158,6 +158,16 @@ app.get('/loan-prepayment-calculator', (req, res) => {
     });
 });
 
+
+app.get('/budget-calculator', (req, res) => {
+    const title = 'Monthly Budget Calculator with 50/30/20 Rule';
+    const desc = 'Plan your monthly budget effectively. Track income vs expenses and analyze your spending habits using the 50/30/20 rule.';
+    res.render('budget_calculator', { 
+        title: title, isHomePage: false, description: desc,
+        schema: generateSchema(title, desc, '/budget-calculator')
+    });
+});
+
 // Static Pages (No 'Application' schema needed, just Breadcrumbs)
 app.get('/about', (req, res) => res.render('about', { title: 'About Us', isHomePage: false, description: 'About Financial Hub', schema: generateSchema('About Us', 'About Financial Hub', '/about', false) }));
 app.get('/contact', (req, res) => res.render('contact', { title: 'Contact Us', isHomePage: false, description: 'Contact Financial Hub', schema: generateSchema('Contact Us', 'Contact Financial Hub', '/contact', false) }));

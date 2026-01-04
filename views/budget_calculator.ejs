@@ -1,0 +1,160 @@
+<%- include('partials/header') %>
+
+<div class="form-card">
+    <h3 class="mb-5">Monthly Budget Planner</h3>
+    
+    <%- include('partials/ad_unit') %>
+
+    <div class="row g-5">
+        <!-- Left Column: Inputs -->
+        <div class="col-lg-7">
+            <h5 class="mb-3 text-success">Income Source</h5>
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="incomeInput" class="form-label mb-0">Monthly Take-home Salary</label></div><div class="col-md-7"><div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="incomeInput" min="0" step="500" placeholder="e.g., 50,000"></div></div></div><input type="range" min="0" max="500000" step="500" class="form-range mt-2" id="incomeSlider"></div>
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="otherIncomeInput" class="form-label mb-0">Other Income (Bonus/Rent)</label></div><div class="col-md-7"><div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="otherIncomeInput" min="0" step="500" placeholder="e.g., 5,000"></div></div></div><input type="range" min="0" max="100000" step="500" class="form-range mt-2" id="otherIncomeSlider"></div>
+
+            <hr class="my-4">
+            
+            <h5 class="mb-3 text-danger">Expenses (Needs & Wants)</h5>
+            <!-- Housing -->
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="housingInput" class="form-label mb-0">Rent / Home Loan EMI</label></div><div class="col-md-7"><div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control expense-input" id="housingInput" min="0" step="500" placeholder="e.g., 15,000"></div></div></div><input type="range" min="0" max="100000" step="500" class="form-range mt-2" id="housingSlider"></div>
+            <!-- Food -->
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="foodInput" class="form-label mb-0">Food & Groceries</label></div><div class="col-md-7"><div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control expense-input" id="foodInput" min="0" step="100" placeholder="e.g., 8,000"></div></div></div><input type="range" min="0" max="50000" step="100" class="form-range mt-2" id="foodSlider"></div>
+            <!-- Transport -->
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="transportInput" class="form-label mb-0">Transport & Fuel</label></div><div class="col-md-7"><div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control expense-input" id="transportInput" min="0" step="100" placeholder="e.g., 3,000"></div></div></div><input type="range" min="0" max="20000" step="100" class="form-range mt-2" id="transportSlider"></div>
+            <!-- Utilities -->
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="utilitiesInput" class="form-label mb-0">Utilities (Bills, Internet)</label></div><div class="col-md-7"><div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control expense-input" id="utilitiesInput" min="0" step="100" placeholder="e.g., 2,500"></div></div></div><input type="range" min="0" max="10000" step="100" class="form-range mt-2" id="utilitiesSlider"></div>
+            <!-- Lifestyle -->
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="lifestyleInput" class="form-label mb-0">Lifestyle & Entertainment</label></div><div class="col-md-7"><div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control expense-input" id="lifestyleInput" min="0" step="100" placeholder="e.g., 4,000"></div></div></div><input type="range" min="0" max="50000" step="100" class="form-range mt-2" id="lifestyleSlider"></div>
+            
+            <hr class="my-4">
+            <h5 class="mb-3 text-primary">Savings & Investments</h5>
+            <div class="slider-container"><div class="row align-items-center"><div class="col-md-5"><label for="savingsInput" class="form-label mb-0">SIPs / FDs / Savings</label></div><div class="col-md-7"><div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control expense-input" id="savingsInput" min="0" step="500" placeholder="e.g., 10,000"></div></div></div><input type="range" min="0" max="100000" step="500" class="form-range mt-2" id="savingsSlider"></div>
+        </div>
+
+        <!-- Right Column: Results -->
+        <div class="col-lg-5 d-flex flex-column">
+            <div id="initialState" class="d-flex flex-grow-1 align-items-center justify-content-center h-100 text-center text-muted p-4" style="background-color: #f8f9fa; border-radius: 12px;"><h4>Enter your income and expenses to analyze your budget.</h4></div>
+            <div id="resultsState" class="flex-grow-1" style="display: none;">
+                <div class="emi-result-display mb-4"><div class="label">Net Balance (Unallocated)</div><div class="amount" id="netBalance">₹0</div></div>
+                
+                <div class="emi-summary-card mb-4">
+                    <div class="summary-item"><div><span class="dot" style="background-color: #198754;"></span><span class="label">Total Income</span></div><div class="value text-success" id="totalIncomeDisplay">₹0</div></div>
+                    <div class="summary-item"><div><span class="dot" style="background-color: #dc3545;"></span><span class="label">Expenses (Needs+Wants)</span></div><div class="value text-danger" id="totalExpensesDisplay">₹0</div></div>
+                    <hr>
+                    <!-- এখানে পরিবর্তন: রেট এখন সরাসরি ইনপুটের সাথে যুক্ত -->
+                    <div class="summary-item fw-bold"><div class="label">Active Savings Rate</div><div class="value text-primary" id="savingsRateDisplay">0%</div></div>
+                </div>
+
+                <div class="chart-container">
+                    <h4 class="chart-title">Where Your Money Goes</h4>
+                    <canvas id="budgetPieChart"></canvas>
+                </div>
+                
+                <!-- 50/30/20 Rule Verdict -->
+                <div id="ruleVerdict" class="alert mt-4 text-center"></div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/ad_unit') %>
+
+    <!-- Guide Section -->
+    <div class="info-accordion">
+        <div class="accordion" id="calculatorInfoAccordion">
+            <div class="accordion-item"><h2 class="accordion-header" id="headingOne"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">How to Use This Calculator</button></h2><div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#calculatorInfoAccordion"><div class="accordion-body"><ol><li><strong>Enter Income:</strong> Input your monthly take-home salary and any other income sources.</li><li><strong>Enter Expenses:</strong> Fill in your monthly expenses across categories like Housing, Food, Transport, etc.</li><li><strong>Enter Savings:</strong> Input the amount you actively save or invest each month.</li><li><strong>Analyze:</strong> See your net balance, savings rate, and a breakdown of where your money goes.</li></ol></div></div></div>
+            <div class="accordion-item"><h2 class="accordion-header" id="headingTwo"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">Understanding the 50/30/20 Rule</button></h2><div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#calculatorInfoAccordion"><div class="accordion-body"><p>The 50/30/20 rule is a popular budgeting technique:</p><ul><li><strong>50% Needs:</strong> Half of your income should go to essentials (Rent, Food, Utilities).</li><li><strong>30% Wants:</strong> Use 30% for lifestyle choices (Dining out, Entertainment, Shopping).</li><li><strong>20% Savings:</strong> At least 20% should be saved or invested for future goals and debt repayment.</li></ul><p>This calculator helps you see how close your spending habits are to this ideal balance.</p></div></div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ids = ['income', 'otherIncome', 'housing', 'food', 'transport', 'utilities', 'lifestyle', 'savings'];
+        const inputs = {}, sliders = {};
+        ids.forEach(id => { inputs[id] = document.getElementById(id + 'Input'); sliders[id] = document.getElementById(id + 'Slider'); });
+
+        const initialState = document.getElementById('initialState'), resultsState = document.getElementById('resultsState');
+        const netBalanceEl = document.getElementById('netBalance'), totalIncomeEl = document.getElementById('totalIncomeDisplay'), totalExpensesEl = document.getElementById('totalExpensesDisplay'), savingsRateEl = document.getElementById('savingsRateDisplay'), ruleVerdictEl = document.getElementById('ruleVerdict');
+        const pieCanvas = document.getElementById('budgetPieChart');
+        let budgetPieChart;
+
+        const formatCurrency = (num) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(num);
+
+        function calculateAndDisplay() {
+            const income = (parseFloat(inputs.income.value) || 0) + (parseFloat(inputs.otherIncome.value) || 0);
+            
+            // Expenses
+            const housing = parseFloat(inputs.housing.value) || 0;
+            const food = parseFloat(inputs.food.value) || 0;
+            const transport = parseFloat(inputs.transport.value) || 0;
+            const utilities = parseFloat(inputs.utilities.value) || 0;
+            const lifestyle = parseFloat(inputs.lifestyle.value) || 0;
+            const savings = parseFloat(inputs.savings.value) || 0;
+
+            const totalExpenses = housing + food + transport + utilities + lifestyle;
+            const netBalance = income - (totalExpenses + savings);
+
+            if (income === 0 && totalExpenses === 0 && savings === 0) {
+                initialState.style.display = 'flex'; resultsState.style.display = 'none';
+                if (budgetPieChart) budgetPieChart.destroy();
+                return;
+            }
+            initialState.style.display = 'none'; resultsState.style.display = 'block';
+
+            totalIncomeEl.textContent = formatCurrency(income);
+            totalExpensesEl.textContent = formatCurrency(totalExpenses);
+            netBalanceEl.textContent = formatCurrency(netBalance);
+            netBalanceEl.className = netBalance >= 0 ? 'amount text-success' : 'amount text-danger';
+
+            // ### পরিবর্তন: Savings Rate এখন সরাসরি ইনপুটের ওপর নির্ভর করে ###
+            const savingsRate = income > 0 ? (savings / income) * 100 : 0;
+            savingsRateEl.textContent = savingsRate.toFixed(1) + '%';
+
+            // Charts
+            if (budgetPieChart) budgetPieChart.destroy();
+            
+            // চার্ট ডেটা তৈরি: যদি ব্যালেন্স নেগেটিভ হয়, তবে চার্টে ০ দেখানো হবে
+            const balanceForChart = netBalance > 0 ? netBalance : 0;
+
+            budgetPieChart = new Chart(pieCanvas, {
+                type: 'doughnut',
+                data: {
+                    // চার্টে এখন 'Remaining Balance' আলাদাভাবে দেখানো হবে
+                    labels: ['Housing', 'Food', 'Transport', 'Utilities', 'Lifestyle', 'Investments', 'Remaining'],
+                    datasets: [{
+                        data: [housing, food, transport, utilities, lifestyle, savings, balanceForChart],
+                        backgroundColor: ['#fd7e14', '#ffc107', '#0dcaf0', '#6610f2', '#d63384', '#198754', '#6c757d'], // Remaining এর জন্য ধূসর রং
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } } } }
+            });
+
+            // 50/30/20 Verdict
+            const needs = housing + food + transport + utilities;
+            const wants = lifestyle;
+            const needsPct = income > 0 ? (needs / income) * 100 : 0;
+            
+            let message = '';
+            if (needsPct > 50) message += `⚠️ Needs are high (${needsPct.toFixed(0)}%). Try reducing fixed costs. <br>`;
+            else message += `✅ Needs are within limit (${needsPct.toFixed(0)}%). <br>`;
+            
+            if (savingsRate < 20) message += `⚠️ Savings are low (${savingsRate.toFixed(0)}%). Aim for 20%.`;
+            else message += `✅ Great savings rate!`;
+
+            ruleVerdictEl.innerHTML = message;
+            ruleVerdictEl.className = (needsPct > 50 || savingsRate < 20) ? 'alert alert-warning mt-4 text-center' : 'alert alert-success mt-4 text-center';
+        }
+
+        function syncAndCalculate(source, target) { if (target) target.value = source.value; calculateAndDisplay(); }
+
+        ids.forEach(id => {
+            sliders[id].addEventListener('input', () => syncAndCalculate(sliders[id], inputs[id]));
+            inputs[id].addEventListener('input', () => syncAndCalculate(inputs[id], sliders[id]));
+        });
+
+        calculateAndDisplay();
+    });
+</script>
+
+<%- include('partials/footer') %>
