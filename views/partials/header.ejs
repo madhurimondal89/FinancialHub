@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- SEO Meta Tags -->
-    <title><%= title %></title>
-    <meta name="description" content="<%= locals.description || 'A collection of free and easy-to-use financial calculators for your investment, loan, and retirement planning needs.' %>">
-    
+
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-DSS4N95B8B"></script>
     <script>
@@ -17,25 +13,49 @@
         gtag('config', 'G-DSS4N95B8B');
     </script>
 
+    <!-- SEO Meta Tags -->
+    <title><%= title %></title>
+    <meta name="description" content="<%= locals.description || 'A collection of free and easy-to-use financial calculators for your investment, loan, and retirement planning needs.' %>">
+    <meta name="robots" content="index, follow">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://financialhub.calculatorfree.in<%= locals.canonicalPath || '/' %>">
+
+    <!-- Open Graph (Facebook, WhatsApp preview) -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Financial Hub">
+    <meta property="og:title" content="<%= title %>">
+    <meta property="og:description" content="<%= locals.description || 'Free financial calculators for SIP, EMI, GST, Income Tax, FD, PPF and more.' %>">
+    <meta property="og:url" content="https://financialhub.calculatorfree.in<%= locals.canonicalPath || '/' %>">
+    <meta property="og:image" content="https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png">
+    <meta property="og:locale" content="en_IN">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="<%= title %>">
+    <meta name="twitter:description" content="<%= locals.description || 'Free financial calculators for SIP, EMI, GST, Income Tax, FD, PPF and more.' %>">
+    <meta name="twitter:image" content="https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png">
+
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png">
-    
+
     <!-- Schema.org Structured Data -->
     <% if (locals.schema) { %>
     <script type="application/ld+json">
         <%- schema %>
     </script>
     <% } %>
-    
+
     <!-- Fonts & CSS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="bg-light">
-    
+<body>
+
     <nav class="navbar navbar-expand-lg navbar-dark site-header">
         <div class="container">
             <a class="navbar-brand me-4" href="/"><strong>Financial</strong>Hub</a>

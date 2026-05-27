@@ -1,0 +1,159 @@
+<%- include('partials/header') %>
+
+<div class="form-card">
+    <h3 class="mb-1">🏦 FD Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Fixed Deposit Maturity Amount & Interest Calculator</p>
+<%- include('partials/ad_unit') %>
+
+    <div class="row g-5">
+        <!-- Left: Inputs -->
+        <div class="col-lg-6">
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Principal Amount <span id="principalDisplay" style="color:var(--gold); font-weight:600;">₹1,00,000</span></label>
+                <input type="range" id="principalSlider" min="1000" max="10000000" step="1000" value="100000" oninput="syncInput('principal', this.value); calculate();">
+                <div class="input-group mt-2">
+                    <span class="input-group-text">₹</span>
+                    <input type="number" class="form-control" id="principalInput" value="100000" oninput="syncSlider('principal', this.value); calculate();">
+                </div>
+            </div>
+
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Annual Interest Rate <span id="rateDisplay" style="color:var(--gold); font-weight:600;">7.0%</span></label>
+                <input type="range" id="rateSlider" min="1" max="15" step="0.1" value="7" oninput="syncInput('rate', this.value); calculate();">
+                <div class="input-group mt-2">
+                    <input type="number" class="form-control" id="rateInput" value="7" step="0.1" oninput="syncSlider('rate', this.value); calculate();">
+                    <span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">%</span>
+                </div>
+            </div>
+
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Tenure <span id="tenureDisplay" style="color:var(--gold); font-weight:600;">2 Years</span></label>
+                <input type="range" id="tenureSlider" min="1" max="120" step="1" value="24" oninput="syncInput('tenure', this.value); calculate();">
+                <div class="input-group mt-2">
+                    <input type="number" class="form-control" id="tenureInput" value="24" oninput="syncSlider('tenure', this.value); calculate();">
+                    <span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">Months</span>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Compounding Frequency</label>
+                <select class="form-select" id="compound" onchange="calculate()">
+                    <option value="4" selected>Quarterly (most common)</option>
+                    <option value="12">Monthly</option>
+                    <option value="2">Half-Yearly</option>
+                    <option value="1">Annually</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Right: Results -->
+        <div class="col-lg-6">
+            <div class="emi-result-display mt-3">
+                <p class="label">Maturity Amount</p>
+                <p class="amount" id="maturityAmount">₹0</p>
+            </div>
+            <div class="emi-summary-card">
+                <div class="summary-item"><div class="label">Principal Invested</div><div class="value" id="resPrincipal">₹0</div></div>
+                <div class="summary-item"><div class="label">Total Interest Earned</div><div class="value" style="color:var(--accent);" id="resInterest">₹0</div></div>
+                <div class="summary-item"><div class="label">Maturity Value</div><div class="value" style="color:var(--gold); font-size:1.2rem;" id="resMaturity">₹0</div></div>
+                <div class="summary-item"><div class="label">Effective Annual Yield</div><div class="value" id="resYield">0%</div></div>
+            </div>
+
+            <div class="chart-container mt-4">
+                <p class="chart-title">Principal vs Interest</p>
+                <canvas id="fdChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info -->
+    <div class="info-accordion">
+        <div class="accordion" id="fdAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#fdC1">How FD Interest is Calculated</button></h2>
+                <div id="fdC1" class="accordion-collapse collapse show" data-bs-parent="#fdAccordion">
+                    <div class="accordion-body">
+                        <p>FD interest is calculated using compound interest formula: <strong>A = P × (1 + r/n)^(n×t)</strong></p>
+                        <ul>
+                            <li><strong>P</strong> = Principal Amount</li>
+                            <li><strong>r</strong> = Annual Interest Rate (decimal)</li>
+                            <li><strong>n</strong> = Compounding frequency per year (quarterly = 4)</li>
+                            <li><strong>t</strong> = Tenure in years</li>
+                        </ul>
+                        <p>Most Indian banks compound FD interest quarterly. Senior citizens usually get 0.25%–0.50% extra interest.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related -->
+    <div class="related-section">
+        <h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/ppf-calculator" class="related-card"><span class="icon">🏛️</span><div class="title">PPF Calculator</div><div class="desc">Long-term tax-free savings</div></a></div>
+            <div class="col-md-4"><a href="/sip-calculator" class="related-card"><span class="icon">📊</span><div class="title">SIP Calculator</div><div class="desc">Monthly investment growth</div></a></div>
+            <div class="col-md-4"><a href="/compound-interest" class="related-card"><span class="icon">📈</span><div class="title">Compound Interest</div><div class="desc">General compounding calculator</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+
+<script>
+const fmt = (n) => new Intl.NumberFormat('en-IN', { style:'currency', currency:'INR', maximumFractionDigits:0 }).format(n);
+let fdChart = null;
+
+function syncInput(field, val) {
+    const num = parseFloat(val);
+    if (field === 'principal') {
+        document.getElementById('principalInput').value = num;
+        document.getElementById('principalDisplay').textContent = fmt(num);
+    } else if (field === 'rate') {
+        document.getElementById('rateInput').value = num;
+        document.getElementById('rateDisplay').textContent = num.toFixed(1) + '%';
+    } else {
+        document.getElementById('tenureInput').value = num;
+        document.getElementById('tenureDisplay').textContent = num < 12 ? num + ' Months' : (num/12).toFixed(1) + ' Years';
+    }
+}
+function syncSlider(field, val) {
+    if (field === 'principal') { document.getElementById('principalSlider').value = val; document.getElementById('principalDisplay').textContent = fmt(parseFloat(val)); }
+    else if (field === 'rate') { document.getElementById('rateSlider').value = val; document.getElementById('rateDisplay').textContent = parseFloat(val).toFixed(1) + '%'; }
+    else { document.getElementById('tenureSlider').value = val; const m = parseInt(val); document.getElementById('tenureDisplay').textContent = m < 12 ? m + ' Months' : (m/12).toFixed(1) + ' Years'; }
+    calculate();
+}
+
+function calculate() {
+    const P = parseFloat(document.getElementById('principalInput').value) || 0;
+    const r = parseFloat(document.getElementById('rateInput').value) / 100 || 0;
+    const months = parseInt(document.getElementById('tenureInput').value) || 0;
+    const n = parseInt(document.getElementById('compound').value);
+    const t = months / 12;
+
+    const A = P * Math.pow(1 + r/n, n*t);
+    const interest = A - P;
+    const ear = (Math.pow(1 + r/n, n) - 1) * 100;
+
+    document.getElementById('maturityAmount').textContent = fmt(A);
+    document.getElementById('resPrincipal').textContent = fmt(P);
+    document.getElementById('resInterest').textContent = fmt(interest);
+    document.getElementById('resMaturity').textContent = fmt(A);
+    document.getElementById('resYield').textContent = ear.toFixed(2) + '%';
+
+    // Chart
+    const ctx = document.getElementById('fdChart').getContext('2d');
+    if (fdChart) fdChart.destroy();
+    fdChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Principal', 'Interest Earned'],
+            datasets: [{ data: [P, interest], backgroundColor: ['#334155', '#f59e0b'], borderWidth: 0, hoverOffset: 8 }]
+        },
+        options: { responsive: true, plugins: { legend: { labels: { color: '#94a3b8', font: { size: 13 } } } }, cutout: '65%' }
+    });
+}
+
+calculate();
+</script>
+
+<%- include('partials/footer') %>

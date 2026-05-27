@@ -1,0 +1,157 @@
+<%- include('partials/header') %>
+
+<div class="form-card">
+    <h3 class="mb-1">🏛️ PPF Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Public Provident Fund — 15 Year Maturity & Interest Calculator</p>
+<%- include('partials/ad_unit') %>
+
+    <div class="row g-5">
+        <!-- Left: Inputs -->
+        <div class="col-lg-5">
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Yearly Investment <span id="investDisplay" style="color:var(--gold); font-weight:600;">₹50,000</span></label>
+                <input type="range" id="investSlider" min="500" max="150000" step="500" value="50000" oninput="syncInvest(this.value); calculate();">
+                <div class="input-group mt-2">
+                    <span class="input-group-text">₹</span>
+                    <input type="number" class="form-control" id="investInput" value="50000" oninput="document.getElementById('investSlider').value=this.value; document.getElementById('investDisplay').textContent='₹'+parseInt(this.value).toLocaleString('en-IN'); calculate();">
+                </div>
+                <small style="color:var(--text-muted); font-size:0.78rem;">Min ₹500 / Max ₹1,50,000 per year</small>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label d-flex justify-content-between">PPF Interest Rate <span style="color:var(--gold); font-weight:600;">7.1% (Current)</span></label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="ppfRate" value="7.1" step="0.1" oninput="calculate()">
+                    <span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">%</span>
+                </div>
+                <small style="color:var(--text-muted); font-size:0.78rem;">Current rate: 7.1% p.a. (Q1 2025)</small>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Tenure</label>
+                <select class="form-select" id="tenure" onchange="calculate()">
+                    <option value="15" selected>15 Years (Standard)</option>
+                    <option value="20">20 Years (1 Extension)</option>
+                    <option value="25">25 Years (2 Extensions)</option>
+                </select>
+            </div>
+
+            <div class="highlight-box">
+                <h4>💡 PPF Tax Benefits</h4>
+                <p>PPF follows the EEE (Exempt-Exempt-Exempt) tax model — Investment (80C), Interest, and Maturity are all tax-free!</p>
+            </div>
+        </div>
+
+        <!-- Right: Results -->
+        <div class="col-lg-7">
+            <div class="emi-result-display">
+                <p class="label">Maturity Amount</p>
+                <p class="amount" id="maturityAmt">₹0</p>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-6"><div class="summary-card"><div class="label">Total Invested</div><div class="value gold" id="totalInvested">₹0</div></div></div>
+                <div class="col-6"><div class="summary-card"><div class="label">Total Interest</div><div class="value profit" id="totalInterest">₹0</div></div></div>
+                <div class="col-6"><div class="summary-card"><div class="label">Wealth Multiplier</div><div class="value gold" id="multiplier">0x</div></div></div>
+                <div class="col-6"><div class="summary-card"><div class="label">Tax Saved (30% slab)</div><div class="value profit" id="taxSaved">₹0</div></div></div>
+            </div>
+
+            <div class="chart-container">
+                <p class="chart-title">Year-wise Balance Growth</p>
+                <canvas id="ppfChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-accordion">
+        <div class="accordion" id="ppfAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#ppfC1">PPF Rules & Key Facts</button></h2>
+                <div id="ppfC1" class="accordion-collapse collapse show" data-bs-parent="#ppfAccordion">
+                    <div class="accordion-body">
+                        <ul>
+                            <li>Lock-in period: <strong>15 years</strong> (extendable in blocks of 5 years)</li>
+                            <li>Minimum investment: <strong>₹500/year</strong></li>
+                            <li>Maximum investment: <strong>₹1,50,000/year</strong></li>
+                            <li>Interest is <strong>compounded annually</strong> and credited on March 31st</li>
+                            <li>Partial withdrawal allowed from <strong>7th year</strong> onwards</li>
+                            <li>Loan facility available from <strong>3rd to 6th year</strong></li>
+                            <li>The account can be opened at any <strong>post office or authorized bank</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="related-section">
+        <h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/fd-calculator" class="related-card"><span class="icon">🏦</span><div class="title">FD Calculator</div><div class="desc">Fixed deposit returns</div></a></div>
+            <div class="col-md-4"><a href="/sip-calculator" class="related-card"><span class="icon">📊</span><div class="title">SIP Calculator</div><div class="desc">Monthly investment growth</div></a></div>
+            <div class="col-md-4"><a href="/income-tax-calculator" class="related-card"><span class="icon">📋</span><div class="title">Income Tax</div><div class="desc">Maximize 80C deductions</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+
+<script>
+const fmt = (n) => new Intl.NumberFormat('en-IN', { style:'currency', currency:'INR', maximumFractionDigits:0 }).format(n);
+let ppfChart = null;
+
+function syncInvest(val) {
+    document.getElementById('investInput').value = val;
+    document.getElementById('investDisplay').textContent = '₹' + parseInt(val).toLocaleString('en-IN');
+}
+
+function calculate() {
+    const annual = parseFloat(document.getElementById('investInput').value) || 0;
+    const rate   = parseFloat(document.getElementById('ppfRate').value) / 100 || 0.071;
+    const years  = parseInt(document.getElementById('tenure').value) || 15;
+
+    let balance = 0;
+    const yearLabels = [], balances = [], interests = [];
+    let totalInterestAll = 0;
+
+    for (let y = 1; y <= years; y++) {
+        balance += annual;
+        const interest = balance * rate;
+        totalInterestAll += interest;
+        balance += interest;
+        yearLabels.push('Year ' + y);
+        balances.push(Math.round(balance));
+        interests.push(Math.round(annual * y));
+    }
+
+    const totalInvested = annual * years;
+    document.getElementById('maturityAmt').textContent   = fmt(balance);
+    document.getElementById('totalInvested').textContent = fmt(totalInvested);
+    document.getElementById('totalInterest').textContent = fmt(totalInterestAll);
+    document.getElementById('multiplier').textContent    = (balance / totalInvested).toFixed(2) + 'x';
+    document.getElementById('taxSaved').textContent      = fmt(Math.min(annual, 150000) * years * 0.30);
+
+    const ctx = document.getElementById('ppfChart').getContext('2d');
+    if (ppfChart) ppfChart.destroy();
+    ppfChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: yearLabels,
+            datasets: [
+                { label: 'Total Balance', data: balances, backgroundColor: 'rgba(245,158,11,0.8)', borderRadius: 4 },
+                { label: 'Amount Invested', data: interests, backgroundColor: 'rgba(16,185,129,0.5)', borderRadius: 4 }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { labels: { color: '#94a3b8' } } },
+            scales: {
+                x: { ticks: { color: '#64748b', maxTicksLimit: 8 }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                y: { ticks: { color: '#64748b', callback: v => '₹' + (v/100000).toFixed(0) + 'L' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+            }
+        }
+    });
+}
+
+calculate();
+</script>
+
+<%- include('partials/footer') %>
