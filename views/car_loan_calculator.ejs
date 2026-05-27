@@ -1,0 +1,78 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">🚗 Car Loan EMI Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate your car loan EMI, total interest and compare down payment options</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-5">
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Car Price <span id="priceDisplay" style="color:var(--gold);font-weight:600;">₹8,00,000</span></label>
+                <input type="range" id="priceSlider" min="100000" max="20000000" step="50000" value="800000" oninput="s('price',this.value);calc();">
+                <div class="input-group mt-2"><span class="input-group-text">₹</span><input type="number" class="form-control" id="priceInput" value="800000" oninput="ss('price',this.value);calc();"></div>
+            </div>
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Down Payment <span id="downDisplay" style="color:var(--gold);font-weight:600;">₹1,60,000 (20%)</span></label>
+                <input type="range" id="downSlider" min="0" max="90" step="5" value="20" oninput="s('down',this.value);calc();">
+                <div class="input-group mt-2"><input type="number" class="form-control" id="downInput" value="20" step="5" min="0" max="90" oninput="ss('down',this.value);calc();"><span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">%</span></div>
+            </div>
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Interest Rate <span id="rateDisplay" style="color:var(--gold);font-weight:600;">9.5%</span></label>
+                <input type="range" id="rateSlider" min="5" max="20" step="0.25" value="9.5" oninput="s('rate',this.value);calc();">
+                <div class="input-group mt-2"><input type="number" class="form-control" id="rateInput" value="9.5" step="0.25" oninput="ss('rate',this.value);calc();"><span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">%</span></div>
+            </div>
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Loan Tenure <span id="tenDisplay" style="color:var(--gold);font-weight:600;">5 Years</span></label>
+                <input type="range" id="tenSlider" min="12" max="84" step="12" value="60" oninput="s('ten',this.value);calc();">
+                <div class="input-group mt-2"><input type="number" class="form-control" id="tenInput" value="60" oninput="ss('ten',this.value);calc();"><span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">Months</span></div>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="emi-result-display"><p class="label">Monthly EMI</p><p class="amount" id="emiAmt">₹0</p></div>
+            <div class="emi-summary-card mb-4">
+                <div class="summary-item"><div class="label">Car Price</div><div class="value" id="r1">₹0</div></div>
+                <div class="summary-item"><div class="label">Down Payment</div><div class="value" style="color:var(--accent);" id="r2">₹0</div></div>
+                <div class="summary-item"><div class="label">Loan Amount</div><div class="value" id="r3">₹0</div></div>
+                <hr style="border-color:var(--border);">
+                <div class="summary-item"><div class="label">Total Interest</div><div class="value" style="color:var(--accent-red);" id="r4">₹0</div></div>
+                <div class="summary-item"><div class="label">Total Payment</div><div class="value" style="color:var(--gold);font-weight:800;" id="r5">₹0</div></div>
+            </div>
+            <div class="chart-container"><p class="chart-title">Principal vs Interest</p><canvas id="carChart"></canvas></div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/emi-calculator" class="related-card"><span class="icon">🏠</span><div class="title">EMI Calculator</div><div class="desc">General loan EMI</div></a></div>
+            <div class="col-md-4"><a href="/loan-prepayment-calculator" class="related-card"><span class="icon">⚡</span><div class="title">Loan Prepayment</div><div class="desc">Save on interest</div></a></div>
+            <div class="col-md-4"><a href="/budget-calculator" class="related-card"><span class="icon">📅</span><div class="title">Budget Planner</div><div class="desc">Plan for EMI budget</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<script>
+const fmt=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+let carChart=null;
+function s(f,v){const price=parseFloat(document.getElementById('priceInput').value)||800000;if(f==='price'){document.getElementById('priceInput').value=v;document.getElementById('priceDisplay').textContent='₹'+parseInt(v).toLocaleString('en-IN');}else if(f==='down'){document.getElementById('downInput').value=v;const amt=price*parseFloat(v)/100;document.getElementById('downDisplay').textContent='₹'+Math.round(amt).toLocaleString('en-IN')+' ('+v+'%)';}else if(f==='rate'){document.getElementById('rateInput').value=v;document.getElementById('rateDisplay').textContent=parseFloat(v).toFixed(2)+'%';}else{document.getElementById('tenInput').value=v;document.getElementById('tenDisplay').textContent=(v/12).toFixed(1)+' Years';}}
+function ss(f,v){const m={price:'priceSlider',down:'downSlider',rate:'rateSlider',ten:'tenSlider'};document.getElementById(m[f]).value=v;s(f,v);}
+function calc(){
+    const price=parseFloat(document.getElementById('priceInput').value)||0;
+    const downPct=parseFloat(document.getElementById('downInput').value)||0;
+    const rate=parseFloat(document.getElementById('rateInput').value)/100/12||0;
+    const n=parseInt(document.getElementById('tenInput').value)||0;
+    const down=price*downPct/100;
+    const loan=price-down;
+    const emi=loan*rate*Math.pow(1+rate,n)/(Math.pow(1+rate,n)-1);
+    const total=emi*n;
+    const interest=total-loan;
+    document.getElementById('emiAmt').textContent=fmt(emi);
+    document.getElementById('r1').textContent=fmt(price);
+    document.getElementById('r2').textContent=fmt(down);
+    document.getElementById('r3').textContent=fmt(loan);
+    document.getElementById('r4').textContent=fmt(interest);
+    document.getElementById('r5').textContent=fmt(down+total);
+    const ctx=document.getElementById('carChart').getContext('2d');
+    if(carChart)carChart.destroy();
+    carChart=new Chart(ctx,{type:'doughnut',data:{labels:['Principal','Interest'],datasets:[{data:[loan,interest],backgroundColor:['#334155','#f59e0b'],borderWidth:0,hoverOffset:8}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:13}}}},cutout:'65%'}});
+}
+calc();
+</script>
+<%- include('partials/footer') %>

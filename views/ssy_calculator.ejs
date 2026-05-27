@@ -1,0 +1,84 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">🌸 SSY Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Sukanya Samriddhi Yojana — Girl child savings scheme calculator</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-5">
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Yearly Deposit Amount <span id="depDisplay" style="color:var(--gold);font-weight:600;">₹50,000</span></label>
+                <input type="range" id="depSlider" min="250" max="150000" step="250" value="50000" oninput="s(this.value);calc();">
+                <div class="input-group mt-2"><span class="input-group-text">₹</span><input type="number" class="form-control" id="depInput" value="50000" oninput="document.getElementById('depSlider').value=this.value;document.getElementById('depDisplay').textContent='₹'+parseInt(this.value).toLocaleString('en-IN');calc();"></div>
+                <small style="color:var(--text-muted);font-size:0.78rem;">Min ₹250 / Max ₹1,50,000 per year</small>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Daughter's Current Age</label>
+                <div class="input-group"><input type="number" class="form-control" id="dAge" value="5" min="0" max="10" oninput="calc()"><span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">Years</span></div>
+                <small style="color:var(--text-muted);font-size:0.78rem;">Account can be opened for girls below age 10</small>
+            </div>
+            <div class="mb-3">
+                <label class="form-label d-flex justify-content-between">SSY Interest Rate <span style="color:var(--gold);font-weight:600;">8.2% (Current)</span></label>
+                <div class="input-group"><input type="number" class="form-control" id="ssyRate" value="8.2" step="0.1" oninput="calc()"><span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">%</span></div>
+            </div>
+            <div class="highlight-box">
+                <h4>💡 SSY Key Rules</h4>
+                <p>• Deposits for <strong>15 years</strong> from opening<br>
+                • Matures when girl turns <strong>21</strong><br>
+                • EEE tax benefit (like PPF)<br>
+                • Current rate: <strong>8.2% p.a.</strong> (Q1 2025)</p>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="emi-result-display"><p class="label">Maturity Amount (At Age 21)</p><p class="amount" id="maturity">₹0</p></div>
+            <div class="row g-3 mb-4">
+                <div class="col-6"><div class="summary-card"><div class="label">Total Deposited</div><div class="value gold" id="totalDep">₹0</div></div></div>
+                <div class="col-6"><div class="summary-card"><div class="label">Total Interest</div><div class="value profit" id="totalInt">₹0</div></div></div>
+                <div class="col-6"><div class="summary-card"><div class="label">Deposit Period</div><div class="value gold" id="depPeriod">15 Yrs</div></div></div>
+                <div class="col-6"><div class="summary-card"><div class="label">Matures At Age</div><div class="value gold" id="matureAge">21</div></div></div>
+            </div>
+            <div class="chart-container"><p class="chart-title">Year-wise Balance Growth</p><canvas id="ssyChart"></canvas></div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/ppf-calculator" class="related-card"><span class="icon">🏛️</span><div class="title">PPF Calculator</div><div class="desc">Another EEE scheme</div></a></div>
+            <div class="col-md-4"><a href="/income-tax-calculator" class="related-card"><span class="icon">📋</span><div class="title">Income Tax</div><div class="desc">Save tax with 80C</div></a></div>
+            <div class="col-md-4"><a href="/sip-calculator" class="related-card"><span class="icon">📊</span><div class="title">SIP Calculator</div><div class="desc">Compare with SIP</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<script>
+const fmt=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+let ssyChart=null;
+function s(v){document.getElementById('depInput').value=v;document.getElementById('depDisplay').textContent='₹'+parseInt(v).toLocaleString('en-IN');}
+function calc(){
+    const dep=parseFloat(document.getElementById('depInput').value)||0;
+    const age=parseInt(document.getElementById('dAge').value)||5;
+    const rate=parseFloat(document.getElementById('ssyRate').value)/100||0.082;
+    const openAge=Math.min(age,10);
+    const maturityAge=21;
+    const totalYears=maturityAge-openAge; // account active years
+    const depositYears=Math.min(15, totalYears); // deposit for max 15 years
+    let balance=0,totalDep=0,totalInterest=0;
+    const labels=[],balances=[];
+    for(let y=1;y<=totalYears;y++){
+        if(y<=depositYears){balance+=dep;totalDep+=dep;}
+        const interest=balance*rate;
+        totalInterest+=interest;
+        balance+=interest;
+        labels.push('Age '+(openAge+y));
+        balances.push(Math.round(balance));
+    }
+    document.getElementById('maturity').textContent=fmt(balance);
+    document.getElementById('totalDep').textContent=fmt(totalDep);
+    document.getElementById('totalInt').textContent=fmt(totalInterest);
+    document.getElementById('depPeriod').textContent=depositYears+' Yrs';
+    document.getElementById('matureAge').textContent=maturityAge;
+    const ctx=document.getElementById('ssyChart').getContext('2d');
+    if(ssyChart)ssyChart.destroy();
+    ssyChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'SSY Balance',data:balances,backgroundColor:'rgba(245,158,11,0.8)',borderRadius:4}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8'}}},scales:{x:{ticks:{color:'#64748b',maxTicksLimit:10},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#64748b',callback:v=>{if(v>=10000000)return'₹'+(v/10000000).toFixed(1)+'Cr';return'₹'+(v/100000).toFixed(0)+'L';}},grid:{color:'rgba(255,255,255,0.05)'}}}}});
+}
+calc();
+</script>
+<%- include('partials/footer') %>

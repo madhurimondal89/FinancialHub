@@ -1,0 +1,66 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">💸 Inflation Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Find out the future value of money and real purchasing power</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-5">
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Current Amount <span id="amtDisplay" style="color:var(--gold);font-weight:600;">₹1,00,000</span></label>
+                <input type="range" id="amtSlider" min="1000" max="10000000" step="1000" value="100000" oninput="syncAmt(this.value);calculate();">
+                <div class="input-group mt-2"><span class="input-group-text">₹</span><input type="number" class="form-control" id="amtInput" value="100000" oninput="document.getElementById('amtSlider').value=this.value;document.getElementById('amtDisplay').textContent='₹'+parseInt(this.value).toLocaleString('en-IN');calculate();"></div>
+            </div>
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Annual Inflation Rate <span id="infDisplay" style="color:var(--gold);font-weight:600;">6.0%</span></label>
+                <input type="range" id="infSlider" min="1" max="20" step="0.5" value="6" oninput="document.getElementById('infInput').value=this.value;document.getElementById('infDisplay').textContent=this.value+'%';calculate();">
+                <div class="input-group mt-2"><input type="number" class="form-control" id="infInput" value="6" step="0.5" oninput="document.getElementById('infSlider').value=this.value;document.getElementById('infDisplay').textContent=this.value+'%';calculate();"><span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">%</span></div>
+            </div>
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Time Period <span id="yrDisplay" style="color:var(--gold);font-weight:600;">10 Years</span></label>
+                <input type="range" id="yrSlider" min="1" max="40" step="1" value="10" oninput="document.getElementById('yrInput').value=this.value;document.getElementById('yrDisplay').textContent=this.value+' Years';calculate();">
+                <div class="input-group mt-2"><input type="number" class="form-control" id="yrInput" value="10" oninput="document.getElementById('yrSlider').value=this.value;document.getElementById('yrDisplay').textContent=this.value+' Years';calculate();"><span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">Years</span></div>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="row g-3 mb-4">
+                <div class="col-6"><div class="summary-card"><div class="label">Today's Value</div><div class="value gold" id="todayVal">₹0</div></div></div>
+                <div class="col-6"><div class="summary-card"><div class="label">Future Value Needed</div><div class="value" style="color:var(--accent-red);" id="futureVal">₹0</div></div></div>
+                <div class="col-6"><div class="summary-card"><div class="label">Purchasing Power Loss</div><div class="value loss" id="ppLoss">₹0</div></div></div>
+                <div class="col-6"><div class="summary-card"><div class="label">Value Erosion</div><div class="value loss" id="erosion">0%</div></div></div>
+            </div>
+            <div class="chart-container"><p class="chart-title">Purchasing Power Over Time</p><canvas id="inflChart"></canvas></div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/sip-calculator" class="related-card"><span class="icon">📊</span><div class="title">SIP Calculator</div><div class="desc">Beat inflation with SIP</div></a></div>
+            <div class="col-md-4"><a href="/retirement-calculator" class="related-card"><span class="icon">🌅</span><div class="title">Retirement Planning</div><div class="desc">Inflation-adjusted corpus</div></a></div>
+            <div class="col-md-4"><a href="/cagr-calculator" class="related-card"><span class="icon">📐</span><div class="title">CAGR Calculator</div><div class="desc">Real return calculator</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+let inflChart = null;
+function syncAmt(v){document.getElementById('amtInput').value=v;document.getElementById('amtDisplay').textContent='₹'+parseInt(v).toLocaleString('en-IN');}
+function calculate(){
+    const amt = parseFloat(document.getElementById('amtInput').value)||0;
+    const inf = parseFloat(document.getElementById('infInput').value)/100||0.06;
+    const yr  = parseInt(document.getElementById('yrInput').value)||0;
+    const futureNeeded = amt * Math.pow(1+inf, yr);
+    const ppLoss = futureNeeded - amt;
+    const erosionPct = ((futureNeeded-amt)/futureNeeded)*100;
+    document.getElementById('todayVal').textContent = fmt(amt);
+    document.getElementById('futureVal').textContent = fmt(futureNeeded);
+    document.getElementById('ppLoss').textContent = fmt(ppLoss);
+    document.getElementById('erosion').textContent = erosionPct.toFixed(1)+'%';
+    const labels=[], vals=[];
+    for(let y=0;y<=yr;y++){labels.push('Y'+y);vals.push(Math.round(amt/Math.pow(1+inf,y)));}
+    const ctx = document.getElementById('inflChart').getContext('2d');
+    if(inflChart) inflChart.destroy();
+    inflChart = new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Real Value of ₹'+fmt(amt).replace('₹','').trim(),data:vals,borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,0.1)',fill:true,tension:0.4,pointRadius:3}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8'}}},scales:{x:{ticks:{color:'#64748b'},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#64748b',callback:v=>'₹'+(v/100000).toFixed(0)+'L'},grid:{color:'rgba(255,255,255,0.05)'}}}}});
+}
+calculate();
+</script>
+<%- include('partials/footer') %>

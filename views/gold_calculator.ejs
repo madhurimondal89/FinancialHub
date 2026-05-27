@@ -1,0 +1,91 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">🥇 Gold Investment Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate returns on physical gold, Gold ETF, or Sovereign Gold Bonds</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-5">
+            <div class="mb-4">
+                <label class="form-label">Investment Type</label>
+                <select class="form-select" id="goldType" onchange="updateType();calc();">
+                    <option value="physical">Physical Gold</option>
+                    <option value="etf">Gold ETF</option>
+                    <option value="sgb" selected>Sovereign Gold Bond (SGB)</option>
+                </select>
+            </div>
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Investment Amount <span id="amtDisplay" style="color:var(--gold);font-weight:600;">₹1,00,000</span></label>
+                <input type="range" id="amtSlider" min="5000" max="10000000" step="5000" value="100000" oninput="s(this.value);calc();">
+                <div class="input-group mt-2"><span class="input-group-text">₹</span><input type="number" class="form-control" id="amtInput" value="100000" oninput="document.getElementById('amtSlider').value=this.value;document.getElementById('amtDisplay').textContent='₹'+parseInt(this.value).toLocaleString('en-IN');calc();"></div>
+            </div>
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Expected Annual Gold Return <span id="retDisplay" style="color:var(--gold);font-weight:600;">10%</span></label>
+                <input type="range" id="retSlider" min="1" max="20" step="0.5" value="10" oninput="document.getElementById('retInput').value=this.value;document.getElementById('retDisplay').textContent=this.value+'%';calc();">
+                <div class="input-group mt-2"><input type="number" class="form-control" id="retInput" value="10" step="0.5" oninput="document.getElementById('retSlider').value=this.value;document.getElementById('retDisplay').textContent=this.value+'%';calc();"><span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">%</span></div>
+            </div>
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Investment Period <span id="yrDisplay" style="color:var(--gold);font-weight:600;">8 Years</span></label>
+                <input type="range" id="yrSlider" min="1" max="30" step="1" value="8" oninput="document.getElementById('yrInput').value=this.value;document.getElementById('yrDisplay').textContent=this.value+' Years';calc();">
+                <div class="input-group mt-2"><input type="number" class="form-control" id="yrInput" value="8" oninput="document.getElementById('yrSlider').value=this.value;document.getElementById('yrDisplay').textContent=this.value+' Years';calc();"><span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">Years</span></div>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="emi-result-display"><p class="label">Maturity Value</p><p class="amount" id="maturity">₹0</p></div>
+            <div class="emi-summary-card mb-4">
+                <div class="summary-item"><div class="label">Investment</div><div class="value" id="r1">₹0</div></div>
+                <div class="summary-item"><div class="label">Capital Gains</div><div class="value" style="color:var(--accent);" id="r2">₹0</div></div>
+                <div id="sgbSection">
+                    <div class="summary-item"><div class="label">SGB Interest (2.5% p.a.)</div><div class="value" style="color:var(--accent);" id="sgbInt">₹0</div></div>
+                </div>
+                <hr style="border-color:var(--border);">
+                <div class="summary-item"><div class="label">Tax Note</div><div class="value" style="font-size:0.82rem;text-align:right;max-width:60%;" id="taxNote">—</div></div>
+                <div class="summary-item"><div class="label" style="color:var(--gold);font-weight:700;">Net Maturity Value</div><div class="value" style="color:var(--gold);font-weight:800;font-size:1.2rem;" id="netVal">₹0</div></div>
+            </div>
+            <div class="chart-container"><p class="chart-title">Investment Growth</p><canvas id="goldChart"></canvas></div>
+        </div>
+    </div>
+    <div class="highlight-box">
+        <h4>🥇 SGB vs Gold ETF vs Physical Gold</h4>
+        <p><strong>SGB:</strong> Extra 2.5% interest, no capital gains tax if held to 8yr maturity, no storage cost.<br>
+        <strong>Gold ETF:</strong> LTCG 20% with indexation after 3 years, low expense ratio.<br>
+        <strong>Physical Gold:</strong> Making charges + storage cost + LTCG tax after 3 years.</p>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/sip-calculator" class="related-card"><span class="icon">📊</span><div class="title">SIP Calculator</div><div class="desc">Mutual fund vs gold</div></a></div>
+            <div class="col-md-4"><a href="/fd-calculator" class="related-card"><span class="icon">🏦</span><div class="title">FD Calculator</div><div class="desc">FD vs gold returns</div></a></div>
+            <div class="col-md-4"><a href="/cagr-calculator" class="related-card"><span class="icon">📐</span><div class="title">CAGR Calculator</div><div class="desc">Calculate actual returns</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<script>
+const fmt=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+let goldChart=null;
+function s(v){document.getElementById('amtInput').value=v;document.getElementById('amtDisplay').textContent='₹'+parseInt(v).toLocaleString('en-IN');}
+function updateType(){const t=document.getElementById('goldType').value;document.getElementById('sgbSection').style.display=t==='sgb'?'block':'none';}
+function calc(){
+    const amt=parseFloat(document.getElementById('amtInput').value)||0;
+    const ret=parseFloat(document.getElementById('retInput').value)/100||0;
+    const yr=parseInt(document.getElementById('yrInput').value)||0;
+    const type=document.getElementById('goldType').value;
+    const maturity=amt*Math.pow(1+ret,yr);
+    const gains=maturity-amt;
+    const sgbInterest=type==='sgb'?amt*0.025*yr:0;
+    const netVal=maturity+sgbInterest;
+    document.getElementById('maturity').textContent=fmt(netVal);
+    document.getElementById('r1').textContent=fmt(amt);
+    document.getElementById('r2').textContent=fmt(gains);
+    document.getElementById('sgbInt').textContent=fmt(sgbInterest);
+    const taxMap={physical:'LTCG 20% with indexation (after 3 yrs)',etf:'LTCG 20% with indexation (after 3 yrs)',sgb:'NIL tax if held to 8yr maturity 🎉'};
+    document.getElementById('taxNote').textContent=taxMap[type];
+    document.getElementById('netVal').textContent=fmt(netVal);
+    const labels=[],vals=[];
+    for(let y=0;y<=yr;y++){labels.push('Y'+y);vals.push(Math.round(amt*Math.pow(1+ret,y)+(type==='sgb'?amt*0.025*y:0)));}
+    const ctx=document.getElementById('goldChart').getContext('2d');
+    if(goldChart)goldChart.destroy();
+    goldChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Gold Value',data:vals,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',fill:true,tension:0.4,pointRadius:3}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8'}}},scales:{x:{ticks:{color:'#64748b'},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#64748b',callback:v=>{if(v>=10000000)return'₹'+(v/10000000).toFixed(1)+'Cr';return'₹'+(v/100000).toFixed(0)+'L';}},grid:{color:'rgba(255,255,255,0.05)'}}}}});
+}
+updateType();calc();
+</script>
+<%- include('partials/footer') %>

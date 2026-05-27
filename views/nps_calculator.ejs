@@ -1,0 +1,81 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">🏛️ NPS Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">National Pension System — Plan your retirement corpus and monthly pension</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-5">
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Monthly Contribution <span id="contribDisplay" style="color:var(--gold);font-weight:600;">₹5,000</span></label>
+                <input type="range" id="contribSlider" min="500" max="100000" step="500" value="5000" oninput="s('contrib',this.value);calc();">
+                <div class="input-group mt-2"><span class="input-group-text">₹</span><input type="number" class="form-control" id="contribInput" value="5000" oninput="ss('contrib',this.value);calc();"></div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Current Age</label>
+                <div class="input-group"><input type="number" class="form-control" id="currentAge" value="30" min="18" max="59" oninput="calc()"><span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">Years</span></div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Retirement Age (Max 60)</label>
+                <div class="input-group"><input type="number" class="form-control" id="retireAge" value="60" min="18" max="60" oninput="calc()"><span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">Years</span></div>
+            </div>
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Expected Annual Return <span id="retDisplay" style="color:var(--gold);font-weight:600;">10%</span></label>
+                <input type="range" id="retSlider" min="6" max="14" step="0.5" value="10" oninput="s('ret',this.value);calc();">
+                <div class="input-group mt-2"><input type="number" class="form-control" id="retInput" value="10" step="0.5" oninput="ss('ret',this.value);calc();"><span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">%</span></div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Annuity Rate (Pension Rate)</label>
+                <div class="input-group"><input type="number" class="form-control" id="annuityRate" value="6" step="0.5" oninput="calc()"><span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">%</span></div>
+                <small style="color:var(--text-muted);font-size:0.78rem;">Typical range: 5%–7%</small>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="emi-result-display"><p class="label">Total NPS Corpus</p><p class="amount" id="corpus">₹0</p></div>
+            <div class="row g-3 mb-4">
+                <div class="col-6"><div class="summary-card"><div class="label">Total Invested</div><div class="value gold" id="totalInv">₹0</div></div></div>
+                <div class="col-6"><div class="summary-card"><div class="label">Interest Earned</div><div class="value profit" id="interest">₹0</div></div></div>
+                <div class="col-6"><div class="summary-card"><div class="label">Lump Sum (60%)</div><div class="value gold" id="lumpsum">₹0</div></div></div>
+                <div class="col-6"><div class="summary-card"><div class="label">Monthly Pension</div><div class="value profit" id="pension">₹0</div></div></div>
+            </div>
+            <div class="highlight-box">
+                <h4>💡 NPS Rules</h4>
+                <p>At maturity, you can withdraw <strong>60% as lump sum</strong> (tax-free). The remaining <strong>40% must be used to buy an annuity</strong> (monthly pension). Contributions up to ₹1.5L deductible under 80C + additional ₹50,000 under 80CCD(1B).</p>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/ppf-calculator" class="related-card"><span class="icon">🏛️</span><div class="title">PPF Calculator</div><div class="desc">Tax-free long-term savings</div></a></div>
+            <div class="col-md-4"><a href="/retirement-calculator" class="related-card"><span class="icon">🌅</span><div class="title">Retirement Planning</div><div class="desc">Full retirement planning</div></a></div>
+            <div class="col-md-4"><a href="/gratuity-calculator" class="related-card"><span class="icon">🏅</span><div class="title">Gratuity Calculator</div><div class="desc">Retirement benefits</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<script>
+const fmt=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function s(f,v){const m={contrib:['contribInput','contribDisplay'],ret:['retInput','retDisplay']};const[i,d]=m[f];document.getElementById(i).value=v;document.getElementById(d).textContent=(f==='contrib'?'₹'+parseInt(v).toLocaleString('en-IN'):parseFloat(v).toFixed(1)+'%');}
+function ss(f,v){const m={contrib:'contribSlider',ret:'retSlider'};document.getElementById(m[f]).value=v;s(f,v);}
+function calc(){
+    const contrib=parseFloat(document.getElementById('contribInput').value)||0;
+    const cur=parseInt(document.getElementById('currentAge').value)||30;
+    const ret=parseInt(document.getElementById('retireAge').value)||60;
+    const rate=parseFloat(document.getElementById('retInput').value)/100||0.10;
+    const annuity=parseFloat(document.getElementById('annuityRate').value)/100||0.06;
+    const yrs=Math.max(0,ret-cur);
+    const r=rate/12;
+    const n=yrs*12;
+    const corpus=n>0?contrib*(Math.pow(1+r,n)-1)*(1+r)/r:0;
+    const totalInv=contrib*n;
+    const lumpsum=corpus*0.6;
+    const annuityCorpus=corpus*0.4;
+    const monthlyPension=annuityCorpus*annuity/12;
+    document.getElementById('corpus').textContent=fmt(corpus);
+    document.getElementById('totalInv').textContent=fmt(totalInv);
+    document.getElementById('interest').textContent=fmt(corpus-totalInv);
+    document.getElementById('lumpsum').textContent=fmt(lumpsum);
+    document.getElementById('pension').textContent=fmt(monthlyPension);
+}
+calc();
+</script>
+<%- include('partials/footer') %>

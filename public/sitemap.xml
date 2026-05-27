@@ -101,4 +101,56 @@
         <priority>0.8</priority>
     </url>
 
+    <!-- Returns & Analysis -->
+    <url>
+        <loc>https://financialhub.calculatorfree.in/cagr-calculator</loc>
+        <lastmod>2026-05-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://financialhub.calculatorfree.in/inflation-calculator</loc>
+        <lastmod>2026-05-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://financialhub.calculatorfree.in/step-up-sip-calculator</loc>
+        <lastmod>2026-05-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://financialhub.calculatorfree.in/gold-calculator</loc>
+        <lastmod>2026-05-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Retirement & Welfare -->
+    <url>
+        <loc>https://financialhub.calculatorfree.in/nps-calculator</loc>
+        <lastmod>2026-05-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://financialhub.calculatorfree.in/gratuity-calculator</loc>
+        <lastmod>2026-05-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://financialhub.calculatorfree.in/ssy-calculator</loc>
+        <lastmod>2026-05-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://financialhub.calculatorfree.in/car-loan-calculator</loc>
+        <lastmod>2026-05-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
 </urlset>

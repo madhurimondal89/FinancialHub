@@ -1,25 +1,25 @@
 /* ============================================================
-   Financial Hub — Premium Dark Theme CSS
-   Color: Deep Navy + Gold Accent
+   Financial Hub — Premium Dual Theme CSS
+   Dark: Deep Navy + Gold | Light: Slate + Amber
    ============================================================ */
 
 /* === Google Font Import === */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
 
-/* === CSS Variables === */
+/* === CSS Variables — Dark Theme (Default) === */
 :root {
-    --primary:       #0f172a;   /* Deep Navy */
-    --primary-mid:   #1e293b;   /* Mid Navy */
-    --primary-light: #334155;   /* Light Navy */
-    --gold:          #f59e0b;   /* Amber Gold */
-    --gold-light:    #fcd34d;   /* Light Gold */
-    --gold-dark:     #d97706;   /* Dark Gold */
-    --accent:        #10b981;   /* Emerald Green */
-    --accent-red:    #ef4444;   /* Red */
-    --text-primary:  #f1f5f9;   /* Near White */
-    --text-secondary:#94a3b8;   /* Slate */
-    --text-muted:    #64748b;   /* Muted */
-    --bg-page:       #0f172a;   /* Page background */
+    --primary:       #0f172a;
+    --primary-mid:   #1e293b;
+    --primary-light: #334155;
+    --gold:          #f59e0b;
+    --gold-light:    #fcd34d;
+    --gold-dark:     #d97706;
+    --accent:        #10b981;
+    --accent-red:    #ef4444;
+    --text-primary:  #f1f5f9;
+    --text-secondary:#94a3b8;
+    --text-muted:    #64748b;
+    --bg-page:       #0f172a;
     --bg-card:       rgba(30, 41, 59, 0.85);
     --bg-input:      rgba(15, 23, 42, 0.6);
     --border:        rgba(245, 158, 11, 0.15);
@@ -34,6 +34,98 @@
     --radius-xl:     28px;
     --transition:    all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* === CSS Variables — Light Theme === */
+[data-theme="light"] {
+    --primary:       #ffffff;
+    --primary-mid:   #f8fafc;
+    --primary-light: #e2e8f0;
+    --gold:          #d97706;
+    --gold-light:    #f59e0b;
+    --gold-dark:     #b45309;
+    --accent:        #059669;
+    --accent-red:    #dc2626;
+    --text-primary:  #0f172a;
+    --text-secondary:#475569;
+    --text-muted:    #94a3b8;
+    --bg-page:       #f1f5f9;
+    --bg-card:       rgba(255, 255, 255, 0.95);
+    --bg-input:      rgba(248, 250, 252, 0.9);
+    --border:        rgba(148, 163, 184, 0.25);
+    --border-hover:  rgba(217, 119, 6, 0.4);
+    --shadow-sm:     0 4px 16px rgba(0,0,0,0.06);
+    --shadow-md:     0 8px 32px rgba(0,0,0,0.1);
+    --shadow-lg:     0 20px 60px rgba(0,0,0,0.12);
+    --shadow-gold:   0 8px 32px rgba(217, 119, 6, 0.15);
+}
+
+/* Light theme specific overrides */
+[data-theme="light"] body {
+    background-image:
+        radial-gradient(ellipse at 20% 0%, rgba(217,119,6,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 100%, rgba(5,150,105,0.03) 0%, transparent 60%);
+}
+[data-theme="light"] .site-header {
+    background: rgba(255,255,255,0.95);
+    border-bottom-color: rgba(148,163,184,0.2);
+}
+[data-theme="light"] .site-header .navbar-brand,
+[data-theme="light"] .site-header .nav-link { color: #0f172a !important; }
+[data-theme="light"] .site-header .nav-link:hover { color: var(--gold) !important; background: rgba(217,119,6,0.08); }
+[data-theme="light"] .site-header .btn-outline-light {
+    border-color: rgba(148,163,184,0.4);
+    color: #475569 !important;
+}
+[data-theme="light"] .site-header .btn-outline-light:hover { color: var(--gold) !important; }
+[data-theme="light"] .hero-section {
+    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.98) 100%);
+}
+[data-theme="light"] .calculator-card { box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
+[data-theme="light"] .info-accordion .accordion-header .accordion-button {
+    background: #f8fafc;
+    color: #0f172a;
+}
+[data-theme="light"] .info-accordion .accordion-body { background: #fff; color: #475569; }
+[data-theme="light"] .emi-summary-card { background: rgba(241,245,249,0.8); }
+[data-theme="light"] .chart-container { background: rgba(241,245,249,0.9); border-color: rgba(148,163,184,0.2); }
+[data-theme="light"] .site-footer { background: rgba(15,23,42,0.95); }
+[data-theme="light"] .related-card { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+[data-theme="light"] input[type="range"] { background: #cbd5e1; }
+[data-theme="light"] ::-webkit-scrollbar-track { background: #f1f5f9; }
+[data-theme="light"] .summary-card { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+
+/* === Smooth Theme Transition === */
+body, .site-header, .calculator-card, .form-card, .summary-card,
+.hero-section, .emi-summary-card, .chart-container, .related-card,
+.info-accordion .accordion-item, input, select, textarea {
+    transition: background-color 0.35s ease, border-color 0.35s ease,
+                color 0.25s ease, box-shadow 0.35s ease !important;
+}
+
+/* === Theme Toggle Button === */
+.theme-toggle-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: var(--transition);
+    margin-left: 12px;
+    white-space: nowrap;
+}
+.theme-toggle-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(245,158,11,0.08);
+}
+.theme-toggle-btn .theme-icon { font-size: 1rem; transition: transform 0.4s ease; }
+.theme-toggle-btn:hover .theme-icon { transform: rotate(20deg); }
 
 /* === Reset & Base === */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

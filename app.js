@@ -206,6 +206,55 @@ app.get('/hra-calculator', (req, res) => {
     });
 });
 
+// 8 New Calculators
+app.get('/cagr-calculator', (req, res) => {
+    const title = 'CAGR Calculator — Compound Annual Growth Rate';
+    const desc = 'Calculate the Compound Annual Growth Rate (CAGR) of any investment. Measure true annual returns on stocks, mutual funds, and more.';
+    res.render('cagr_calculator', { title, isHomePage: false, canonicalPath: '/cagr-calculator', description: desc, schema: generateSchema(title, desc, '/cagr-calculator') });
+});
+
+app.get('/inflation-calculator', (req, res) => {
+    const title = 'Inflation Calculator — Future Value of Money';
+    const desc = 'Calculate how inflation erodes purchasing power over time. Find the future value needed to match today\'s purchasing power.';
+    res.render('inflation_calculator', { title, isHomePage: false, canonicalPath: '/inflation-calculator', description: desc, schema: generateSchema(title, desc, '/inflation-calculator') });
+});
+
+app.get('/step-up-sip-calculator', (req, res) => {
+    const title = 'Step-Up SIP Calculator — Increase SIP Yearly';
+    const desc = 'Calculate returns on Step-Up SIP where you increase your monthly investment by a fixed percentage every year.';
+    res.render('step_up_sip_calculator', { title, isHomePage: false, canonicalPath: '/step-up-sip-calculator', description: desc, schema: generateSchema(title, desc, '/step-up-sip-calculator') });
+});
+
+app.get('/gratuity-calculator', (req, res) => {
+    const title = 'Gratuity Calculator — Payment of Gratuity Act 1972';
+    const desc = 'Calculate your gratuity amount based on last drawn salary and years of service as per the Payment of Gratuity Act, 1972.';
+    res.render('gratuity_calculator', { title, isHomePage: false, canonicalPath: '/gratuity-calculator', description: desc, schema: generateSchema(title, desc, '/gratuity-calculator') });
+});
+
+app.get('/nps-calculator', (req, res) => {
+    const title = 'NPS Calculator — National Pension System';
+    const desc = 'Plan your National Pension System (NPS) corpus. Calculate maturity amount, tax-free lump sum (60%) and monthly pension.';
+    res.render('nps_calculator', { title, isHomePage: false, canonicalPath: '/nps-calculator', description: desc, schema: generateSchema(title, desc, '/nps-calculator') });
+});
+
+app.get('/car-loan-calculator', (req, res) => {
+    const title = 'Car Loan EMI Calculator';
+    const desc = 'Calculate your car loan EMI, total interest payable and compare down payment options with interactive charts.';
+    res.render('car_loan_calculator', { title, isHomePage: false, canonicalPath: '/car-loan-calculator', description: desc, schema: generateSchema(title, desc, '/car-loan-calculator') });
+});
+
+app.get('/gold-calculator', (req, res) => {
+    const title = 'Gold Investment Calculator — Physical, ETF & SGB';
+    const desc = 'Compare returns on Physical Gold, Gold ETF and Sovereign Gold Bonds (SGB). Includes tax treatment comparison.';
+    res.render('gold_calculator', { title, isHomePage: false, canonicalPath: '/gold-calculator', description: desc, schema: generateSchema(title, desc, '/gold-calculator') });
+});
+
+app.get('/ssy-calculator', (req, res) => {
+    const title = 'SSY Calculator — Sukanya Samriddhi Yojana';
+    const desc = 'Calculate Sukanya Samriddhi Yojana (SSY) maturity amount for your daughter. See year-wise growth and tax-free returns.';
+    res.render('ssy_calculator', { title, isHomePage: false, canonicalPath: '/ssy-calculator', description: desc, schema: generateSchema(title, desc, '/ssy-calculator') });
+});
+
 // Static Pages (No 'Application' schema needed, just Breadcrumbs)
 app.get('/about', (req, res) => res.render('about', { title: 'About Us', isHomePage: false, description: 'About Financial Hub', schema: generateSchema('About Us', 'About Financial Hub', '/about', false) }));
 app.get('/contact', (req, res) => res.render('contact', { title: 'Contact Us', isHomePage: false, description: 'Contact Financial Hub', schema: generateSchema('Contact Us', 'Contact Financial Hub', '/contact', false) }));

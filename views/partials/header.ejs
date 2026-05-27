@@ -64,9 +64,14 @@
                     <a class="nav-link active" href="https://www.calculatorfree.in/" target="_blank" rel="noopener noreferrer">Home</a>
                 </li>
             </ul>
-            <div class="ms-auto">
+            <div class="ms-auto d-flex align-items-center">
+                <!-- Theme Toggle -->
+                <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle Light/Dark Mode">
+                    <span class="theme-icon" id="themeIcon">🌙</span>
+                    <span id="themeLabel">Dark</span>
+                </button>
                 <% if (locals.isHomePage === false) { %>
-                    <a href="/" class="btn btn-outline-light d-flex align-items-center">
+                    <a href="/" class="btn btn-outline-light d-flex align-items-center ms-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-circle me-2" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"/></svg>
                         Back to Hub
                     </a>
@@ -75,3 +80,40 @@
         </div>
     </nav>
     <div class="container mt-5">
+
+<script>
+    // Theme toggle logic
+    (function() {
+        const saved = localStorage.getItem('fh-theme') || 'dark';
+        if (saved === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+    })();
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const current = html.getAttribute('data-theme');
+        const next = current === 'light' ? 'dark' : 'light';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('fh-theme', next);
+        updateToggleUI(next);
+    }
+
+    function updateToggleUI(theme) {
+        const icon  = document.getElementById('themeIcon');
+        const label = document.getElementById('themeLabel');
+        if (!icon || !label) return;
+        if (theme === 'light') {
+            icon.textContent  = '☀️';
+            label.textContent = 'Light';
+        } else {
+            icon.textContent  = '🌙';
+            label.textContent = 'Dark';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const saved = localStorage.getItem('fh-theme') || 'dark';
+        updateToggleUI(saved);
+    });
+</script>

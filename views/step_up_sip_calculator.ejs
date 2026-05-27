@@ -1,0 +1,80 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">📈 Step-Up SIP Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">SIP with yearly increment — grow your investment as your income grows</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-5">
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Monthly SIP Amount <span id="sipDisplay" style="color:var(--gold);font-weight:600;">₹5,000</span></label>
+                <input type="range" id="sipSlider" min="500" max="200000" step="500" value="5000" oninput="s('sip',this.value);calc();">
+                <div class="input-group mt-2"><span class="input-group-text">₹</span><input type="number" class="form-control" id="sipInput" value="5000" oninput="ss('sip',this.value);calc();"></div>
+            </div>
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Expected Return Rate <span id="retDisplay" style="color:var(--gold);font-weight:600;">12%</span></label>
+                <input type="range" id="retSlider" min="1" max="30" step="0.5" value="12" oninput="s('ret',this.value);calc();">
+                <div class="input-group mt-2"><input type="number" class="form-control" id="retInput" value="12" step="0.5" oninput="ss('ret',this.value);calc();"><span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">%</span></div>
+            </div>
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Time Period <span id="tenDisplay" style="color:var(--gold);font-weight:600;">15 Years</span></label>
+                <input type="range" id="tenSlider" min="1" max="40" step="1" value="15" oninput="s('ten',this.value);calc();">
+                <div class="input-group mt-2"><input type="number" class="form-control" id="tenInput" value="15" oninput="ss('ten',this.value);calc();"><span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">Years</span></div>
+            </div>
+            <div class="slider-container">
+                <label class="form-label d-flex justify-content-between">Annual Step-Up % <span id="stepDisplay" style="color:var(--gold);font-weight:600;">10%</span></label>
+                <input type="range" id="stepSlider" min="0" max="50" step="1" value="10" oninput="s('step',this.value);calc();">
+                <div class="input-group mt-2"><input type="number" class="form-control" id="stepInput" value="10" oninput="ss('step',this.value);calc();"><span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">%</span></div>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="emi-result-display"><p class="label">Final Corpus</p><p class="amount" id="corpus">₹0</p></div>
+            <div class="row g-3 mb-4">
+                <div class="col-6"><div class="summary-card"><div class="label">Total Invested</div><div class="value gold" id="invested">₹0</div></div></div>
+                <div class="col-6"><div class="summary-card"><div class="label">Total Returns</div><div class="value profit" id="returns">₹0</div></div></div>
+                <div class="col-6"><div class="summary-card"><div class="label">Wealth Multiplier</div><div class="value gold" id="mult">0x</div></div></div>
+                <div class="col-6"><div class="summary-card"><div class="label">vs Normal SIP</div><div class="value profit" id="vsNormal">+₹0</div></div></div>
+            </div>
+            <div class="chart-container"><p class="chart-title">Corpus Growth Year-by-Year</p><canvas id="stepChart"></canvas></div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/sip-calculator" class="related-card"><span class="icon">📊</span><div class="title">Regular SIP</div><div class="desc">Fixed monthly SIP</div></a></div>
+            <div class="col-md-4"><a href="/inflation-calculator" class="related-card"><span class="icon">💸</span><div class="title">Inflation Calculator</div><div class="desc">Beat inflation planning</div></a></div>
+            <div class="col-md-4"><a href="/retirement-calculator" class="related-card"><span class="icon">🌅</span><div class="title">Retirement Planning</div><div class="desc">Long-term goal planning</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<script>
+const fmt = n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+let stepChart=null;
+function s(f,v){const map={sip:['sipInput','sipDisplay','₹'],ret:['retInput','retDisplay',''],ten:['tenInput','tenDisplay',''],step:['stepInput','stepDisplay','']};const [inp,disp,pre]=map[f];document.getElementById(inp).value=v;const pv=parseFloat(v);if(f==='sip')document.getElementById(disp).textContent='₹'+pv.toLocaleString('en-IN');else document.getElementById(disp).textContent=pv+(f==='ten'?' Years':'%');}
+function ss(f,v){const map={sip:'sipSlider',ret:'retSlider',ten:'tenSlider',step:'stepSlider'};document.getElementById(map[f]).value=v;s(f,v);}
+function calc(){
+    const sip=parseFloat(document.getElementById('sipInput').value)||0;
+    const ret=parseFloat(document.getElementById('retInput').value)/100||0;
+    const ten=parseInt(document.getElementById('tenInput').value)||0;
+    const step=parseFloat(document.getElementById('stepInput').value)/100||0;
+    const r=ret/12;
+    let corpus=0,totalInv=0,monthlySip=sip;
+    const labels=[],corpora=[];
+    // Normal SIP for comparison
+    let normalCorpus=0;
+    for(let y=1;y<=ten;y++){
+        for(let m=0;m<12;m++){corpus=(corpus+monthlySip)*(1+r);normalCorpus=(normalCorpus+sip)*(1+r);totalInv+=monthlySip;}
+        monthlySip*=(1+step);
+        labels.push('Y'+y);corpora.push(Math.round(corpus));
+    }
+    document.getElementById('corpus').textContent=fmt(corpus);
+    document.getElementById('invested').textContent=fmt(totalInv);
+    document.getElementById('returns').textContent=fmt(corpus-totalInv);
+    document.getElementById('mult').textContent=(corpus/totalInv).toFixed(2)+'x';
+    document.getElementById('vsNormal').textContent='+'+fmt(corpus-normalCorpus);
+    const ctx=document.getElementById('stepChart').getContext('2d');
+    if(stepChart)stepChart.destroy();
+    stepChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Step-Up SIP Corpus',data:corpora,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',fill:true,tension:0.4}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8'}}},scales:{x:{ticks:{color:'#64748b'},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#64748b',callback:v=>{if(v>=10000000)return'₹'+(v/10000000).toFixed(1)+'Cr';if(v>=100000)return'₹'+(v/100000).toFixed(0)+'L';return'₹'+v;}},grid:{color:'rgba(255,255,255,0.05)'}}}}});
+}
+calc();
+</script>
+<%- include('partials/footer') %>
