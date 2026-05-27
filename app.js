@@ -6,6 +6,65 @@ const app = express();
 const port = 3000;
 
 app.use(express.urlencoded({ extended: true }));
+
+// --- Dynamic Sitemap (always fresh, no cache issues) ---
+app.get('/sitemap.xml', (req, res) => {
+    const base = 'https://financialhub.calculatorfree.in';
+    const today = new Date().toISOString().split('T')[0];
+
+    const urls = [
+        { loc: '/',                          priority: '1.0', changefreq: 'weekly'  },
+        // Investment & Savings
+        { loc: '/sip-calculator',            priority: '0.9', changefreq: 'monthly' },
+        { loc: '/compound-interest',         priority: '0.8', changefreq: 'monthly' },
+        { loc: '/simple-interest',           priority: '0.7', changefreq: 'monthly' },
+        { loc: '/fd-calculator',             priority: '0.9', changefreq: 'monthly' },
+        { loc: '/ppf-calculator',            priority: '0.9', changefreq: 'monthly' },
+        { loc: '/schd-dividend-calculator',  priority: '0.7', changefreq: 'monthly' },
+        // Loans
+        { loc: '/emi-calculator',            priority: '0.9', changefreq: 'monthly' },
+        { loc: '/loan-prepayment-calculator',priority: '0.8', changefreq: 'monthly' },
+        { loc: '/hra-calculator',            priority: '0.8', changefreq: 'monthly' },
+        { loc: '/car-loan-calculator',       priority: '0.8', changefreq: 'monthly' },
+        // Tax & Business
+        { loc: '/income-tax-calculator',     priority: '0.9', changefreq: 'monthly' },
+        { loc: '/gst-calculator',            priority: '0.9', changefreq: 'monthly' },
+        { loc: '/advanced-profit-loss',      priority: '0.7', changefreq: 'monthly' },
+        // Financial Planning
+        { loc: '/retirement-calculator',     priority: '0.8', changefreq: 'monthly' },
+        { loc: '/budget-calculator',         priority: '0.8', changefreq: 'monthly' },
+        // Returns & Analysis
+        { loc: '/cagr-calculator',           priority: '0.8', changefreq: 'monthly' },
+        { loc: '/inflation-calculator',      priority: '0.8', changefreq: 'monthly' },
+        { loc: '/step-up-sip-calculator',    priority: '0.8', changefreq: 'monthly' },
+        { loc: '/gold-calculator',           priority: '0.8', changefreq: 'monthly' },
+        // Retirement & Welfare
+        { loc: '/nps-calculator',            priority: '0.9', changefreq: 'monthly' },
+        { loc: '/gratuity-calculator',       priority: '0.8', changefreq: 'monthly' },
+        { loc: '/ssy-calculator',            priority: '0.8', changefreq: 'monthly' },
+    ];
+
+    const urlTags = urls.map(u => `
+    <url>
+        <loc>${base}${u.loc}</loc>
+        <lastmod>${today}</lastmod>
+        <changefreq>${u.changefreq}</changefreq>
+        <priority>${u.priority}</priority>
+    </url>`).join('');
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urlTags}
+</urlset>`;
+
+    res.set({
+        'Content-Type': 'application/xml',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+    });
+    res.send(xml);
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
