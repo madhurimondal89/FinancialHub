@@ -1,0 +1,106 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">🔥 Startup Runway & Burn Rate Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate monthly gross/net cash burn and determine remaining cash runway in months</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <label class="form-label">Current Cash in Bank (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="stCash" value="7500000" step="500000" oninput="calculate()"></div>
+                <div id="stWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <label class="form-label">Monthly Revenue (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="stRevenue" value="350000" step="25000" oninput="calculate()"></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Monthly Expenses (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="stExpenses" value="850000" step="50000" oninput="calculate()"></div>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <h4>🚀 Founders' Rule of Thumb</h4>
+                <p>• <strong>Net Burn Rate:</strong> Monthly Expenses − Monthly Revenue.<br>• Always aim for a minimum <strong>12 to 18 months runway</strong> before initiating the next fundraise round.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Estimated Cash Runway</p><p class="amount" id="stRunwayMonths" style="color:var(--gold);">15.0 Months</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Gross Monthly Burn</div><div class="value" style="color:var(--accent-red);" id="rGrossBurn">₹8,50,000 / mo</div></div>
+                    <div class="summary-item"><div class="label">Net Monthly Burn</div><div class="value" style="color:var(--accent-red);" id="rNetBurn">₹5,00,000 / mo</div></div>
+                    <div class="summary-item"><div class="label">Zero-Cash Date Estimate</div><div class="value" style="color:var(--gold);" id="rZeroDate">15 Months</div></div>
+                    <div class="summary-item"><div class="label">Gross Runway (Without Revenue)</div><div class="value" id="rGrossRunway">8.8 Months</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/advanced-profit-loss" class="related-card"><span class="icon">💼</span><div class="title">Profit & Loss</div><div class="desc">Break-even unit analysis</div></a></div>
+            <div class="col-md-4"><a href="/budget-calculator" class="related-card"><span class="icon">📋</span><div class="title">Budget Planner</div><div class="desc">50/30/20 Expense control</div></a></div>
+            <div class="col-md-4"><a href="/emergency-fund-calculator" class="related-card"><span class="icon">🦺</span><div class="title">Emergency Fund</div><div class="desc">Liquid cushion</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="stToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="stBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="stBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="stBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const cash = parseFloat(document.getElementById('stCash').value)||0;
+    const rev = parseFloat(document.getElementById('stRevenue').value)||0;
+    const exp = parseFloat(document.getElementById('stExpenses').value)||0;
+
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('stWords');
+        if(el) el.textContent = convertNumberToIndianWords(cash);
+    }
+
+    if(cash <= 0 || exp <= 0) return;
+
+    const grossBurn = exp;
+    const netBurn = exp - rev;
+    
+    let runwayMonths = 0;
+    if(netBurn <= 0) {
+        document.getElementById('stRunwayMonths').textContent = '∞ Profitable!';
+        document.getElementById('stRunwayMonths').style.color = 'var(--accent-green)';
+    } else {
+        runwayMonths = (cash / netBurn).toFixed(1);
+        document.getElementById('stRunwayMonths').textContent = runwayMonths + ' Months';
+        document.getElementById('stRunwayMonths').style.color = runwayMonths < 6 ? 'var(--accent-red)' : 'var(--gold)';
+    }
+
+    const grossRunway = (cash / grossBurn).toFixed(1);
+
+    document.getElementById('rGrossBurn').textContent = fmt(grossBurn) + ' / mo';
+    document.getElementById('rNetBurn').textContent = (netBurn >= 0 ? fmt(netBurn) : '-' + fmt(Math.abs(netBurn))) + ' / mo';
+    document.getElementById('rZeroDate').textContent = runwayMonths > 0 ? runwayMonths + ' Months remaining' : 'Cash Positive (Default Alive)';
+    document.getElementById('rGrossRunway').textContent = grossRunway + ' Months';
+
+    window._lastST = { cash, rev, exp, netBurn, runwayMonths };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('stBtnSave').addEventListener('click', () => {
+        const d = window._lastST; if(!d) return;
+        const name = prompt('Save as:', `Runway ${d.runwayMonths} Mo`);
+        if(name) saveCalculation(name, { BankCash: fmt(d.cash), NetBurn: fmt(d.netBurn)+'/mo', Runway: d.runwayMonths+' Months' });
+    });
+    document.getElementById('stBtnShare').addEventListener('click', () => {
+        const d = window._lastST; if(!d) return;
+        shareViaWhatsApp('Startup Runway Calculator', `Bank Balance: ${fmt(d.cash)}\nMonthly Revenue: ${fmt(d.rev)}\nMonthly Expenses: ${fmt(d.exp)}\nNet Monthly Burn: ${fmt(d.netBurn)}\nRunway: ${d.runwayMonths} Months`);
+    });
+    document.getElementById('stBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

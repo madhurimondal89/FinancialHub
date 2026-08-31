@@ -1,0 +1,142 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">💼 In-Hand Salary Calculator (CTC to Take-Home)</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate exact monthly take-home salary after Employee PF, Professional Tax & TDS deductions</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <label class="form-label">Annual CTC (Cost to Company) (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="salCtc" value="1200000" step="50000" oninput="calculate()"></div>
+                <div id="salWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Tax Regime</label>
+                <select class="form-select" id="salRegime" onchange="calculate()">
+                    <option value="new" selected>New Tax Regime (Default FY 2024-25 / FY 2025-26)</option>
+                    <option value="old">Old Tax Regime (With 80C, 80D, HRA)</option>
+                </select>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <label class="form-label">Monthly Bonus / Variable (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="salBonus" value="0" step="5000" oninput="calculate()"></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Professional Tax (₹/mo)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="salPt" value="200" step="50" oninput="calculate()"></div>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <h4>📊 Standard Indian Salary Structure</h4>
+                <p>Basic Salary = 40-50% of CTC | Employee PF = 12% of Basic | Standard Deduction = ₹75,000 in New Regime (₹50,000 in Old Regime).</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Monthly In-Hand Take Home</p><p class="amount" id="salInHand" style="color:var(--accent-green);">₹84,250</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Gross Monthly Salary</div><div class="value" id="rGrossMonthly">₹1,00,000 / mo</div></div>
+                    <div class="summary-item"><div class="label">Employee PF (12% Basic)</div><div class="value" style="color:var(--accent-red);" id="rPfDeduct">-₹4,800 / mo</div></div>
+                    <div class="summary-item"><div class="label">Monthly TDS (Estimated)</div><div class="value" style="color:var(--accent-red);" id="rTdsDeduct">-₹10,750 / mo</div></div>
+                    <div class="summary-item"><div class="label">Professional Tax (PT)</div><div class="value" style="color:var(--accent-red);" id="rPtDeduct">-₹200 / mo</div></div>
+                    <div class="summary-item"><div class="label">Total Annual In-Hand</div><div class="value" style="color:var(--gold);" id="rAnnualInHand">₹10,11,000 / yr</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/income-tax-calculator" class="related-card"><span class="icon">🧾</span><div class="title">Income Tax</div><div class="desc">New vs Old tax regime</div></a></div>
+            <div class="col-md-4"><a href="/hra-calculator" class="related-card"><span class="icon">🏢</span><div class="title">HRA Calculator</div><div class="desc">Rent tax exemption</div></a></div>
+            <div class="col-md-4"><a href="/epf-calculator" class="related-card"><span class="icon">👔</span><div class="title">EPF Calculator</div><div class="desc">Provident fund growth</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="salToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="salBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="salBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="salBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const ctc = parseFloat(document.getElementById('salCtc').value)||0;
+    const bonus = parseFloat(document.getElementById('salBonus').value)||0;
+    const ptMonthly = parseFloat(document.getElementById('salPt').value)||0;
+    const regime = document.getElementById('salRegime').value;
+
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('salWords');
+        if(el) el.textContent = convertNumberToIndianWords(ctc);
+    }
+
+    if(ctc <= 0) return;
+
+    const grossAnnual = ctc - bonus;
+    const grossMonthly = grossAnnual / 12;
+
+    // Basic is approx 40% of CTC
+    const basicMonthly = grossMonthly * 0.40;
+    // Employee PF = 12% of Basic (capped at 1800 or actual)
+    const pfMonthly = Math.min(basicMonthly * 0.12, 15000 * 0.12);
+    const annualPf = pfMonthly * 12;
+
+    // Tax estimation
+    const stdDeduction = regime === 'new' ? 75000 : 50000;
+    let taxable = Math.max(0, grossAnnual - stdDeduction - (regime === 'old' ? annualPf : 0));
+    let annualTax = 0;
+
+    if(regime === 'new') {
+        // New Slabs FY 2024-25 / 2025-26: 0-3L 0%, 3-7L 5%, 7-10L 10%, 10-12L 15%, 12-15L 20%, >15L 30%
+        if(taxable <= 700000) {
+            annualTax = 0; // 87A rebate
+        } else {
+            if(taxable > 300000) annualTax += Math.min(taxable - 300000, 400000) * 0.05;
+            if(taxable > 700000) annualTax += Math.min(taxable - 700000, 300000) * 0.10;
+            if(taxable > 1000000) annualTax += Math.min(taxable - 1000000, 200000) * 0.15;
+            if(taxable > 1200000) annualTax += Math.min(taxable - 1200000, 300000) * 0.20;
+            if(taxable > 1500000) annualTax += (taxable - 1500000) * 0.30;
+        }
+    } else {
+        if(taxable <= 500000) {
+            annualTax = 0;
+        } else {
+            if(taxable > 250000) annualTax += Math.min(taxable - 250000, 250000) * 0.05;
+            if(taxable > 500000) annualTax += Math.min(taxable - 500000, 500000) * 0.20;
+            if(taxable > 1000000) annualTax += (taxable - 1000000) * 0.30;
+        }
+    }
+    annualTax *= 1.04; // 4% cess
+
+    const monthlyTds = annualTax / 12;
+    const monthlyInHand = Math.max(0, grossMonthly - pfMonthly - ptMonthly - monthlyTds);
+    const annualInHand = monthlyInHand * 12;
+
+    document.getElementById('salInHand').textContent = fmt(monthlyInHand);
+    document.getElementById('rGrossMonthly').textContent = fmt(grossMonthly) + ' / mo';
+    document.getElementById('rPfDeduct').textContent = '-' + fmt(pfMonthly) + ' / mo';
+    document.getElementById('rTdsDeduct').textContent = '-' + fmt(monthlyTds) + ' / mo';
+    document.getElementById('rPtDeduct').textContent = '-' + fmt(ptMonthly) + ' / mo';
+    document.getElementById('rAnnualInHand').textContent = fmt(annualInHand) + ' / yr';
+
+    window._lastSal = { ctc, monthlyInHand, annualInHand, monthlyTds, pfMonthly };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('salBtnSave').addEventListener('click', () => {
+        const d = window._lastSal; if(!d) return;
+        const name = prompt('Save as:', `Take Home ${fmt(d.monthlyInHand)}/mo`);
+        if(name) saveCalculation(name, { CTC: fmt(d.ctc), InHandMonthly: fmt(d.monthlyInHand), AnnualInHand: fmt(d.annualInHand) });
+    });
+    document.getElementById('salBtnShare').addEventListener('click', () => {
+        const d = window._lastSal; if(!d) return;
+        shareViaWhatsApp('In-Hand Salary Calculator', `Annual CTC: ${fmt(d.ctc)}\nMonthly In-Hand Salary: ${fmt(d.monthlyInHand)}/mo\nAnnual Take-Home: ${fmt(d.annualInHand)}`);
+    });
+    document.getElementById('salBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

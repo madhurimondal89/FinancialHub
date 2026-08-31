@@ -81,6 +81,14 @@
         </div>
 <%- include('partials/ad_unit') %>
     </div>
+
+    <!-- Save & Share Toolbar -->
+    <div class="action-toolbar" id="gstToolbar" style="display:none;">
+        <span class="toolbar-label">Tools:</span>
+        <button type="button" class="btn-action-tool" id="gstBtnSave">💾 Save Calculation</button>
+        <button type="button" class="btn-action-tool btn-whatsapp" id="gstBtnShare">💬 Share on WhatsApp</button>
+        <button type="button" class="btn-action-tool" id="gstBtnCopy">🔗 Copy Link</button>
+    </div>
 </div>
 
 <!-- JavaScript (এই অংশটি ঠিক আছে) -->
@@ -97,8 +105,9 @@
         const formatCurrency = (num) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
         function calculateAndDisplay() {
             const isAddMode = gstTypeAdd.checked; const amount = parseFloat(amountInput.value); const gstRate = parseFloat(gstRateInput.value);
-            if (isNaN(amount) || isNaN(gstRate) || amount <= 0 || gstRate < 0) { initialState.style.display = 'flex'; resultsState.style.display = 'none'; return; }
+            if (isNaN(amount) || isNaN(gstRate) || amount <= 0 || gstRate < 0) { initialState.style.display = 'flex'; resultsState.style.display = 'none'; document.getElementById('gstToolbar').style.display = 'none'; return; }
             initialState.style.display = 'none'; resultsState.style.display = 'block';
+            document.getElementById('gstToolbar').style.display = 'flex';
             let baseAmount, gstAmount, finalAmount;
             if (isAddMode) {
                 baseAmount = amount; gstAmount = baseAmount * (gstRate / 100); finalAmount = baseAmount + gstAmount;
@@ -111,6 +120,7 @@
             baseAmountValue.textContent = formatCurrency(baseAmount); cgstRate.textContent = halfGstRate; sgstRate.textContent = halfGstRate;
             cgstValue.textContent = formatCurrency(halfGstAmount); sgstValue.textContent = formatCurrency(halfGstAmount);
             totalGstValue.textContent = formatCurrency(gstAmount); finalAmountValue.textContent = formatCurrency(finalAmount);
+            window._lastGst = { amount, gstRate, baseAmount, gstAmount, finalAmount };
         }
         function updateGstType() { amountLabel.textContent = gstTypeAdd.checked ? 'Amount (without GST)' : 'Amount (including GST)'; calculateAndDisplay(); }
         gstRateButtons.forEach(button => {
@@ -122,6 +132,17 @@
         gstRateInput.addEventListener('input', () => { gstRateButtons.forEach(btn => { if(btn.dataset.rate === gstRateInput.value) { btn.classList.add('active'); } else { btn.classList.remove('active'); } }); });
         allControls.forEach(control => { control.addEventListener('input', calculateAndDisplay); control.addEventListener('change', calculateAndDisplay); });
         gstTypeAdd.addEventListener('change', updateGstType); gstTypeRemove.addEventListener('change', updateGstType);
+
+        document.getElementById('gstBtnSave').addEventListener('click', () => {
+            const d = window._lastGst; if (!d) return;
+            const name = prompt('Save this GST calculation as:', `GST ${d.gstRate}% on ${formatCurrency(d.amount)}`);
+            if (name) saveCalculation(name, { amount: formatCurrency(d.amount), gstRate: d.gstRate + '%', totalGST: formatCurrency(d.gstAmount), finalAmount: formatCurrency(d.finalAmount) });
+        });
+        document.getElementById('gstBtnShare').addEventListener('click', () => {
+            const d = window._lastGst; if (!d) return;
+            shareViaWhatsApp('GST Calculator Result', `Amount: ${formatCurrency(d.amount)}\nGST Rate: ${d.gstRate}%\nTotal GST: ${formatCurrency(d.gstAmount)}\nFinal: ${formatCurrency(d.finalAmount)}`);
+        });
+        document.getElementById('gstBtnCopy').addEventListener('click', copyShareableURL);
         calculateAndDisplay();
     });
 </script>

@@ -49,6 +49,13 @@
     </div>
 <%- include('partials/ad_unit') %>
 </div>
+<!-- Save & Share Toolbar -->
+<div class="action-toolbar" id="cagrToolbar" style="display:none;">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="cagrBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="cagrBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="cagrBtnCopy">🔗 Copy Link</button>
+</div>
 <script>
 const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
 function calculate() {
@@ -61,6 +68,7 @@ function calculate() {
     const absReturn = ((fv-iv)/iv)*100;
     document.getElementById('initialState').style.display='none';
     document.getElementById('resultsState').style.display='block';
+    document.getElementById('cagrToolbar').style.display='flex';
     document.getElementById('cagrResult').textContent = cagr.toFixed(2)+'%';
     document.getElementById('r1').textContent = fmt(iv);
     document.getElementById('r2').textContent = fmt(fv);
@@ -68,6 +76,19 @@ function calculate() {
     document.getElementById('r4').textContent = absReturn.toFixed(2)+'%';
     document.getElementById('r5').textContent = yr+' Years';
     document.getElementById('r6').textContent = cagr.toFixed(2)+'%';
+    window._lastCagr = { iv, fv, yr, cagr, gain, absReturn };
 }
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('cagrBtnSave').addEventListener('click', () => {
+        const d = window._lastCagr; if(!d) return;
+        const name = prompt('Save as:', `CAGR ${d.cagr.toFixed(2)}% (${d.yr}Y)`);
+        if(name) saveCalculation(name, { initial: fmt(d.iv), final: fmt(d.fv), period: d.yr+' Years', CAGR: d.cagr.toFixed(2)+'%' });
+    });
+    document.getElementById('cagrBtnShare').addEventListener('click', () => {
+        const d = window._lastCagr; if(!d) return;
+        shareViaWhatsApp('CAGR Calculator', `Initial: ${fmt(d.iv)}\nFinal: ${fmt(d.fv)}\nPeriod: ${d.yr} Years\nCAGR: ${d.cagr.toFixed(2)}%\nAbsolute Return: ${d.absReturn.toFixed(2)}%`);
+    });
+    document.getElementById('cagrBtnCopy').addEventListener('click', copyShareableURL);
+});
 </script>
 <%- include('partials/footer') %>

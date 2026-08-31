@@ -1,0 +1,104 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">💳 Personal Loan EMI Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate monthly EMI, processing fees & total interest for instant personal loans</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <label class="form-label">Personal Loan Amount (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="plAmount" value="300000" step="10000" oninput="calculate()"></div>
+                <div id="plWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Interest Rate (% p.a.)</label>
+                <div class="input-group"><input type="number" class="form-control" id="plRate" value="13.5" step="0.25" oninput="calculate()"><span class="input-group-text">% p.a.</span></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Tenure (Years)</label>
+                <div class="input-group"><input type="number" class="form-control" id="plTenure" value="3" step="1" min="1" max="7" oninput="calculate()"><span class="input-group-text">Years</span></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Processing Fee (% + 18% GST)</label>
+                <div class="input-group"><input type="number" class="form-control" id="plFeePct" value="2.0" step="0.5" oninput="calculate()"><span class="input-group-text">%</span></div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Monthly EMI</p><p class="amount" id="plEmi">₹10,183</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Principal Loan Amount</div><div class="value" id="rPrincipal">₹3,00,000</div></div>
+                    <div class="summary-item"><div class="label">Total Interest Payable</div><div class="value" style="color:var(--accent-red);" id="rInterest">₹66,588</div></div>
+                    <div class="summary-item"><div class="label">Processing Fee + GST</div><div class="value" id="rProcFee">₹7,080</div></div>
+                    <div class="summary-item"><div class="label">Total Cost of Loan</div><div class="value" style="color:var(--gold);" id="rTotalCost">₹3,73,668</div></div>
+                    <div class="summary-item"><div class="label">Net Loan Disbursed</div><div class="value" id="rDisbursed">₹2,92,920</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/emi-calculator" class="related-card"><span class="icon">🏠</span><div class="title">Loan EMI</div><div class="desc">Standard EMI calculation</div></a></div>
+            <div class="col-md-4"><a href="/car-loan-calculator" class="related-card"><span class="icon">🚗</span><div class="title">Car Loan EMI</div><div class="desc">Vehicle loan planner</div></a></div>
+            <div class="col-md-4"><a href="/credit-card-emi" class="related-card"><span class="icon">⚡</span><div class="title">Loan Prepayment</div><div class="desc">Save high interest</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="plToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="plBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="plBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="plBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const P = parseFloat(document.getElementById('plAmount').value)||0;
+    const rateAnnual = (parseFloat(document.getElementById('plRate').value)||0) / 100;
+    const tenureYrs = parseFloat(document.getElementById('plTenure').value)||0;
+    const feePct = (parseFloat(document.getElementById('plFeePct').value)||0) / 100;
+
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('plWords');
+        if(el) el.textContent = convertNumberToIndianWords(P);
+    }
+
+    if(P <= 0 || tenureYrs <= 0 || rateAnnual <= 0) return;
+
+    const r = rateAnnual / 12;
+    const n = tenureYrs * 12;
+    // Standard EMI formula = P * r * (1+r)^n / ((1+r)^n - 1)
+    const emi = (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+    const totalPayment = emi * n;
+    const totalInterest = totalPayment - P;
+    const procFeeBase = P * feePct;
+    const procFeeGst = procFeeBase * 1.18; // 18% GST
+    const totalCost = totalPayment + procFeeGst;
+    const netDisbursed = P - procFeeGst;
+
+    document.getElementById('plEmi').textContent = fmt(emi);
+    document.getElementById('rPrincipal').textContent = fmt(P);
+    document.getElementById('rInterest').textContent = fmt(totalInterest);
+    document.getElementById('rProcFee').textContent = fmt(procFeeGst) + ' (incl 18% GST)';
+    document.getElementById('rTotalCost').textContent = fmt(totalCost);
+    document.getElementById('rDisbursed').textContent = fmt(netDisbursed);
+
+    window._lastPL = { P, rateAnnual: rateAnnual*100, tenureYrs, emi, totalInterest, totalCost };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('plBtnSave').addEventListener('click', () => {
+        const d = window._lastPL; if(!d) return;
+        const name = prompt('Save as:', `Personal Loan ${fmt(d.P)} (${d.tenureYrs}Y)`);
+        if(name) saveCalculation(name, { Loan: fmt(d.P), EMI: fmt(d.emi)+'/mo', Interest: fmt(d.totalInterest), TotalCost: fmt(d.totalCost) });
+    });
+    document.getElementById('plBtnShare').addEventListener('click', () => {
+        const d = window._lastPL; if(!d) return;
+        shareViaWhatsApp('Personal Loan EMI Calculator', `Loan: ${fmt(d.P)}\nTenure: ${d.tenureYrs} Years\nMonthly EMI: ${fmt(d.emi)}\nTotal Interest: ${fmt(d.totalInterest)}`);
+    });
+    document.getElementById('plBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

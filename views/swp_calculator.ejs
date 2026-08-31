@@ -1,0 +1,115 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">💸 SWP Calculator (Systematic Withdrawal Plan)</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Generate steady monthly pension & income from your mutual fund investments</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <label class="form-label">Total Initial Corpus (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="swpCorpus" value="2500000" step="50000" oninput="calculate()"></div>
+                <div id="swpWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Monthly Withdrawal Amount (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="swpWithdrawal" value="18000" step="1000" oninput="calculate()"></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Expected Annual Return Rate (%)</label>
+                <div class="input-group"><input type="number" class="form-control" id="swpRate" value="8.5" step="0.5" oninput="calculate()"><span class="input-group-text">% p.a.</span></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Duration (Years)</label>
+                <div class="input-group"><input type="number" class="form-control" id="swpYears" value="15" step="1" min="1" max="40" oninput="calculate()"><span class="input-group-text">Years</span></div>
+            </div>
+            <div class="highlight-box">
+                <h4>🛡️ SWP vs Fixed Deposit Interest</h4>
+                <p>SWP is highly tax-efficient compared to bank FD interest because only the capital gain portion of each withdrawal is taxed, not the entire payout!</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Total Withdrawn Cash</p><p class="amount" id="swpTotalWithdrawn">₹32,40,000</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Initial Corpus</div><div class="value" id="rCorpus">₹25,00,000</div></div>
+                    <div class="summary-item"><div class="label">Total Monthly Payouts</div><div class="value" style="color:var(--accent-green);" id="rPayouts">₹32,40,000</div></div>
+                    <div class="summary-item"><div class="label">Final Remaining Balance</div><div class="value" style="color:var(--gold);" id="rBalance">₹16,84,320</div></div>
+                    <div class="summary-item"><div class="label">Total Value (Payouts + Balance)</div><div class="value" id="rTotalCreated">₹49,24,320</div></div>
+                    <div class="summary-item"><div class="label">Monthly Cash Flow</div><div class="value" id="rMonthly">₹18,000 / month</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/retirement-calculator" class="related-card"><span class="icon">🎯</span><div class="title">Retirement Planner</div><div class="desc">Build retirement corpus</div></a></div>
+            <div class="col-md-4"><a href="/sip-calculator" class="related-card"><span class="icon">📊</span><div class="title">SIP Calculator</div><div class="desc">Accumulation phase</div></a></div>
+            <div class="col-md-4"><a href="/pomis-calculator" class="related-card"><span class="icon">📬</span><div class="title">POMIS Calculator</div><div class="desc">Post office monthly income</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="swpToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="swpBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="swpBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="swpBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    let balance = parseFloat(document.getElementById('swpCorpus').value)||0;
+    const initialCorpus = balance;
+    const monthlyW = parseFloat(document.getElementById('swpWithdrawal').value)||0;
+    const rateAnnual = (parseFloat(document.getElementById('swpRate').value)||0) / 100;
+    const rMonthly = rateAnnual / 12;
+    const years = parseFloat(document.getElementById('swpYears').value)||0;
+    const totalMonths = years * 12;
+
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('swpWords');
+        if(el) el.textContent = convertNumberToIndianWords(initialCorpus);
+    }
+
+    if(initialCorpus <= 0 || monthlyW <= 0 || totalMonths <= 0) return;
+
+    let totalWithdrawn = 0;
+    for(let m = 1; m <= totalMonths; m++) {
+        balance = balance * (1 + rMonthly);
+        if(balance >= monthlyW) {
+            balance -= monthlyW;
+            totalWithdrawn += monthlyW;
+        } else {
+            totalWithdrawn += balance;
+            balance = 0;
+            break;
+        }
+    }
+
+    const totalCreated = totalWithdrawn + balance;
+
+    document.getElementById('swpTotalWithdrawn').textContent = fmt(totalWithdrawn);
+    document.getElementById('rCorpus').textContent = fmt(initialCorpus);
+    document.getElementById('rPayouts').textContent = fmt(totalWithdrawn);
+    document.getElementById('rBalance').textContent = fmt(balance);
+    document.getElementById('rTotalCreated').textContent = fmt(totalCreated);
+    document.getElementById('rMonthly').textContent = fmt(monthlyW) + ' / month';
+
+    window._lastSWP = { initialCorpus, monthlyW, years, totalWithdrawn, balance, totalCreated };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('swpBtnSave').addEventListener('click', () => {
+        const d = window._lastSWP; if(!d) return;
+        const name = prompt('Save as:', `SWP ${fmt(d.monthlyW)}/mo (${d.years}Y)`);
+        if(name) saveCalculation(name, { Corpus: fmt(d.initialCorpus), MonthlyPayout: fmt(d.monthlyW), TotalWithdrawn: fmt(d.totalWithdrawn), FinalBalance: fmt(d.balance) });
+    });
+    document.getElementById('swpBtnShare').addEventListener('click', () => {
+        const d = window._lastSWP; if(!d) return;
+        shareViaWhatsApp('SWP Calculator', `Corpus: ${fmt(d.initialCorpus)}\nMonthly Payout: ${fmt(d.monthlyW)}\nDuration: ${d.years} Years\nTotal Withdrawn: ${fmt(d.totalWithdrawn)}\nRemaining Balance: ${fmt(d.balance)}`);
+    });
+    document.getElementById('swpBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

@@ -1,0 +1,132 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">📉 Capital Gains Tax Calculator (LTCG & STCG)</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Budget 2024 revised rates: 12.5% LTCG (>₹1.25L exemption) & 20% STCG on equity, mutual funds & real estate</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-3">
+                <label class="form-label">Asset Class</label>
+                <select class="form-select" id="cgAsset" onchange="calculate()">
+                    <option value="equity" selected>Listed Stocks / Equity Mutual Funds</option>
+                    <option value="debt">Debt Mutual Funds / Gold ETF / Unlisted</option>
+                    <option value="realestate">Real Estate / Property (12.5% without indexation)</option>
+                </select>
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label class="form-label">Purchase Price (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="cgBuyPrice" value="500000" step="25000" oninput="calculate()"></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Sale Price (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="cgSellPrice" value="850000" step="25000" oninput="calculate()"></div>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Holding Period (Months)</label>
+                <div class="input-group"><input type="number" class="form-control" id="cgMonths" value="24" step="1" min="1" max="360" oninput="calculate()"><span class="input-group-text">Months</span></div>
+            </div>
+            <div class="highlight-box">
+                <h4>📜 Budget 2024 Revised Tax Rules</h4>
+                <p>• <strong>Equity LTCG:</strong> 12.5% on gains above ₹1.25 Lakh exemption.<br>• <strong>Equity STCG:</strong> 20% (holding ≤ 12 months).<br>• 4% Health & Education cess applies.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Total Capital Gains Tax</p><p class="amount" id="cgTotalTax" style="color:var(--accent-red);">₹29,250</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Total Capital Gain / Profit</div><div class="value" style="color:var(--accent-green);" id="rNetGain">+₹3,50,000</div></div>
+                    <div class="summary-item"><div class="label">Gain Classification</div><div class="value" style="color:var(--gold);" id="rGainType">LTCG (Long-Term)</div></div>
+                    <div class="summary-item"><div class="label">Exemption Allowed (Sec 112A)</div><div class="value" id="rExemption">-₹1,25,000</div></div>
+                    <div class="summary-item"><div class="label">Taxable Capital Gain</div><div class="value" id="rTaxableGain">₹2,25,000</div></div>
+                    <div class="summary-item"><div class="label">Net Post-Tax Profit</div><div class="value" style="color:var(--gold);" id="rPostTaxProfit">₹3,20,750</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/stock-profit-calculator" class="related-card"><span class="icon">📊</span><div class="title">Stock Profit</div><div class="desc">Brokerage & STT fees</div></a></div>
+            <div class="col-md-4"><a href="/income-tax-calculator" class="related-card"><span class="icon">🧾</span><div class="title">Income Tax</div><div class="desc">Tax slab computation</div></a></div>
+            <div class="col-md-4"><a href="/crypto-tax-calculator" class="related-card"><span class="icon">🪙</span><div class="title">Crypto Tax</div><div class="desc">30% Flat VDA tax</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="cgToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="cgBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="cgBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="cgBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const buy = parseFloat(document.getElementById('cgBuyPrice').value)||0;
+    const sell = parseFloat(document.getElementById('cgSellPrice').value)||0;
+    const months = parseFloat(document.getElementById('cgMonths').value)||0;
+    const asset = document.getElementById('cgAsset').value;
+
+    if(buy <= 0 || sell <= 0) return;
+
+    const gain = Math.max(0, sell - buy);
+    let isLongTerm = false;
+    let taxRate = 0;
+    let exemption = 0;
+    let gainType = '';
+
+    if(asset === 'equity') {
+        isLongTerm = months > 12;
+        if(isLongTerm) {
+            gainType = 'LTCG (Long-Term >12 Mo)';
+            exemption = Math.min(gain, 125000); // ₹1.25L exemption
+            taxRate = 0.125; // 12.5%
+        } else {
+            gainType = 'STCG (Short-Term ≤12 Mo)';
+            exemption = 0;
+            taxRate = 0.20; // 20%
+        }
+    } else if(asset === 'realestate') {
+        isLongTerm = months > 24;
+        gainType = isLongTerm ? 'LTCG Real Estate (12.5%)' : 'STCG Real Estate (Slab Rate)';
+        exemption = 0;
+        taxRate = isLongTerm ? 0.125 : 0.30;
+    } else {
+        // Debt / Gold / Others
+        isLongTerm = months > 24;
+        gainType = isLongTerm ? 'LTCG (12.5%)' : 'STCG (Slab Rate 30%)';
+        exemption = 0;
+        taxRate = isLongTerm ? 0.125 : 0.30;
+    }
+
+    const taxableGain = Math.max(0, gain - exemption);
+    const taxBase = taxableGain * taxRate;
+    const totalTax = taxBase * 1.04; // 4% cess
+    const postTaxProfit = gain - totalTax;
+
+    document.getElementById('cgTotalTax').textContent = fmt(totalTax);
+    document.getElementById('rNetGain').textContent = '+' + fmt(gain);
+    document.getElementById('rGainType').textContent = gainType;
+    document.getElementById('rExemption').textContent = exemption > 0 ? '-' + fmt(exemption) : '₹0';
+    document.getElementById('rTaxableGain').textContent = fmt(taxableGain);
+    document.getElementById('rPostTaxProfit').textContent = fmt(postTaxProfit);
+
+    window._lastCG = { buy, sell, gain, totalTax, postTaxProfit, gainType };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('cgBtnSave').addEventListener('click', () => {
+        const d = window._lastCG; if(!d) return;
+        const name = prompt('Save as:', `Capital Gains Tax ${fmt(d.totalTax)}`);
+        if(name) saveCalculation(name, { Gain: fmt(d.gain), Type: d.gainType, TaxPayable: fmt(d.totalTax), NetProfit: fmt(d.postTaxProfit) });
+    });
+    document.getElementById('cgBtnShare').addEventListener('click', () => {
+        const d = window._lastCG; if(!d) return;
+        shareViaWhatsApp('Capital Gains Tax Calculator', `Gain: ${fmt(d.gain)}\nType: ${d.gainType}\nTax Payable (Budget 2024): ${fmt(d.totalTax)}\nNet Post-Tax Profit: ${fmt(d.postTaxProfit)}`);
+    });
+    document.getElementById('cgBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

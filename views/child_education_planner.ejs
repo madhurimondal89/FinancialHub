@@ -1,0 +1,117 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">🎒 Child Education & Marriage Planner</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate future cost of college & marriage considering 10% education inflation and required monthly SIP</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <label class="form-label">Current Cost of Education / Goal Today (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="ceCostToday" value="2000000" step="100000" oninput="calculate()"></div>
+                <div id="ceWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <label class="form-label">Child's Current Age (Yrs)</label>
+                    <div class="input-group"><input type="number" class="form-control" id="ceChildAge" value="3" step="1" min="0" max="17" oninput="calculate()"><span class="input-group-text">Yrs</span></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Target Goal Age (Yrs)</label>
+                    <div class="input-group"><input type="number" class="form-control" id="ceTargetAge" value="18" step="1" min="10" max="30" oninput="calculate()"><span class="input-group-text">Yrs</span></div>
+                </div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <label class="form-label">Education Inflation (%)</label>
+                    <div class="input-group"><input type="number" class="form-control" id="ceInflation" value="10.0" step="0.5" oninput="calculate()"><span class="input-group-text">%</span></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Expected SIP Return (%)</label>
+                    <div class="input-group"><input type="number" class="form-control" id="ceSipReturn" value="13.0" step="0.5" oninput="calculate()"><span class="input-group-text">%</span></div>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <h4>🎓 Education Inflation Warning</h4>
+                <p>Higher education costs in India and abroad inflate at <strong>10% to 12% annually</strong>, double the rate of general consumer inflation.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Monthly SIP Needed</p><p class="amount" id="ceMonthlySip" style="color:var(--accent-green);">₹16,854 / mo</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Future Cost of College at Age 18</div><div class="value" style="color:var(--gold);" id="rFutureCost">₹83,54,496</div></div>
+                    <div class="summary-item"><div class="label">Years Remaining to Save</div><div class="value" id="rYearsLeft">15 Years</div></div>
+                    <div class="summary-item"><div class="label">Total Amount You Will Invest</div><div class="value" id="rTotalInvest">₹30,33,720</div></div>
+                    <div class="summary-item"><div class="label">Compounded Wealth Created</div><div class="value" style="color:var(--accent-green);" id="rGainCreated">+₹53,20,776</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/sip-calculator" class="related-card"><span class="icon">📊</span><div class="title">SIP Calculator</div><div class="desc">Mutual fund growth</div></a></div>
+            <div class="col-md-4"><a href="/ssy-calculator" class="related-card"><span class="icon">👧</span><div class="title">Sukanya Samriddhi (SSY)</div><div class="desc">Girl child scheme</div></a></div>
+            <div class="col-md-4"><a href="/inflation-calculator" class="related-card"><span class="icon">🔥</span><div class="title">Inflation Calculator</div><div class="desc">Purchasing power</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="ceToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="ceBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="ceBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="ceBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const costToday = parseFloat(document.getElementById('ceCostToday').value)||0;
+    const childAge = parseInt(document.getElementById('ceChildAge').value)||0;
+    const targetAge = parseInt(document.getElementById('ceTargetAge').value)||18;
+    const inflRate = (parseFloat(document.getElementById('ceInflation').value)||10) / 100;
+    const returnRate = (parseFloat(document.getElementById('ceSipReturn').value)||12) / 100;
+
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('ceWords');
+        if(el) el.textContent = convertNumberToIndianWords(costToday);
+    }
+
+    const years = Math.max(1, targetAge - childAge);
+    if(costToday <= 0 || years <= 0) return;
+
+    // Future Cost = CostToday * (1 + inf)^years
+    const futureCost = costToday * Math.pow(1 + inflRate, years);
+
+    // SIP Formula to reach FutureCost: P = FutureCost / [ ((1+r)^n - 1)/r * (1+r) ]
+    const n = years * 12;
+    const r = returnRate / 12;
+    const sipFactor = ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
+    const monthlySip = futureCost / sipFactor;
+
+    const totalInvest = monthlySip * n;
+    const gain = futureCost - totalInvest;
+
+    document.getElementById('ceMonthlySip').textContent = fmt(monthlySip) + ' / mo';
+    document.getElementById('rFutureCost').textContent = fmt(futureCost);
+    document.getElementById('rYearsLeft').textContent = years + ' Years (Age ' + childAge + ' ➔ ' + targetAge + ')';
+    document.getElementById('rTotalInvest').textContent = fmt(totalInvest);
+    document.getElementById('rGainCreated').textContent = '+' + fmt(gain);
+
+    window._lastCE = { costToday, futureCost, years, monthlySip, totalInvest };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('ceBtnSave').addEventListener('click', () => {
+        const d = window._lastCE; if(!d) return;
+        const name = prompt('Save as:', `Education SIP ${fmt(d.monthlySip)}/mo`);
+        if(name) saveCalculation(name, { FutureCost: fmt(d.futureCost), YearsLeft: d.years+' Yrs', MonthlySIP: fmt(d.monthlySip)+'/mo' });
+    });
+    document.getElementById('ceBtnShare').addEventListener('click', () => {
+        const d = window._lastCE; if(!d) return;
+        shareViaWhatsApp('Child Education Planner', `Cost Today: ${fmt(d.costToday)}\nYears to Goal: ${d.years} Years\nFuture Cost of College: ${fmt(d.futureCost)}\nRequired Monthly SIP: ${fmt(d.monthlySip)}/mo`);
+    });
+    document.getElementById('ceBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

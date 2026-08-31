@@ -48,6 +48,14 @@
     </div>
 <%- include('partials/ad_unit') %>
 </div>
+
+<!-- Save & Share Toolbar -->
+<div class="action-toolbar" id="carToolbar" style="display:none;">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="carBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="carBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="carBtnCopy">🔗 Copy Link</button>
+</div>
 <script>
 const fmt=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
 let carChart=null;
@@ -69,10 +77,24 @@ function calc(){
     document.getElementById('r3').textContent=fmt(loan);
     document.getElementById('r4').textContent=fmt(interest);
     document.getElementById('r5').textContent=fmt(down+total);
+    document.getElementById('carToolbar').style.display='flex';
+    window._lastCar={price,down,loan,emi,interest,n};
     const ctx=document.getElementById('carChart').getContext('2d');
     if(carChart)carChart.destroy();
-    carChart=new Chart(ctx,{type:'doughnut',data:{labels:['Principal','Interest'],datasets:[{data:[loan,interest],backgroundColor:['#334155','#f59e0b'],borderWidth:0,hoverOffset:8}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:13}}}},cutout:'65%'}});
+    carChart=new Chart(ctx,{type:'doughnut',data:{labels:['Principal','Interest'],datasets:[{data:[loan,interest],backgroundColor:['#334155','#22d3ee'],borderWidth:0,hoverOffset:8}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8',font:{size:13}}}},cutout:'65%'}});
 }
 calc();
+document.addEventListener('DOMContentLoaded',function(){
+    document.getElementById('carBtnSave').addEventListener('click',function(){
+        const d=window._lastCar; if(!d)return;
+        const name=prompt('Save this Car Loan calculation as:','Car EMI: '+fmt(d.emi)+'/mo');
+        if(name) saveCalculation(name,{price:fmt(d.price),downPayment:fmt(d.down),loanAmount:fmt(d.loan),emi:fmt(d.emi)+'/mo',totalInterest:fmt(d.interest),months:d.n});
+    });
+    document.getElementById('carBtnShare').addEventListener('click',function(){
+        const d=window._lastCar; if(!d)return;
+        shareViaWhatsApp('Car Loan EMI Calculator','Car Price: '+fmt(d.price)+'\nDown Payment: '+fmt(d.down)+'\nLoan Amount: '+fmt(d.loan)+'\nEMI: '+fmt(d.emi)+'/month\nTotal Interest: '+fmt(d.interest));
+    });
+    document.getElementById('carBtnCopy').addEventListener('click',copyShareableURL);
+});
 </script>
 <%- include('partials/footer') %>

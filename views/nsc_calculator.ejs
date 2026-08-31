@@ -1,0 +1,96 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">📜 National Savings Certificate (NSC) Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate 7.7% p.a. 5-year post office maturity & Section 80C tax deduction benefits</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <label class="form-label">Total Investment Amount (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="nscDeposit" value="100000" step="5000" min="1000" oninput="calculate()"></div>
+                <div id="nscWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Govt Interest Rate (% p.a.)</label>
+                <div class="input-group"><input type="number" class="form-control" id="nscRate" value="7.7" step="0.1" readonly><span class="input-group-text">% p.a. (Annual Compounding)</span></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Lock-in Tenure</label>
+                <div class="input-group"><input type="number" class="form-control" value="5" readonly><span class="input-group-text">Years (Fixed 60 Months)</span></div>
+            </div>
+            <div class="highlight-box">
+                <h4>📜 Section 80C Tax Advantage</h4>
+                <p>Initial deposit and accrued interest for the first 4 years are eligible for <strong>Section 80C deduction</strong> (deemed reinvested).</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Total Maturity Amount (5 Years)</p><p class="amount" id="nscMaturity" style="color:var(--accent-green);">₹1,44,903</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Principal Invested</div><div class="value" id="rDeposit">₹1,00,000</div></div>
+                    <div class="summary-item"><div class="label">Total Interest Earned</div><div class="value" style="color:var(--gold);" id="rTotalInterest">+₹44,903</div></div>
+                    <div class="summary-item"><div class="label">Total Return on Investment</div><div class="value" id="rRoi">44.90%</div></div>
+                    <div class="summary-item"><div class="label">Section 80C Tax Savings (30% Slab)</div><div class="value" style="color:var(--accent-green);" id="rTaxSave">~₹30,000</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/ppf-calculator" class="related-card"><span class="icon">🏛️</span><div class="title">PPF Calculator</div><div class="desc">15-year 100% tax-free</div></a></div>
+            <div class="col-md-4"><a href="/kvp-calculator" class="related-card"><span class="icon">🌾</span><div class="title">KVP Calculator</div><div class="desc">Double money scheme</div></a></div>
+            <div class="col-md-4"><a href="/fd-calculator" class="related-card"><span class="icon">🏦</span><div class="title">FD Calculator</div><div class="desc">Bank fixed deposits</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="nscToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="nscBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="nscBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="nscBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const P = parseFloat(document.getElementById('nscDeposit').value)||0;
+    const rateAnnual = 0.077; // 7.7%
+
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('nscWords');
+        if(el) el.textContent = convertNumberToIndianWords(P);
+    }
+
+    if(P <= 0) return;
+
+    // NSC: 5 years, annual compounding
+    // A = P * (1 + r)^5
+    const maturity = P * Math.pow(1 + rateAnnual, 5);
+    const totalInterest = maturity - P;
+    const roi = (totalInterest / P) * 100;
+    const taxSave = Math.min(P, 150000) * 0.30;
+
+    document.getElementById('nscMaturity').textContent = fmt(maturity);
+    document.getElementById('rDeposit').textContent = fmt(P);
+    document.getElementById('rTotalInterest').textContent = '+' + fmt(totalInterest);
+    document.getElementById('rRoi').textContent = roi.toFixed(2) + '%';
+    document.getElementById('rTaxSave').textContent = '~' + fmt(taxSave);
+
+    window._lastNSC = { P, totalInterest, maturity, roi };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('nscBtnSave').addEventListener('click', () => {
+        const d = window._lastNSC; if(!d) return;
+        const name = prompt('Save as:', `NSC Deposit ${fmt(d.P)}`);
+        if(name) saveCalculation(name, { Deposit: fmt(d.P), TotalInterest: fmt(d.totalInterest), Maturity: fmt(d.maturity) });
+    });
+    document.getElementById('nscBtnShare').addEventListener('click', () => {
+        const d = window._lastNSC; if(!d) return;
+        shareViaWhatsApp('NSC Calculator', `Deposit: ${fmt(d.P)}\nRate: 7.7% p.a.\n5-Year Interest: ${fmt(d.totalInterest)}\nMaturity Value: ${fmt(d.maturity)}`);
+    });
+    document.getElementById('nscBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

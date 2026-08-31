@@ -1,296 +1,588 @@
 <%- include('partials/header') %>
 
-<!-- ===== HERO SECTION ===== -->
-<div class="hero-section fade-in-up">
-    <h1>Your <span>Financial Hub</span><br>— All Calculators, Free.</h1>
-    <p>Make smarter money decisions with our free, interactive financial calculators — built for Indian investors, savers, and earners.</p>
+<div class="main-homepage-wrapper">
 
-    <div class="hero-stats">
-        <div class="hero-stat">
-            <span class="stat-number">21</span>
-            <span class="stat-label">Calculators</span>
+    <!-- ===== HERO SECTION (Clean & Modern) ===== -->
+    <section class="hero-clean-modern py-5 position-relative overflow-hidden">
+        <div class="container text-center py-2 py-md-4">
+            
+            <!-- Badge -->
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill hero-badge mb-3">
+                <span class="live-dot-pulse"></span>
+                <span class="fw-bold small text-primary">300+ Smart Financial Calculators · 100% Free & Private</span>
+            </div>
+
+            <!-- Main Heading -->
+            <h1 class="hero-main-title fw-extrabold mb-3">
+                Free Financial <span class="gradient-text">Calculators for India</span>
+            </h1>
+            
+            <!-- Subtitle -->
+            <p class="hero-main-subtitle text-muted mx-auto mb-4" style="max-width: 760px;">
+                Calculate Mutual Fund SIP growth, loan EMIs, New Tax Regime FY 2026-27 liability, in-hand salary, FD rates, and early retirement across 300+ fast, accurate tools.
+            </p>
+
+            <!-- Search Bar with Live Filter & Shortcut -->
+            <div class="hero-search-wrapper mx-auto mb-3" style="max-width: 680px;">
+                <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden border bg-body search-pill-box">
+                    <span class="input-group-text bg-transparent border-0 ps-3 ps-md-4 text-primary">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </span>
+                    <input type="text" 
+                           id="globalCalcSearchInput" 
+                           class="form-control border-0 py-3 ps-2 shadow-none" 
+                           placeholder="Search 300+ calculators (e.g. SIP, Home Loan, 44ADA, FD, HRA)..." 
+                           autocomplete="off">
+                    <span class="input-group-text bg-transparent border-0 pe-3 pe-md-4 d-none d-sm-flex align-items-center">
+                        <kbd class="kbd-badge shadow-2xs">Ctrl + K</kbd>
+                    </span>
+                </div>
+            </div>
+
+            <!-- ===== LIVE CONTINUOUS MOVING MARKET TICKER (HERO SECTION) ===== -->
+            <div class="hero-live-ticker-container" id="heroLiveTicker">
+                <div class="hero-ticker-badge">
+                    <span class="pulse-circle"></span> LIVE RATES
+                </div>
+                <div class="hero-ticker-viewport">
+                    <div class="hero-ticker-track" id="heroTickerTrack">
+                        <!-- First Segment -->
+                        <div class="hero-ticker-segment">
+                            <div class="hero-ticker-item">
+                                <span class="tk-name">USD/INR</span>
+                                <span class="tk-val tk-live-usd">₹95.58</span>
+                                <span class="tk-dot">•</span>
+                            </div>
+                            <div class="hero-ticker-item">
+                                <span class="tk-name">EUR/INR</span>
+                                <span class="tk-val tk-live-eur">₹110.85</span>
+                                <span class="tk-dot">•</span>
+                            </div>
+                            <div class="hero-ticker-item">
+                                <span class="tk-name">GBP/INR</span>
+                                <span class="tk-val tk-live-gbp">₹129.47</span>
+                                <span class="tk-dot">•</span>
+                            </div>
+                            <div class="hero-ticker-item">
+                                <span class="tk-name">BTC/INR</span>
+                                <span class="tk-val tk-live-btc">₹74,86,000</span>
+                                <span class="tk-change-pos tk-live-btc-chg">-0.4%</span>
+                                <span class="tk-dot">•</span>
+                            </div>
+                            <div class="hero-ticker-item">
+                                <span class="tk-name">ETH/INR</span>
+                                <span class="tk-val tk-live-eth">₹2,35,400</span>
+                                <span class="tk-change-pos tk-live-eth-chg">-0.5%</span>
+                                <span class="tk-dot">•</span>
+                            </div>
+                            <div class="hero-ticker-item">
+                                <span class="tk-name">🥇 GOLD 24K (10g)</span>
+                                <span class="tk-val tk-live-gold">₹97,180</span>
+                                <span class="tk-dot">•</span>
+                            </div>
+                            <div class="hero-ticker-item">
+                                <span class="tk-name">🥈 SILVER (1kg)</span>
+                                <span class="tk-val tk-live-silver">₹1,14,850</span>
+                                <span class="tk-dot">•</span>
+                            </div>
+                        </div>
+
+                        <!-- Duplicate Segment for Seamless Infinite Loop -->
+                        <div class="hero-ticker-segment" aria-hidden="true">
+                            <div class="hero-ticker-item">
+                                <span class="tk-name">USD/INR</span>
+                                <span class="tk-val tk-live-usd">₹95.58</span>
+                                <span class="tk-dot">•</span>
+                            </div>
+                            <div class="hero-ticker-item">
+                                <span class="tk-name">EUR/INR</span>
+                                <span class="tk-val tk-live-eur">₹110.85</span>
+                                <span class="tk-dot">•</span>
+                            </div>
+                            <div class="hero-ticker-item">
+                                <span class="tk-name">GBP/INR</span>
+                                <span class="tk-val tk-live-gbp">₹129.47</span>
+                                <span class="tk-dot">•</span>
+                            </div>
+                            <div class="hero-ticker-item">
+                                <span class="tk-name">BTC/INR</span>
+                                <span class="tk-val tk-live-btc">₹74,86,000</span>
+                                <span class="tk-change-pos tk-live-btc-chg">-0.4%</span>
+                                <span class="tk-dot">•</span>
+                            </div>
+                            <div class="hero-ticker-item">
+                                <span class="tk-name">ETH/INR</span>
+                                <span class="tk-val tk-live-eth">₹2,35,400</span>
+                                <span class="tk-change-pos tk-live-eth-chg">-0.5%</span>
+                                <span class="tk-dot">•</span>
+                            </div>
+                            <div class="hero-ticker-item">
+                                <span class="tk-name">🥇 GOLD 24K (10g)</span>
+                                <span class="tk-val tk-live-gold">₹97,180</span>
+                                <span class="tk-dot">•</span>
+                            </div>
+                            <div class="hero-ticker-item">
+                                <span class="tk-name">🥈 SILVER (1kg)</span>
+                                <span class="tk-val tk-live-silver">₹1,14,850</span>
+                                <span class="tk-dot">•</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Suggestion Pills -->
+            <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 mb-4">
+                <span class="text-muted small fw-semibold">Popular:</span>
+                <a href="/sip-calculator" class="quick-link-pill">📊 SIP Returns</a>
+                <a href="/in-hand-salary-calculator" class="quick-link-pill">💼 In-Hand Salary</a>
+                <a href="/emi-calculator" class="quick-link-pill">🏠 Loan EMI</a>
+                <a href="/income-tax-calculator" class="quick-link-pill">🧾 Income Tax FY 26-27</a>
+                <a href="/fd-calculator" class="quick-link-pill">🏦 Bank FD Rates</a>
+                <a href="/fire-calculator" class="quick-link-pill">🏖️ FIRE Freedom</a>
+                <a href="/gold-calculator" class="quick-link-pill">🥇 Gold SGB</a>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="row g-3 justify-content-center pt-2" style="max-width: 700px; margin: 0 auto;">
+                <div class="col-4 col-sm-4 border-end">
+                    <div class="h4 fw-bold text-primary mb-0"><%= calculators.length %>+</div>
+                    <div class="small text-muted text-uppercase fw-semibold" style="font-size: 0.72rem;">Calculators</div>
+                </div>
+                <div class="col-4 col-sm-4 border-end">
+                    <div class="h4 fw-bold text-success mb-0">100%</div>
+                    <div class="small text-muted text-uppercase fw-semibold" style="font-size: 0.72rem;">Free & Private</div>
+                </div>
+                <div class="col-4 col-sm-4">
+                    <div class="h4 fw-bold text-info mb-0">⚡ Live</div>
+                    <div class="small text-muted text-uppercase fw-semibold" style="font-size: 0.72rem;">Interactive Charts</div>
+                </div>
+            </div>
         </div>
-        <div class="hero-stat">
-            <span class="stat-number">100%</span>
-            <span class="stat-label">Free Forever</span>
+    </section>
+
+    <!-- ===== CONTAINER FOR DIRECTORY ===== -->
+    <div class="container my-4 my-md-5">
+
+        <!-- ===== REAL-TIME LIVE MARKET PULSE & FOREX/CRYPTO WIDGET ===== -->
+        <section class="live-market-card p-4 p-md-4 mb-5 shadow-sm">
+            <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="live-badge-pulse"><span class="pulse-circle"></span> REAL-TIME RATES</span>
+                    <h3 class="h5 fw-bold mb-0 text-body-emphasis">Live Market Intelligence & Forex</h3>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="small text-muted" id="hpLiveTime">Fetching live data...</span>
+                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="refreshLiveMarketRates()">🔄 Refresh</button>
+                </div>
+            </div>
+
+            <!-- Quick Live Rates Grid -->
+            <div class="row g-3">
+                <div class="col-6 col-md-3">
+                    <div class="rate-tile">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <span class="small text-muted fw-semibold">💵 USD to INR</span>
+                            <span class="badge bg-success-subtle text-success py-1">Forex</span>
+                        </div>
+                        <div class="h5 fw-bold mb-0 text-body-emphasis" id="hpLiveUsd">₹87.50</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="rate-tile">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <span class="small text-muted fw-semibold">🟡 Bitcoin (BTC)</span>
+                            <span class="badge bg-warning-subtle text-warning py-1">Crypto</span>
+                        </div>
+                        <div class="h5 fw-bold mb-0 text-body-emphasis" id="hpLiveBtc">₹74,70,000</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="rate-tile">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <span class="small text-muted fw-semibold">🔵 Ethereum (ETH)</span>
+                            <span class="badge bg-info-subtle text-info py-1">Crypto</span>
+                        </div>
+                        <div class="h5 fw-bold mb-0 text-body-emphasis" id="hpLiveEth">₹2,35,000</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="rate-tile">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <span class="small text-muted fw-semibold">🥇 Gold 24K (10g)</span>
+                            <span class="badge bg-warning-subtle text-warning py-1">Bullion</span>
+                        </div>
+                        <div class="h5 fw-bold mb-0 text-body-emphasis" id="hpLiveGold">₹84,500</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== POPULAR CALCULATORS SHOWCASE ===== -->
+        <section class="popular-showcase-section mb-5" id="popularSection">
+            <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-2">
+                <div>
+                    <h2 class="h3 fw-extrabold text-body-emphasis mb-1">⭐ Popular Financial Calculators</h2>
+                    <p class="text-muted small mb-0">Our most-used tools for instant tax savings, wealth compounding, and loan planning.</p>
+                </div>
+                <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2 fw-semibold">Top Highlights</span>
+            </div>
+
+            <div class="row g-3 g-md-4">
+                <% popularCalculators.slice(0, 9).forEach(function(calc) { %>
+                    <div class="col-lg-4 col-md-6 calc-card-col" data-title="<%= calc.title.toLowerCase() %>" data-desc="<%= calc.desc.toLowerCase() %>" data-category="<%= calc.category %>">
+                        <a href="/<%= calc.slug %>" class="card calc-card h-100 p-4 rounded-4 shadow-sm text-decoration-none border transition-all">
+                            <!-- Card Top Bar: Icon on Left, Status Badge on Right -->
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="calc-icon-tile shadow-2xs">
+                                    <span><%= calc.icon %></span>
+                                </div>
+                                <% if (calc.badge) { %>
+                                    <span class="badge bg-gradient-pill text-white shadow-2xs fw-bold px-2.5 py-1" style="font-size: 0.68rem; border-radius: 50px;"><%= calc.badge %></span>
+                                <% } %>
+                            </div>
+
+                            <!-- Card Title & Category -->
+                            <div class="mb-2">
+                                <h3 class="h6 fw-bold text-body-emphasis mb-1" style="line-height: 1.35;"><%= calc.title %></h3>
+                                <span class="badge bg-secondary-subtle text-secondary small text-uppercase" style="font-size: 0.65rem;"><%= calc.category %></span>
+                            </div>
+
+                            <!-- Card Description -->
+                            <p class="text-muted small mb-4 line-clamp-2"><%= calc.desc %></p>
+
+                            <!-- Card Footer -->
+                            <div class="mt-auto d-flex align-items-center justify-content-between pt-2 border-top">
+                                <span class="fw-bold small text-primary calc-cta-link">Calculate Now</span>
+                                <span class="calc-arrow-icon text-primary">→</span>
+                            </div>
+                        </a>
+                    </div>
+                <% }); %>
+            </div>
+        </section>
+
+        <!-- ===== CATEGORY FILTER TABS ===== -->
+        <div class="category-filter-nav mb-4 sticky-top py-2 bg-body-glass" style="z-index: 20;">
+            <div class="d-flex flex-nowrap overflow-x-auto gap-2 pb-2 hide-scrollbar">
+                <button type="button" class="btn btn-sm btn-category-pill active" data-filter="all">
+                    ✨ All Calculators (<%= calculators.length %>)
+                </button>
+                <% categories.forEach(function(cat) { %>
+                    <button type="button" class="btn btn-sm btn-category-pill" data-filter="<%= cat.id %>">
+                        <%= cat.icon %> <%= cat.name %> (<%= cat.count %>)
+                    </button>
+                <% }); %>
+            </div>
         </div>
-        <div class="hero-stat">
-            <span class="stat-number">∞</span>
-            <span class="stat-label">Calculations</span>
+
+        <!-- Search Results Count Notification (hidden by default) -->
+        <div id="searchNotice" class="alert alert-info py-2 px-3 small rounded-3 mb-4 d-none">
+            Showing <strong id="matchCount">0</strong> matching calculators for "<span id="queryText"></span>". <button type="button" class="btn btn-link btn-sm p-0 ms-2" id="clearSearchBtn">Clear search</button>
         </div>
-        <div class="hero-stat">
-            <span class="stat-number">0</span>
-            <span class="stat-label">Sign-up Needed</span>
+
+        <!-- Empty state when no search matches -->
+        <div id="noResultsState" class="card text-center p-5 rounded-4 border shadow-sm my-5 d-none">
+            <div class="display-5 mb-3">🔍</div>
+            <h3 class="h5 fw-bold text-body-emphasis mb-2">No Calculators Found</h3>
+            <p class="text-muted small mb-4">We couldn't find any financial calculator matching your keyword.</p>
+            <button type="button" class="btn btn-primary rounded-pill px-4 mx-auto" onclick="document.getElementById('clearSearchBtn').click()">View All 300+ Calculators</button>
         </div>
+
+        <!-- ===== CATEGORIZED CALCULATOR SECTIONS ===== -->
+        <div id="categorizedDirectory">
+            <% categories.forEach(function(cat) { 
+                const catItems = calculators.filter(c => c.category === cat.id);
+                if (catItems.length > 0) {
+            %>
+                <section class="category-section mb-5" data-section-category="<%= cat.id %>">
+                    
+                    <!-- Category Header -->
+                    <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 border-bottom pb-2 gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fs-4"><%= cat.icon %></span>
+                            <h2 class="h4 fw-bold text-body-emphasis mb-0"><%= cat.name %></h2>
+                            <span class="badge bg-primary-subtle text-primary rounded-pill px-2.5 py-1 small fw-bold"><%= catItems.length %> Tools</span>
+                        </div>
+                        <p class="text-muted small mb-0 d-none d-md-block"><%= cat.desc %></p>
+                    </div>
+
+                    <!-- Cards Grid -->
+                    <div class="row g-3 g-md-4">
+                        <% catItems.forEach(function(calc) { %>
+                            <div class="col-lg-4 col-md-6 calc-card-col" data-title="<%= calc.title.toLowerCase() %>" data-desc="<%= calc.desc.toLowerCase() %>" data-category="<%= calc.category %>">
+                                <a href="/<%= calc.slug %>" class="card calc-card h-100 p-4 rounded-4 shadow-sm text-decoration-none border transition-all">
+                                    <!-- Card Top Bar: Icon on Left, Status Badge on Right -->
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <div class="calc-icon-tile shadow-2xs">
+                                            <span><%= calc.icon %></span>
+                                        </div>
+                                        <% if (calc.badge) { %>
+                                            <span class="badge calc-badge-pill"><%= calc.badge %></span>
+                                        <% } %>
+                                    </div>
+
+                                    <!-- Card Title & Category -->
+                                    <div class="mb-2">
+                                        <h3 class="h6 fw-bold text-body-emphasis mb-1" style="line-height: 1.35;"><%= calc.shortTitle || calc.title %></h3>
+                                        <span class="badge bg-secondary-subtle text-secondary small text-uppercase" style="font-size: 0.65rem;"><%= calc.category %></span>
+                                    </div>
+
+                                    <!-- Card Description -->
+                                    <p class="text-muted small mb-4 line-clamp-2"><%= calc.desc %></p>
+
+                                    <!-- Card Footer -->
+                                    <div class="mt-auto d-flex align-items-center justify-content-between pt-2 border-top">
+                                        <span class="fw-bold small text-primary calc-cta-link">Calculate Now</span>
+                                        <span class="calc-arrow-icon text-primary">→</span>
+                                    </div>
+                                </a>
+                            </div>
+                        <% }); %>
+                    </div>
+                </section>
+            <% } }); %>
+        </div>
+
+        <!-- ===== GOAL FINDER WIZARD ===== -->
+        <div class="goal-wizard-card rounded-4 p-4 p-md-5 my-5 shadow-sm border position-relative overflow-hidden">
+            <div class="goal-wizard-header mb-4">
+                <h3 class="h4 fw-bold text-body-emphasis mb-2">🎯 What is your financial goal today?</h3>
+                <p class="text-muted small mb-0">Pick your goal — we'll take you to the right calculator instantly.</p>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-4 col-sm-6">
+                    <a href="/sip-calculator" class="btn-goal-card p-3 rounded-3 border d-flex flex-column text-decoration-none h-100">
+                        <span class="fs-3 mb-2">🚀</span>
+                        <span class="fw-bold text-body-emphasis">Build Wealth (SIP)</span>
+                        <span class="small text-muted">Target ₹1 Cr+ with mutual funds</span>
+                    </a>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <a href="/emi-calculator" class="btn-goal-card p-3 rounded-3 border d-flex flex-column text-decoration-none h-100">
+                        <span class="fs-3 mb-2">🏠</span>
+                        <span class="fw-bold text-body-emphasis">Buy Home or Car</span>
+                        <span class="small text-muted">Calculate lowest EMI</span>
+                    </a>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <a href="/income-tax-calculator" class="btn-goal-card p-3 rounded-3 border d-flex flex-column text-decoration-none h-100">
+                        <span class="fs-3 mb-2">🧾</span>
+                        <span class="fw-bold text-body-emphasis">Save Income Tax</span>
+                        <span class="small text-muted">New vs Old Tax Regime FY 26-27</span>
+                    </a>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <a href="/retirement-calculator" class="btn-goal-card p-3 rounded-3 border d-flex flex-column text-decoration-none h-100">
+                        <span class="fs-3 mb-2">🌴</span>
+                        <span class="fw-bold text-body-emphasis">Plan Early Retirement</span>
+                        <span class="small text-muted">FIRE & Pension Corpus</span>
+                    </a>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <a href="/loan-prepayment-calculator" class="btn-goal-card p-3 rounded-3 border d-flex flex-column text-decoration-none h-100">
+                        <span class="fs-3 mb-2">⚡</span>
+                        <span class="fw-bold text-body-emphasis">Prepay Loan & Save</span>
+                        <span class="small text-muted">Cut 5–10 yrs of interest</span>
+                    </a>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <a href="/ssy-calculator" class="btn-goal-card p-3 rounded-3 border d-flex flex-column text-decoration-none h-100">
+                        <span class="fs-3 mb-2">👧</span>
+                        <span class="fw-bold text-body-emphasis">Daughter's Future (SSY)</span>
+                        <span class="small text-muted">Govt 8.2% Tax-Free</span>
+                    </a>
+                </div>
+        </div>
+
+        <!-- ===== SEO EDITORIAL GUIDE & SEARCH AUTHORITY SECTION ===== -->
+        <article class="card shadow-sm rounded-4 p-4 p-md-5 my-5 border">
+            <h2 class="h3 fw-bold text-body-emphasis mb-3">India's Premier Financial Intelligence & Calculation Platform</h2>
+            <p class="lead text-secondary mb-4" style="font-size: 1.05rem;">
+                <strong>FinancialHub</strong> provides India's largest suite of <strong>330+ free, accurate, and private financial calculators</strong> spanning mutual fund compounding, banking deposits, mortgage amortization, Union Budget tax slabs (FY 2026-27), early retirement FIRE models, and corporate valuation.
+            </p>
+
+            <div class="row g-4 my-2">
+                <div class="col-md-6">
+                    <div class="p-3 border rounded-3 bg-body-tertiary h-100">
+                        <h3 class="h6 fw-bold text-primary mb-2">📈 Wealth & Investment Compounding</h3>
+                        <p class="small text-muted mb-0">From monthly SIP to Step-Up SIP and CAGR models, calculate long-term wealth growth across Nifty 50, Mid Cap, and Small Cap mutual funds with annual compounding schedules.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 border rounded-3 bg-body-tertiary h-100">
+                        <h3 class="h6 fw-bold text-primary mb-2">🧾 Tax Planning (FY 2026-27)</h3>
+                        <p class="small text-muted mb-0">Compare New vs Old Tax Regime, calculate 44ADA freelance presumptive tax, assess Section 112A 12.5% LTCG capital gains, and optimize take-home CTC salaries with ₹75,000 standard deductions.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 border rounded-3 bg-body-tertiary h-100">
+                        <h3 class="h6 fw-bold text-primary mb-2">🏠 Loans & Debt Management</h3>
+                        <p class="small text-muted mb-0">Simulate home loan and car loan EMIs, evaluate 1-extra EMI prepayment savings, compare balance transfer interest cuts, and optimize multi-card debt avalanche payoff schedules.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 border rounded-3 bg-body-tertiary h-100">
+                        <h3 class="h6 fw-bold text-primary mb-2">🎯 FIRE & Early Retirement</h3>
+                        <p class="small text-muted mb-0">Plan Coast FIRE, Lean FIRE, and Fat FIRE milestones, calculate NPS Tier-1 & Tier-2 pension growth, and model 4% safe withdrawal rate (SWR) survival through market cycles.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Homepage FAQs -->
+            <h3 class="h4 fw-bold text-body-emphasis mt-5 mb-3">Frequently Asked Questions</h3>
+            <div class="accordion" id="homeFaqAccordion">
+                <div class="accordion-item">
+                    <h4 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#hfaq1">
+                            Are all 330+ calculators on FinancialHub 100% free?
+                        </button>
+                    </h4>
+                    <div id="hfaq1" class="accordion-collapse collapse show" data-bs-parent="#homeFaqAccordion">
+                        <div class="accordion-body text-muted">
+                            Yes, absolutely! All 330+ calculators are completely free to use with zero hidden subscriptions, signups, or paywalls.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h4 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#hfaq2">
+                            Is my financial data kept confidential and secure?
+                        </button>
+                    </h4>
+                    <div id="hfaq2" class="accordion-collapse collapse" data-bs-parent="#homeFaqAccordion">
+                        <div class="accordion-body text-muted">
+                            Yes. FinancialHub runs 100% client-side in your web browser. No personal income details, loan amounts, or investment values are ever saved on our servers.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h4 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#hfaq3">
+                            Can I export calculation reports as PDF or Excel spreadsheets?
+                        </button>
+                    </h4>
+                    <div id="hfaq3" class="accordion-collapse collapse" data-bs-parent="#homeFaqAccordion">
+                        <div class="accordion-body text-muted">
+                            Yes! Every single calculator includes one-click "Download PDF Report" and "Export Excel/CSV" export buttons with charts and amortization tables.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+
     </div>
 </div>
 
-<%- include('partials/ad_unit') %>
+<!-- Instant Client Search & Category Filtering Script -->
+<script>
+(function() {
+    const searchInput = document.getElementById('globalCalcSearchInput');
+    const categoryButtons = document.querySelectorAll('.btn-category-pill');
+    const allCards = document.querySelectorAll('.calc-card-col');
+    const allSections = document.querySelectorAll('.category-section');
+    const popularSection = document.getElementById('popularSection');
+    const searchNotice = document.getElementById('searchNotice');
+    const matchCountEl = document.getElementById('matchCount');
+    const queryTextEl = document.getElementById('queryText');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const noResultsState = document.getElementById('noResultsState');
 
-<!-- ===== INVESTMENT CALCULATORS ===== -->
-<p class="section-title">📈 Investment & Savings</p>
-<div class="row g-4 mb-2">
+    let currentCategory = 'all';
+    let searchQuery = '';
 
-    <!-- SIP Calculator -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-badge">Most Popular</span>
-            <span class="card-icon">📊</span>
-            <h5 class="card-title">SIP Calculator</h5>
-            <p class="card-text">Calculate the future value of your Systematic Investment Plan with year-by-year growth charts.</p>
-            <a href="/sip-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
+    function filterDirectory() {
+        let visibleCount = 0;
+        const q = searchQuery.toLowerCase().trim();
 
-    <!-- Compound Interest -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-icon">📈</span>
-            <h5 class="card-title">Compound Interest</h5>
-            <p class="card-text">Visualize the power of compounding on your investments with detailed year-wise breakdown.</p>
-            <a href="/compound-interest" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
+        allCards.forEach(card => {
+            const title = card.getAttribute('data-title') || '';
+            const desc = card.getAttribute('data-desc') || '';
+            const cat = card.getAttribute('data-category') || '';
 
-    <!-- FD Calculator -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-badge new-badge">New</span>
-            <span class="card-icon">🏦</span>
-            <h5 class="card-title">FD Calculator</h5>
-            <p class="card-text">Calculate Fixed Deposit maturity amount with quarterly, monthly or annual compounding options.</p>
-            <a href="/fd-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
+            const matchesCategory = (currentCategory === 'all' || cat === currentCategory);
+            const matchesSearch = (q === '' || title.includes(q) || desc.includes(q) || cat.includes(q));
 
-    <!-- PPF Calculator -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-badge new-badge">New</span>
-            <span class="card-icon">🏛️</span>
-            <h5 class="card-title">PPF Calculator</h5>
-            <p class="card-text">Calculate your Public Provident Fund maturity value and yearly interest for the 15-year lock-in period.</p>
-            <a href="/ppf-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
+            if (matchesCategory && matchesSearch) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
 
-    <!-- SCHD Dividend -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-icon">💰</span>
-            <h5 class="card-title">SCHD Dividend</h5>
-            <p class="card-text">Project future portfolio growth with reinvested SCHD dividends, tax considerations and expense ratios.</p>
-            <a href="/schd-dividend-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
+        // Hide empty category sections
+        allSections.forEach(section => {
+            const secCat = section.getAttribute('data-section-category');
+            if (currentCategory !== 'all' && secCat !== currentCategory) {
+                section.style.display = 'none';
+            } else {
+                // Check if this section has at least one visible card
+                const visibleInSec = section.querySelectorAll('.calc-card-col[style="display: block;"]').length;
+                section.style.display = visibleInSec > 0 ? 'block' : 'none';
+            }
+        });
 
-    <!-- Simple Interest -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-icon">🧮</span>
-            <h5 class="card-title">Simple Interest</h5>
-            <p class="card-text">Calculate simple interest on your investments or loans in real-time with yearly breakdown.</p>
-            <a href="/simple-interest" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
-</div>
+        // Hide/Show Popular Section if searching or filtering
+        if (popularSection) {
+            popularSection.style.display = (q === '' && currentCategory === 'all') ? 'block' : 'none';
+        }
 
-<!-- ===== LOAN CALCULATORS ===== -->
-<p class="section-title">🏠 Loans & EMI</p>
-<div class="row g-4 mb-2">
+        // Search Notice Alert
+        if (q !== '') {
+            searchNotice.classList.remove('d-none');
+            matchCountEl.textContent = visibleCount;
+            queryTextEl.textContent = q;
+        } else {
+            searchNotice.classList.add('d-none');
+        }
 
-    <!-- EMI Calculator -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-badge">Most Popular</span>
-            <span class="card-icon">🏠</span>
-            <h5 class="card-title">EMI Calculator</h5>
-            <p class="card-text">Calculate your Equated Monthly Installment for home, car, or personal loans with amortization schedule.</p>
-            <a href="/emi-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
+        // No results state
+        if (visibleCount === 0) {
+            noResultsState.classList.remove('d-none');
+        } else {
+            noResultsState.classList.add('d-none');
+        }
+    }
 
-    <!-- Loan Prepayment -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-icon">⚡</span>
-            <h5 class="card-title">Loan Prepayment</h5>
-            <p class="card-text">See how much interest and years you save by prepaying your loan with interactive comparison charts.</p>
-            <a href="/loan-prepayment-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
+    // Search Input Listener
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            searchQuery = this.value;
+            filterDirectory();
+        });
+    }
 
-    <!-- HRA Calculator -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-badge new-badge">New</span>
-            <span class="card-icon">🏢</span>
-            <h5 class="card-title">HRA Calculator</h5>
-            <p class="card-text">Calculate your HRA exemption amount under the Income Tax Act and reduce your tax liability.</p>
-            <a href="/hra-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
-</div>
+    // Category Buttons Listener
+    categoryButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            categoryButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentCategory = this.getAttribute('data-filter');
+            filterDirectory();
+        });
+    });
 
-<!-- ===== TAX & BUSINESS ===== -->
-<p class="section-title">🧾 Tax & Business</p>
-<div class="row g-4 mb-2">
+    // Clear search
+    if (clearSearchBtn) {
+        clearSearchBtn.addEventListener('click', function() {
+            if (searchInput) searchInput.value = '';
+            searchQuery = '';
+            filterDirectory();
+        });
+    }
 
-    <!-- Income Tax Calculator -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-badge new-badge">New</span>
-            <span class="card-icon">📋</span>
-            <h5 class="card-title">Income Tax Calculator</h5>
-            <p class="card-text">Compare Old vs New Tax Regime for FY 2024-25 and find which regime saves you more tax.</p>
-            <a href="/income-tax-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
-
-    <!-- GST Calculator -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-icon">🧾</span>
-            <h5 class="card-title">GST Calculator</h5>
-            <p class="card-text">Add or remove GST from any amount instantly. Get detailed CGST, SGST and IGST breakdowns.</p>
-            <a href="/gst-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
-
-    <!-- Profit & Loss -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-icon">📉</span>
-            <h5 class="card-title">Profit & Loss</h5>
-            <p class="card-text">Advanced business profitability analysis with break-even points and growth scenario charts.</p>
-            <a href="/advanced-profit-loss" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
-</div>
-
-<!-- ===== PLANNING ===== -->
-<p class="section-title">🎯 Financial Planning</p>
-<div class="row g-4 mb-4">
-
-    <!-- Retirement Calculator -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-icon">🌅</span>
-            <h5 class="card-title">Retirement Calculator</h5>
-            <p class="card-text">Plan your retirement corpus and see if you are on track. Get actionable investment advice.</p>
-            <a href="/retirement-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
-
-    <!-- Budget Calculator -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-icon">📅</span>
-            <h5 class="card-title">Budget Planner</h5>
-            <p class="card-text">Track monthly income vs expenses using the 50/30/20 rule analysis with visual pie charts.</p>
-            <a href="/budget-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
-</div>
-
-<!-- ===== RETURNS & ANALYSIS ===== -->
-<p class="section-title">📐 Returns & Analysis</p>
-<div class="row g-4 mb-2">
-
-    <!-- CAGR Calculator -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-badge new-badge">New</span>
-            <span class="card-icon">📐</span>
-            <h5 class="card-title">CAGR Calculator</h5>
-            <p class="card-text">Measure the true annual growth rate of any investment over any time period.</p>
-            <a href="/cagr-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
-
-    <!-- Inflation Calculator -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-badge new-badge">New</span>
-            <span class="card-icon">💸</span>
-            <h5 class="card-title">Inflation Calculator</h5>
-            <p class="card-text">See how inflation erodes purchasing power and how much you'll need in the future.</p>
-            <a href="/inflation-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
-
-    <!-- Step-Up SIP -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-badge new-badge">New</span>
-            <span class="card-icon">🚀</span>
-            <h5 class="card-title">Step-Up SIP</h5>
-            <p class="card-text">Grow your SIP investment yearly as your income grows — supercharge your wealth.</p>
-            <a href="/step-up-sip-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
-
-    <!-- Gold Investment -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-badge new-badge">New</span>
-            <span class="card-icon">🥇</span>
-            <h5 class="card-title">Gold Investment</h5>
-            <p class="card-text">Compare Physical Gold, Gold ETF, and Sovereign Gold Bonds returns and tax benefits.</p>
-            <a href="/gold-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
-</div>
-
-<!-- ===== RETIREMENT & WELFARE ===== -->
-<p class="section-title">🎗️ Retirement & Welfare</p>
-<div class="row g-4 mb-4">
-
-    <!-- NPS Calculator -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-badge new-badge">New</span>
-            <span class="card-icon">🏛️</span>
-            <h5 class="card-title">NPS Calculator</h5>
-            <p class="card-text">Plan your National Pension System corpus, lump sum withdrawal and monthly pension.</p>
-            <a href="/nps-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
-
-    <!-- Gratuity Calculator -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-badge new-badge">New</span>
-            <span class="card-icon">🏅</span>
-            <h5 class="card-title">Gratuity Calculator</h5>
-            <p class="card-text">Calculate your gratuity amount as per Payment of Gratuity Act 1972 with eligibility check.</p>
-            <a href="/gratuity-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
-
-    <!-- SSY Calculator -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-badge new-badge">New</span>
-            <span class="card-icon">🌸</span>
-            <h5 class="card-title">SSY Calculator</h5>
-            <p class="card-text">Sukanya Samriddhi Yojana — tax-free savings scheme for your daughter's future.</p>
-            <a href="/ssy-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
-
-    <!-- Car Loan EMI -->
-    <div class="col-lg-4 col-md-6">
-        <div class="calculator-card">
-            <span class="card-badge new-badge">New</span>
-            <span class="card-icon">🚗</span>
-            <h5 class="card-title">Car Loan EMI</h5>
-            <p class="card-text">Calculate car loan EMI with down payment comparison and total interest breakdown.</p>
-            <a href="/car-loan-calculator" class="btn btn-custom">Open Calculator</a>
-        </div>
-    </div>
-</div>
-
-<%- include('partials/ad_unit') %>
+    // Keyboard Shortcut (Ctrl+K / Cmd+K)
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            if (searchInput) {
+                searchInput.focus();
+                searchInput.select();
+            }
+        }
+    });
+})();
+</script>
 
 <%- include('partials/footer') %>

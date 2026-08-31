@@ -1,0 +1,123 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">💻 Freelance & Section 44ADA Tax Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Presumptive taxation scheme for software developers, consultants, designers & freelancers (up to ₹75 Lakh receipts)</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <label class="form-label">Total Gross Receipts / Invoices (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="flGross" value="2400000" step="50000" oninput="calculate()"></div>
+                <div id="flWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Tax Regime</label>
+                <select class="form-select" id="flRegime" onchange="calculate()">
+                    <option value="new" selected>New Tax Regime (Recommended)</option>
+                    <option value="old">Old Tax Regime (With 80C/80D/Home Loan)</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Declared Profit Margin (%)</label>
+                <div class="input-group"><input type="number" class="form-control" id="flProfitPct" value="50" step="5" min="50" max="100" oninput="calculate()"><span class="input-group-text">% (Min 50%)</span></div>
+            </div>
+            <div class="highlight-box">
+                <h4>📜 Section 44ADA Super Benefit</h4>
+                <p>No books of accounts or audit required! Exactly 50% of your gross turnover is considered business expenses, and only the remaining 50% is taxed.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Total Tax Payable</p><p class="amount" id="flTotalTax" style="color:var(--accent-red);">₹78,000</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Total Gross Revenue</div><div class="value" id="rGrossRevenue">₹24,00,000</div></div>
+                    <div class="summary-item"><div class="label">Presumptive Expense (50%)</div><div class="value" style="color:var(--accent-green);" id="rExpenseDeduct">-₹12,00,000 (Tax-Free)</div></div>
+                    <div class="summary-item"><div class="label">Taxable Net Profit</div><div class="value" style="color:var(--gold);" id="rTaxableProfit">₹12,00,000</div></div>
+                    <div class="summary-item"><div class="label">Effective Tax Rate on Revenue</div><div class="value" id="rEffectiveRate">3.25%</div></div>
+                    <div class="summary-item"><div class="label">Take-Home Freelance Income</div><div class="value" style="color:var(--accent-green);" id="rTakeHome">₹23,22,000</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/income-tax-calculator" class="related-card"><span class="icon">🧾</span><div class="title">Income Tax</div><div class="desc">Slab tax comparison</div></a></div>
+            <div class="col-md-4"><a href="/tds-calculator" class="related-card"><span class="icon">📑</span><div class="title">TDS Calculator</div><div class="desc">194J technical fees</div></a></div>
+            <div class="col-md-4"><a href="/gst-calculator" class="related-card"><span class="icon">🏷️</span><div class="title">GST Calculator</div><div class="desc">Export of services GST</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="flToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="flBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="flBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="flBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const gross = parseFloat(document.getElementById('flGross').value)||0;
+    const profitPct = (parseFloat(document.getElementById('flProfitPct').value)||50) / 100;
+    const regime = document.getElementById('flRegime').value;
+
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('flWords');
+        if(el) el.textContent = convertNumberToIndianWords(gross);
+    }
+
+    if(gross <= 0) return;
+
+    const taxableProfit = gross * profitPct;
+    const expenseDeduct = gross - taxableProfit;
+
+    let tax = 0;
+    if(regime === 'new') {
+        if(taxableProfit <= 700000) {
+            tax = 0; // 87A rebate
+        } else {
+            if(taxableProfit > 300000) tax += Math.min(taxableProfit - 300000, 400000) * 0.05;
+            if(taxableProfit > 700000) tax += Math.min(taxableProfit - 700000, 300000) * 0.10;
+            if(taxableProfit > 1000000) tax += Math.min(taxableProfit - 1000000, 200000) * 0.15;
+            if(taxableProfit > 1200000) tax += Math.min(taxableProfit - 1200000, 300000) * 0.20;
+            if(taxableProfit > 1500000) tax += (taxableProfit - 1500000) * 0.30;
+        }
+    } else {
+        if(taxableProfit <= 500000) {
+            tax = 0;
+        } else {
+            if(taxableProfit > 250000) tax += Math.min(taxableProfit - 250000, 250000) * 0.05;
+            if(taxableProfit > 500000) tax += Math.min(taxableProfit - 500000, 500000) * 0.20;
+            if(taxableProfit > 1000000) tax += (taxableProfit - 1000000) * 0.30;
+        }
+    }
+    tax *= 1.04; // 4% cess
+
+    const takeHome = gross - tax;
+    const effectiveRate = ((tax / gross) * 100).toFixed(2);
+
+    document.getElementById('flTotalTax').textContent = fmt(tax);
+    document.getElementById('rGrossRevenue').textContent = fmt(gross);
+    document.getElementById('rExpenseDeduct').textContent = '-' + fmt(expenseDeduct) + ' (50% Tax-Free)';
+    document.getElementById('rTaxableProfit').textContent = fmt(taxableProfit);
+    document.getElementById('rEffectiveRate').textContent = effectiveRate + '% of gross';
+    document.getElementById('rTakeHome').textContent = fmt(takeHome);
+
+    window._lastFL = { gross, taxableProfit, tax, takeHome, effectiveRate };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('flBtnSave').addEventListener('click', () => {
+        const d = window._lastFL; if(!d) return;
+        const name = prompt('Save as:', `44ADA Tax ${fmt(d.tax)}`);
+        if(name) saveCalculation(name, { GrossReceipts: fmt(d.gross), TaxableProfit: fmt(d.taxableProfit), TaxPayable: fmt(d.tax), TakeHome: fmt(d.takeHome) });
+    });
+    document.getElementById('flBtnShare').addEventListener('click', () => {
+        const d = window._lastFL; if(!d) return;
+        shareViaWhatsApp('Freelance Tax Calculator (44ADA)', `Gross Revenue: ${fmt(d.gross)}\nTaxable Profit (50%): ${fmt(d.taxableProfit)}\nTotal Tax Payable: ${fmt(d.tax)} (Effective ${d.effectiveRate}%)\nTake-Home: ${fmt(d.takeHome)}`);
+    });
+    document.getElementById('flBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

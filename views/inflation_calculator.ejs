@@ -40,6 +40,13 @@
     </div>
 <%- include('partials/ad_unit') %>
 </div>
+<!-- Save & Share Toolbar -->
+<div class="action-toolbar" id="inflToolbar" style="display:none;">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="inflBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="inflBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="inflBtnCopy">🔗 Copy Link</button>
+</div>
 <script>
 const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
 let inflChart = null;
@@ -55,6 +62,8 @@ function calculate(){
     document.getElementById('futureVal').textContent = fmt(futureNeeded);
     document.getElementById('ppLoss').textContent = fmt(ppLoss);
     document.getElementById('erosion').textContent = erosionPct.toFixed(1)+'%';
+    document.getElementById('inflToolbar').style.display='flex';
+    window._lastInfl = { amt, inf, yr, futureNeeded, ppLoss, erosionPct };
     const labels=[], vals=[];
     for(let y=0;y<=yr;y++){labels.push('Y'+y);vals.push(Math.round(amt/Math.pow(1+inf,y)));}
     const ctx = document.getElementById('inflChart').getContext('2d');
@@ -62,5 +71,17 @@ function calculate(){
     inflChart = new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Real Value of ₹'+fmt(amt).replace('₹','').trim(),data:vals,borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,0.1)',fill:true,tension:0.4,pointRadius:3}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8'}}},scales:{x:{ticks:{color:'#64748b'},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#64748b',callback:v=>'₹'+(v/100000).toFixed(0)+'L'},grid:{color:'rgba(255,255,255,0.05)'}}}}});
 }
 calculate();
+document.addEventListener('DOMContentLoaded',()=>{
+    document.getElementById('inflBtnSave').addEventListener('click',()=>{
+        const d=window._lastInfl; if(!d) return;
+        const name=prompt('Save as:',`Inflation ${(d.inf*100).toFixed(1)}% over ${d.yr}Y`); if(!name) return;
+        saveCalculation(name,{today:fmt(d.amt),future:fmt(d.futureNeeded),erosion:d.erosionPct.toFixed(1)+'%',years:d.yr});
+    });
+    document.getElementById('inflBtnShare').addEventListener('click',()=>{
+        const d=window._lastInfl; if(!d) return;
+        shareViaWhatsApp('Inflation Calculator',`Today: ${fmt(d.amt)}\nRate: ${(d.inf*100).toFixed(1)}%\nAfter ${d.yr} Years: ${fmt(d.futureNeeded)}\nPurchasing Power Loss: ${d.erosionPct.toFixed(1)}%`);
+    });
+    document.getElementById('inflBtnCopy').addEventListener('click',copyShareableURL);
+});
 </script>
 <%- include('partials/footer') %>

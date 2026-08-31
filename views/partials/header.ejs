@@ -13,31 +13,47 @@
         gtag('config', 'G-DSS4N95B8B');
     </script>
 
-    <!-- SEO Meta Tags -->
+    <!-- SEO Meta Tags for Top Google SERP Rankings -->
     <title><%= title %></title>
-    <meta name="description" content="<%= locals.description || 'A collection of free and easy-to-use financial calculators for your investment, loan, and retirement planning needs.' %>">
-    <meta name="robots" content="index, follow">
+    <meta name="description" content="<%= locals.description || 'A collection of 330+ free, accurate financial calculators for investment, mutual fund SIP, home loan EMI, New Tax Regime FY 2026-27, salary and retirement planning.' %>">
+    <meta name="keywords" content="financial calculators India, SIP calculator, EMI calculator, New Tax Regime FY 2026-27, in hand salary calculator, FD calculator, PPF calculator, FIRE calculator, corporate finance tools">
+    <meta name="author" content="FinancialHub">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large">
+    <meta name="theme-color" content="#070d1a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+
+    <!-- PWA Manifest & App Icons -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/icon.svg">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="https://financialhub.calculatorfree.in<%= locals.canonicalPath || '/' %>">
 
-    <!-- Open Graph (Facebook, WhatsApp preview) -->
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Financial Hub">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="<%= locals.isHomePage ? 'website' : 'article' %>">
+    <meta property="og:site_name" content="FinancialHub">
     <meta property="og:title" content="<%= title %>">
-    <meta property="og:description" content="<%= locals.description || 'Free financial calculators for SIP, EMI, GST, Income Tax, FD, PPF and more.' %>">
+    <meta property="og:description" content="<%= locals.description || 'India\'s most accurate suite of 330+ free financial calculators.' %>">
     <meta property="og:url" content="https://financialhub.calculatorfree.in<%= locals.canonicalPath || '/' %>">
     <meta property="og:image" content="https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta property="og:locale" content="en_IN">
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@FinancialHubIN">
     <meta name="twitter:title" content="<%= title %>">
-    <meta name="twitter:description" content="<%= locals.description || 'Free financial calculators for SIP, EMI, GST, Income Tax, FD, PPF and more.' %>">
+    <meta name="twitter:description" content="<%= locals.description || 'India\'s most accurate suite of 330+ free financial calculators.' %>">
     <meta name="twitter:image" content="https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png">
+    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+    <link rel="alternate icon" type="image/png" href="https://www.calculatorfree.in/wp-content/uploads/2025/07/cropped-calculatorfree.png">
 
     <!-- Schema.org Structured Data -->
     <% if (locals.schema) { %>
@@ -46,54 +62,176 @@
     </script>
     <% } %>
 
-    <!-- Fonts & CSS -->
+    <!-- Fonts & Core Assets Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark site-header">
-        <div class="container">
-            <a class="navbar-brand me-4" href="/"><strong>Financial</strong>Hub</a>
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link active" href="https://www.calculatorfree.in/" target="_blank" rel="noopener noreferrer">Home</a>
-                </li>
-            </ul>
-            <div class="ms-auto d-flex align-items-center">
-                <!-- Theme Toggle -->
-                <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle Light/Dark Mode">
-                    <span class="theme-icon" id="themeIcon">🌙</span>
-                    <span id="themeLabel">Dark</span>
-                </button>
-                <% if (locals.isHomePage === false) { %>
-                    <a href="/" class="btn btn-outline-light d-flex align-items-center ms-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-circle me-2" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"/></svg>
-                        Back to Hub
+    <!-- Immediate Theme Init (prevents flash) -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('fh-theme') || 'dark';
+            if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
+        })();
+    </script>
+
+    <!-- PWA Install Banner -->
+    <div id="pwaInstallBanner" class="pwa-top-banner" style="display: none;">
+        <div class="container-fluid px-lg-5 px-3 d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <span class="pwa-banner-icon">📱</span>
+                <div>
+                    <strong>Install Financial Hub App</strong>
+                    <span class="d-none d-md-inline ms-2 text-muted-custom">— Fast, lightweight & 100% offline ready!</span>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-warning btn-sm fw-bold px-3" onclick="installPWAApp()">Install App</button>
+                <button type="button" class="btn-close btn-close-white" onclick="document.getElementById('pwaInstallBanner').style.display='none'" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar navbar-expand site-header sticky-top">
+        <div class="container-fluid px-lg-5 px-3 d-flex align-items-center justify-content-between">
+            
+            <!-- Left: Brand Logo & Optional Back Button on Subpages -->
+            <div class="d-flex align-items-center gap-3">
+                <a class="navbar-brand d-inline-flex align-items-center m-0" href="/" style="white-space: nowrap;">
+                    <span class="brand-badge-icon">₹</span>
+                    <span class="fw-bold">Financial</span><span class="fw-normal ms-1 brand-subtext">Hub</span>
+                </a>
+
+                <% if (typeof path !== 'undefined' && path !== '/') { %>
+                    <a class="nav-btn-back d-none d-sm-inline-flex align-items-center" href="/" title="Back to All 50 Calculators">
+                        <span class="nav-back-arrow">←</span>
+                        <span>Back to Home</span>
                     </a>
                 <% } %>
             </div>
+
+            <!-- Center: Spotlight Search Bar -->
+            <div class="d-none d-md-flex align-items-center flex-grow-1 justify-content-center mx-3" style="max-width: 520px;">
+                <button type="button" class="nav-search-trigger w-100" onclick="openSpotlightSearch()">
+                    <span class="search-icon">🔍</span>
+                    <span class="search-placeholder-text">Search 300+ calculators (SIP, EMI, Tax, Salary, FD, FIRE...)...</span>
+                    <span class="search-badge ms-auto">Ctrl K</span>
+                </button>
+            </div>
+
+            <!-- Right: Actions (Mobile Search, Saved, Theme, Main Link) -->
+            <div class="d-flex align-items-center gap-2">
+                <!-- Mobile Search Icon -->
+                <button type="button" class="btn btn-link btn-nav-action d-md-none p-1 px-2" onclick="openSpotlightSearch()" aria-label="Search" title="Search Calculators">
+                    🔍
+                </button>
+
+                <% if (typeof path !== 'undefined' && path !== '/') { %>
+                    <a class="btn btn-nav-action d-sm-none p-1 px-2" href="/" title="Back to Home">
+                        ← Home
+                    </a>
+                <% } %>
+
+                <!-- Saved Calculations Button -->
+                <button type="button" class="btn btn-nav-action" onclick="openSavedModal()" title="Saved Calculations">
+                    <span>💾</span>
+                    <span class="d-none d-lg-inline ms-1">Saved</span>
+                </button>
+
+                <!-- Theme Toggle -->
+                <button type="button" class="theme-toggle-btn" onclick="toggleTheme()" id="themeToggleBtn" aria-label="Toggle Light/Dark Theme">
+                    <span class="theme-icon" id="themeIcon">🌙</span>
+                    <span class="theme-label d-none d-sm-inline" id="themeLabel">Dark</span>
+                </button>
+
+                <!-- Main Site Link -->
+                <a href="https://www.calculatorfree.in" target="_blank" rel="noopener noreferrer" class="btn btn-outline-light btn-sm ms-1 d-none d-xl-inline-flex align-items-center gap-1">
+                    <span>calculatorfree.in</span> ↗
+                </a>
+            </div>
         </div>
     </nav>
-    <div class="container mt-5">
+
+    <!-- Spotlight Search Overlay Modal -->
+    <div id="spotlightModal" class="spotlight-overlay" onclick="if(event.target === this) closeSpotlightSearch()">
+        <div class="spotlight-dialog">
+            <div class="spotlight-header">
+                <span class="spotlight-search-icon">🔍</span>
+                <input 
+                    type="text" 
+                    id="spotlightInput" 
+                    class="spotlight-input" 
+                    placeholder="Type to search all 300+ calculators (SIP, Salary, EMI, Tax, PPF, FIRE...)" 
+                    autocomplete="off"
+                    autofocus
+                >
+                <button type="button" class="spotlight-close-btn" onclick="closeSpotlightSearch()">ESC</button>
+            </div>
+            <div id="spotlightResults" class="spotlight-results">
+                <!-- Results injected dynamically via financial-core.js -->
+            </div>
+            <div class="spotlight-footer">
+                <span>Navigate <kbd>↑</kbd> <kbd>↓</kbd></span>
+                <span>Open <kbd>↵</kbd></span>
+                <span>Close <kbd>Esc</kbd></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SAVED CALCULATIONS MODAL ===== -->
+    <div id="savedCalcsModal" class="spotlight-overlay" onclick="if(event.target === this) closeSavedModal()">
+        <div class="spotlight-dialog">
+            <div class="spotlight-header justify-content-between">
+                <h5 class="m-0 text-gold-custom fw-bold d-flex align-items-center gap-2">
+                    <span>💾</span> Saved Calculations <span style="font-size:0.7rem; color:var(--text-muted); font-weight:400;">(Local & Private)</span>
+                </h5>
+                <button type="button" class="spotlight-close-btn" onclick="closeSavedModal()">✕</button>
+            </div>
+            <div id="savedCalcsList" class="spotlight-results p-3">
+                <!-- Injected via financial-core.js -->
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid px-lg-5 px-3 mt-3">
+
+    <% if (typeof path !== 'undefined' && path !== '/') { %>
+        <!-- ===== CALCULATOR TOP NAVIGATION / BACK TO HOME BAR ===== -->
+        <div class="calc-top-nav-bar fade-in-up">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <!-- Back to Home Button -->
+                <a href="/" class="btn-back-home" title="Return to Homepage">
+                    <span class="back-arrow">←</span>
+                    <span>All 50 Calculators</span>
+                </a>
+
+                <!-- Breadcrumbs -->
+                <nav aria-label="breadcrumb" class="calc-breadcrumb d-none d-md-flex align-items-center">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="/">🏠 Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><%= typeof title !== 'undefined' ? title.split('—')[0].split('-')[0].trim() : 'Calculator' %></li>
+                    </ol>
+                </nav>
+
+                <!-- Quick Switch Calculator (Ctrl + K) -->
+                <button type="button" class="btn-quick-switch" onclick="openSpotlightSearch()" title="Switch Calculator">
+                    <span>🔍 Switch Calculator</span>
+                    <kbd>Ctrl K</kbd>
+                </button>
+            </div>
+        </div>
+    <% } %>
 
 <script>
-    // Theme toggle logic
-    (function() {
-        const saved = localStorage.getItem('fh-theme') || 'dark';
-        if (saved === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
-        }
-    })();
-
     function toggleTheme() {
-        const html = document.documentElement;
-        const current = html.getAttribute('data-theme');
-        const next = current === 'light' ? 'dark' : 'light';
+        const html  = document.documentElement;
+        const next  = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
         html.setAttribute('data-theme', next);
         localStorage.setItem('fh-theme', next);
         updateToggleUI(next);
@@ -112,8 +250,7 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const saved = localStorage.getItem('fh-theme') || 'dark';
-        updateToggleUI(saved);
+    document.addEventListener('DOMContentLoaded', function () {
+        updateToggleUI(localStorage.getItem('fh-theme') || 'dark');
     });
 </script>

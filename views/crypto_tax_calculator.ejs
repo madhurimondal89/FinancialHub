@@ -1,0 +1,94 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">🪙 Crypto Tax Calculator (30% + 1% TDS)</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate Indian tax on Bitcoin, Ethereum, NFTs & Virtual Digital Assets under Section 115BBH</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label class="form-label">Purchase / Buy Price (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="cryptoBuy" value="200000" step="10000" oninput="calculate()"></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Selling / Sale Price (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="cryptoSell" value="450000" step="10000" oninput="calculate()"></div>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Transfer / Mining Expenses (₹) (Not Deductible)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="cryptoExpenses" value="5000" step="500" oninput="calculate()"></div>
+            </div>
+            <div class="highlight-box">
+                <h4>📜 Section 115BBH & 194S Strict Rules</h4>
+                <p>• <strong>Flat 30% Tax + 4% Cess = 31.2%</strong> effective tax rate.<br>• <strong>No deductions allowed</strong> except the actual cost of acquisition.<br>• Losses from one crypto transaction cannot be set off against gains from another!</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Total Tax Payable (31.2%)</p><p class="amount" id="cryptoTaxAmount" style="color:var(--accent-red);">₹78,000</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Gross Crypto Profit</div><div class="value" style="color:var(--accent-green);" id="rGrossProfit">+₹2,50,000</div></div>
+                    <div class="summary-item"><div class="label">Flat 30% Tax Base</div><div class="value" id="rTax30">₹75,000</div></div>
+                    <div class="summary-item"><div class="label">4% Health & Education Cess</div><div class="value" id="rCess">₹3,000</div></div>
+                    <div class="summary-item"><div class="label">1% TDS Deducted (Sec 194S)</div><div class="value" style="color:var(--gold);" id="rTds1">₹4,500</div></div>
+                    <div class="summary-item"><div class="label">Net Realized In-Pocket Profit</div><div class="value" style="color:var(--gold);" id="rNetCrypto">₹1,72,000</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/capital-gains-tax-calculator" class="related-card"><span class="icon">📉</span><div class="title">Capital Gains Tax</div><div class="desc">Stocks & mutual funds</div></a></div>
+            <div class="col-md-4"><a href="/tds-calculator" class="related-card"><span class="icon">📑</span><div class="title">TDS Calculator</div><div class="desc">1% TDS deduction</div></a></div>
+            <div class="col-md-4"><a href="/income-tax-calculator" class="related-card"><span class="icon">🧾</span><div class="title">Income Tax</div><div class="desc">Tax slab planning</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="cryptoToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="cryptoBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="cryptoBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="cryptoBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const buy = parseFloat(document.getElementById('cryptoBuy').value)||0;
+    const sell = parseFloat(document.getElementById('cryptoSell').value)||0;
+
+    if(buy <= 0 || sell <= 0) return;
+
+    const profit = Math.max(0, sell - buy);
+    const tax30 = profit * 0.30;
+    const cess = tax30 * 0.04;
+    const totalTax = tax30 + cess; // 31.2%
+    const tds1 = sell * 0.01; // 1% TDS on sale consideration
+    const netProfit = profit - totalTax;
+
+    document.getElementById('cryptoTaxAmount').textContent = fmt(totalTax);
+    document.getElementById('rGrossProfit').textContent = '+' + fmt(profit);
+    document.getElementById('rTax30').textContent = fmt(tax30);
+    document.getElementById('rCess').textContent = fmt(cess);
+    document.getElementById('rTds1').textContent = fmt(tds1) + ' (Adjustable against total tax)';
+    document.getElementById('rNetCrypto').textContent = fmt(netProfit);
+
+    window._lastCrypto = { buy, sell, profit, totalTax, tds1, netProfit };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('cryptoBtnSave').addEventListener('click', () => {
+        const d = window._lastCrypto; if(!d) return;
+        const name = prompt('Save as:', `Crypto Tax ${fmt(d.totalTax)}`);
+        if(name) saveCalculation(name, { Buy: fmt(d.buy), Sell: fmt(d.sell), Profit: fmt(d.profit), TotalTax: fmt(d.totalTax), NetProfit: fmt(d.netProfit) });
+    });
+    document.getElementById('cryptoBtnShare').addEventListener('click', () => {
+        const d = window._lastCrypto; if(!d) return;
+        shareViaWhatsApp('Crypto Tax Calculator', `Gross Profit: ${fmt(d.profit)}\nTax (31.2% Flat): ${fmt(d.totalTax)}\n1% TDS: ${fmt(d.tds1)}\nNet In-Pocket Profit: ${fmt(d.netProfit)}`);
+    });
+    document.getElementById('cryptoBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

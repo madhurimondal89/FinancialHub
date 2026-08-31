@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#090d16" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fcd34d" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+    <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  
+  <!-- Rounded Base Background -->
+  <rect width="512" height="512" rx="110" fill="url(#bgGrad)" />
+  <rect width="504" height="504" x="4" y="4" rx="106" fill="none" stroke="url(#goldGrad)" stroke-width="6" opacity="0.4" />
+  
+  <!-- Center Emblem: Rupee + Growth Chart + Shield -->
+  <g transform="translate(80, 76)">
+    <!-- Growth Bars -->
+    <rect x="36" y="240" width="44" height="100" rx="10" fill="#334155" opacity="0.7"/>
+    <rect x="100" y="190" width="44" height="150" rx="10" fill="#475569" opacity="0.85"/>
+    <rect x="164" y="130" width="44" height="210" rx="10" fill="url(#goldGrad)"/>
+    <rect x="228" y="70" width="44" height="270" rx="10" fill="url(#emeraldGrad)" filter="url(#glow)"/>
+    
+    <!-- Trending Line Arrow -->
+    <path d="M 40 220 Q 140 160, 240 50" fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round" filter="url(#glow)"/>
+    <polygon points="236,36 264,48 250,76" fill="#ffffff" />
+    
+    <!-- Rupee Symbol Symbolism -->
+    <circle cx="100" cy="90" r="54" fill="url(#goldGrad)" filter="url(#glow)"/>
+    <text x="100" y="112" font-family="'Inter', sans-serif" font-size="64" font-weight="900" fill="#0f172a" text-anchor="middle">₹</text>
+  </g>
+</svg>

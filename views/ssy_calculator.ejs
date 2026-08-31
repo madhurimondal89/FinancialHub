@@ -48,6 +48,14 @@
     </div>
 <%- include('partials/ad_unit') %>
 </div>
+
+<!-- Save & Share Toolbar -->
+<div class="action-toolbar" id="ssyToolbar" style="display:none;">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="ssyBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="ssyBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="ssyBtnCopy">🔗 Copy Link</button>
+</div>
 <script>
 const fmt=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
 let ssyChart=null;
@@ -75,10 +83,24 @@ function calc(){
     document.getElementById('totalInt').textContent=fmt(totalInterest);
     document.getElementById('depPeriod').textContent=depositYears+' Yrs';
     document.getElementById('matureAge').textContent=maturityAge;
+    document.getElementById('ssyToolbar').style.display='flex';
+    window._lastSsy={dep,age,rate:parseFloat(document.getElementById('ssyRate').value),balance,totalDep,totalInterest};
     const ctx=document.getElementById('ssyChart').getContext('2d');
     if(ssyChart)ssyChart.destroy();
-    ssyChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'SSY Balance',data:balances,backgroundColor:'rgba(245,158,11,0.8)',borderRadius:4}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8'}}},scales:{x:{ticks:{color:'#64748b',maxTicksLimit:10},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#64748b',callback:v=>{if(v>=10000000)return'₹'+(v/10000000).toFixed(1)+'Cr';return'₹'+(v/100000).toFixed(0)+'L';}},grid:{color:'rgba(255,255,255,0.05)'}}}}});
+    ssyChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'SSY Balance',data:balances,backgroundColor:'rgba(245,158,11,0.8)',borderRadius:4}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8'}}},scales:{x:{ticks:{color:'#64748b',maxTicksLimit:10},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#64748b',callback:v=>{if(v>=10000000)return'\u20b9'+(v/10000000).toFixed(1)+'Cr';return'\u20b9'+(v/100000).toFixed(0)+'L';}},grid:{color:'rgba(255,255,255,0.05)'}}}}});
 }
 calc();
+document.addEventListener('DOMContentLoaded',function(){
+    document.getElementById('ssyBtnSave').addEventListener('click',function(){
+        const d=window._lastSsy; if(!d)return;
+        const name=prompt('Save this SSY calculation as:','SSY Maturity: '+fmt(d.balance));
+        if(name) saveCalculation(name,{annual:fmt(d.dep),rate:d.rate+'%',totalDeposit:fmt(d.totalDep),maturity:fmt(d.balance)});
+    });
+    document.getElementById('ssyBtnShare').addEventListener('click',function(){
+        const d=window._lastSsy; if(!d)return;
+        shareViaWhatsApp('SSY Calculator','Annual Deposit: '+fmt(d.dep)+'\nRate: '+d.rate+'%\nTotal Deposit: '+fmt(d.totalDep)+'\nMaturity Amount: '+fmt(d.balance));
+    });
+    document.getElementById('ssyBtnCopy').addEventListener('click',copyShareableURL);
+});
 </script>
 <%- include('partials/footer') %>

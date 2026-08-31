@@ -96,6 +96,7 @@
             const marketing = parseFloat(inputs.marketing.value) || 0, shipping = parseFloat(inputs.shipping.value) || 0, overheads = parseFloat(inputs.overheads.value) || 0;
             if (sp_unit === 0 || units === 0 || cp_unit === 0) { initialState.style.display = 'flex'; resultsState.style.display = 'none'; analysisSection.style.display = 'none'; if (barChart) barChart.destroy(); if (pieChart) pieChart.destroy(); return; }
             initialState.style.display = 'none'; resultsState.style.display = 'block'; analysisSection.style.display = 'block';
+            document.getElementById('plToolbar').style.display = 'flex';
             const totalRevenue = sp_unit * units, totalVariableCost = cp_unit * units, totalFixedCost = marketing + shipping + overheads;
             const totalCost = totalVariableCost + totalFixedCost, netProfitLoss = totalRevenue - totalCost;
             const profitMargin = totalRevenue === 0 ? 0 : (netProfitLoss / totalRevenue) * 100; const breakEvenUnits = (sp_unit > cp_unit) ? totalFixedCost / (sp_unit - cp_unit) : Infinity;
@@ -104,6 +105,7 @@
             const profitMarginEl = document.getElementById('profitMargin'); profitMarginEl.textContent = `${profitMargin.toFixed(2)}%`; profitMarginEl.className = `value ${profitMargin >= 0 ? 'profit' : 'loss'}`;
             document.getElementById('breakEven').textContent = isFinite(breakEvenUnits) ? `${Math.ceil(breakEvenUnits).toLocaleString('en-IN')} Units` : 'Unachievable';
             const breakEvenSP = (units === 0) ? 0 : (totalFixedCost / units) + cp_unit; document.getElementById('breakEvenSP').textContent = formatCurrency(breakEvenSP);
+            window._lastPL = { sp_unit, units, cp_unit, totalRevenue, totalCost, netProfitLoss, profitMargin, breakEvenUnits };
             const targets = [10, 20, 30, 40, 50]; let priceHtml = '', costHtml = '';
             targets.forEach(p => { const reqRev = totalCost / (1 - (p/100)); const reqSP = units === 0 ? 0 : reqRev / units; priceHtml += `<tr><td>${p}%</td><td>${formatCurrency(reqSP)}</td></tr>`; const targetTC = totalRevenue * (1 - (p/100)); const reqVC = targetTC - totalFixedCost; let reqCP = "Unachievable"; if (reqVC >= 0 && units > 0) { reqCP = formatCurrency(reqVC / units); } costHtml += `<tr><td>${p}%</td><td>${reqCP}</td></tr>`; });
             document.getElementById('priceScenariosBody').innerHTML = priceHtml; document.getElementById('costScenariosBody').innerHTML = costHtml;
@@ -118,7 +120,27 @@
         ['sp', 'units', 'cp'].forEach(id => { sliders[id].addEventListener('input', () => syncAndCalculate(sliders[id], inputs[id])); inputs[id].addEventListener('input', () => syncAndCalculate(inputs[id], sliders[id])); });
         ['marketing', 'shipping', 'overheads'].forEach(id => { inputs[id].addEventListener('input', calculateAndDisplay); });
         calculateAndDisplay();
+
+        document.getElementById('plBtnSave').addEventListener('click', () => {
+            const d = window._lastPL; if(!d) return;
+            const name = prompt('Save this P&L analysis as:', `P&L: ${formatCurrency(d.netProfitLoss)} (${d.profitMargin.toFixed(1)}% margin)`);
+            if(name) saveCalculation(name, { revenue: formatCurrency(d.totalRevenue), costs: formatCurrency(d.totalCost), netProfit: formatCurrency(d.netProfitLoss), margin: d.profitMargin.toFixed(2)+'%', units: d.units });
+        });
+        document.getElementById('plBtnShare').addEventListener('click', () => {
+            const d = window._lastPL; if(!d) return;
+            shareViaWhatsApp('Profit & Loss Calculator', `Units Sold: ${d.units}\nTotal Revenue: ${formatCurrency(d.totalRevenue)}\nTotal Cost: ${formatCurrency(d.totalCost)}\nNet Profit: ${formatCurrency(d.netProfitLoss)}\nProfit Margin: ${d.profitMargin.toFixed(2)}%`);
+        });
+        document.getElementById('plBtnCopy').addEventListener('click', copyShareableURL);
     });
 </script>
+
+
+<!-- Save & Share Toolbar -->
+<div class="action-toolbar" id="plToolbar" style="display:none;">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="plBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="plBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="plBtnCopy">🔗 Copy Link</button>
+</div>
 
 <%- include('partials/footer') %>

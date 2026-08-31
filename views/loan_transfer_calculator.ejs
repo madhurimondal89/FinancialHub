@@ -1,0 +1,115 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">🔄 Home Loan Balance Transfer Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate net savings after switching existing home loan to a lower interest rate bank</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <label class="form-label">Outstanding Loan Balance (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="ltOutstanding" value="4000000" step="50000" oninput="calculate()"></div>
+                <div id="ltWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label class="form-label">Existing Rate (% p.a.)</label>
+                    <div class="input-group"><input type="number" class="form-control" id="ltOldRate" value="9.25" step="0.1" oninput="calculate()"><span class="input-group-text">%</span></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">New Bank Rate (% p.a.)</label>
+                    <div class="input-group"><input type="number" class="form-control" id="ltNewRate" value="8.40" step="0.1" oninput="calculate()"><span class="input-group-text">%</span></div>
+                </div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <label class="form-label">Remaining Tenure (Yrs)</label>
+                    <div class="input-group"><input type="number" class="form-control" id="ltTenure" value="15" step="1" min="1" max="30" oninput="calculate()"><span class="input-group-text">Yrs</span></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Transfer Fees / Charges (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="ltCharges" value="15000" step="1000" oninput="calculate()"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Net Total Savings</p><p class="amount" id="ltNetSavings" style="color:var(--accent-green);">+₹3,84,620</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Existing Monthly EMI</div><div class="value" id="rOldEmi">₹41,188 / month</div></div>
+                    <div class="summary-item"><div class="label">New Reduced Monthly EMI</div><div class="value" style="color:var(--gold);" id="rNewEmi">₹39,170 / month</div></div>
+                    <div class="summary-item"><div class="label">Monthly Cash Saved</div><div class="value" style="color:var(--accent-green);" id="rMonthlySave">+₹2,018 / month</div></div>
+                    <div class="summary-item"><div class="label">Total Gross Interest Saved</div><div class="value" id="rGrossSave">₹3,99,620</div></div>
+                    <div class="summary-item"><div class="label">Switching Cost / Fee</div><div class="value" style="color:var(--accent-red);" id="rFeeCost">-₹15,000</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/loan-prepayment-calculator" class="related-card"><span class="icon">⚡</span><div class="title">Loan Prepayment</div><div class="desc">Save interest by prepaying</div></a></div>
+            <div class="col-md-4"><a href="/emi-calculator" class="related-card"><span class="icon">🏠</span><div class="title">Loan EMI</div><div class="desc">Amortization schedules</div></a></div>
+            <div class="col-md-4"><a href="/home-loan-eligibility" class="related-card"><span class="icon">🏡</span><div class="title">Loan Eligibility</div><div class="desc">Salary borrowing limit</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="ltToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="ltBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="ltBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="ltBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const P = parseFloat(document.getElementById('ltOutstanding').value)||0;
+    const oldRate = (parseFloat(document.getElementById('ltOldRate').value)||0) / 100;
+    const newRate = (parseFloat(document.getElementById('ltNewRate').value)||0) / 100;
+    const tenureYrs = parseFloat(document.getElementById('ltTenure').value)||0;
+    const charges = parseFloat(document.getElementById('ltCharges').value)||0;
+
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('ltWords');
+        if(el) el.textContent = convertNumberToIndianWords(P);
+    }
+
+    if(P <= 0 || tenureYrs <= 0 || oldRate <= 0 || newRate <= 0) return;
+
+    const n = tenureYrs * 12;
+    const rOld = oldRate / 12;
+    const rNew = newRate / 12;
+
+    const oldEmi = (P * rOld * Math.pow(1 + rOld, n)) / (Math.pow(1 + rOld, n) - 1);
+    const newEmi = (P * rNew * Math.pow(1 + rNew, n)) / (Math.pow(1 + rNew, n) - 1);
+
+    const oldTotal = oldEmi * n;
+    const newTotal = newEmi * n;
+    const grossSave = oldTotal - newTotal;
+    const netSavings = grossSave - charges;
+    const monthlySave = oldEmi - newEmi;
+
+    document.getElementById('ltNetSavings').textContent = (netSavings >= 0 ? '+' : '') + fmt(netSavings);
+    document.getElementById('rOldEmi').textContent = fmt(oldEmi) + ' / month';
+    document.getElementById('rNewEmi').textContent = fmt(newEmi) + ' / month';
+    document.getElementById('rMonthlySave').textContent = '+' + fmt(monthlySave) + ' / month';
+    document.getElementById('rGrossSave').textContent = fmt(grossSave);
+    document.getElementById('rFeeCost').textContent = '-' + fmt(charges);
+
+    window._lastLT = { P, oldRate: oldRate*100, newRate: newRate*100, tenureYrs, netSavings, monthlySave };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('ltBtnSave').addEventListener('click', () => {
+        const d = window._lastLT; if(!d) return;
+        const name = prompt('Save as:', `Balance Transfer Saved ${fmt(d.netSavings)}`);
+        if(name) saveCalculation(name, { Outstanding: fmt(d.P), OldRate: d.oldRate+'%', NewRate: d.newRate+'%', NetSavings: fmt(d.netSavings) });
+    });
+    document.getElementById('ltBtnShare').addEventListener('click', () => {
+        const d = window._lastLT; if(!d) return;
+        shareViaWhatsApp('Loan Balance Transfer Calculator', `Outstanding Loan: ${fmt(d.P)}\nOld Rate: ${d.oldRate}% ➔ New Rate: ${d.newRate}%\nMonthly Saving: ${fmt(d.monthlySave)}/mo\nNet Total Savings: ${fmt(d.netSavings)}`);
+    });
+    document.getElementById('ltBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

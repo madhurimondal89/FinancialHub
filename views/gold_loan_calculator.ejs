@@ -1,0 +1,114 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">👑 Gold Loan EMI & Per Gram Value Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate maximum loan against gold ornaments based on RBI 75% LTV regulations</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-3">
+                <label class="form-label">Gold Purity (Carats)</label>
+                <select class="form-select" id="glPurity" onchange="calculate()">
+                    <option value="22" selected>22 Karat (91.6% Pure) - Most Common</option>
+                    <option value="24">24 Karat (99.9% Pure Bullion)</option>
+                    <option value="18">18 Karat (75.0% Jewellery)</option>
+                </select>
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label class="form-label">Gold Weight (Grams)</label>
+                    <div class="input-group"><input type="number" class="form-control" id="glWeight" value="50" step="1" oninput="calculate()"><span class="input-group-text">Grams</span></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">24K Gold Rate / Gram (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="glRatePerGram" value="7300" step="50" oninput="calculate()"></div>
+                </div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <label class="form-label">Interest Rate (% p.a.)</label>
+                    <div class="input-group"><input type="number" class="form-control" id="glInterestRate" value="9.8" step="0.1" oninput="calculate()"><span class="input-group-text">%</span></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Tenure (Months)</label>
+                    <div class="input-group"><input type="number" class="form-control" id="glTenureMonths" value="12" step="1" min="1" max="36" oninput="calculate()"><span class="input-group-text">Mo</span></div>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <h4>📜 RBI LTV Norms (Loan-to-Value)</h4>
+                <p>Reserve Bank of India mandates maximum <strong>75% Loan to Value (LTV)</strong> ratio against gold jewellery market valuation.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Maximum Gold Loan Value</p><p class="amount" id="glMaxLoan">₹2,50,938</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Total Gold Market Value</div><div class="value" id="rMarketVal">₹3,34,583</div></div>
+                    <div class="summary-item"><div class="label">Per Gram Loan Eligibility</div><div class="value" style="color:var(--gold);" id="rPerGram">₹5,018 / gram</div></div>
+                    <div class="summary-item"><div class="label">Monthly EMI (if amortized)</div><div class="value" style="color:var(--accent-green);" id="rMonthlyEmi">₹22,036 / month</div></div>
+                    <div class="summary-item"><div class="label">Bullet Repayment Interest</div><div class="value" style="color:var(--accent-red);" id="rBulletInterest">₹24,592 (End of Tenure)</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/gold-calculator" class="related-card"><span class="icon">🥇</span><div class="title">Gold Investment</div><div class="desc">SGB, ETF & physical</div></a></div>
+            <div class="col-md-4"><a href="/personal-loan-calculator" class="related-card"><span class="icon">💳</span><div class="title">Personal Loan</div><div class="desc">Unsecured instant loan</div></a></div>
+            <div class="col-md-4"><a href="/emi-calculator" class="related-card"><span class="icon">🏠</span><div class="title">Loan EMI</div><div class="desc">General loan calculator</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="glToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="glBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="glBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="glBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const purity = parseInt(document.getElementById('glPurity').value)||22;
+    const weight = parseFloat(document.getElementById('glWeight').value)||0;
+    const rate24k = parseFloat(document.getElementById('glRatePerGram').value)||0;
+    const rateAnnual = (parseFloat(document.getElementById('glInterestRate').value)||0) / 100;
+    const months = parseFloat(document.getElementById('glTenureMonths').value)||0;
+
+    if(weight <= 0 || rate24k <= 0 || months <= 0) return;
+
+    const purityFactor = purity / 24;
+    const effectiveRatePerGram = rate24k * purityFactor;
+    const totalMarketVal = effectiveRatePerGram * weight;
+    const maxLoan = totalMarketVal * 0.75; // 75% RBI LTV
+    const perGramLoan = maxLoan / weight;
+
+    // Monthly amortized EMI
+    const r = rateAnnual / 12;
+    const emi = (maxLoan * r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
+    // Bullet interest (Simple interest accrued)
+    const bulletInterest = maxLoan * (rateAnnual * (months / 12));
+
+    document.getElementById('glMaxLoan').textContent = fmt(maxLoan);
+    document.getElementById('rMarketVal').textContent = fmt(totalMarketVal);
+    document.getElementById('rPerGram').textContent = fmt(perGramLoan) + ' / gram';
+    document.getElementById('rMonthlyEmi').textContent = fmt(emi) + ' / month';
+    document.getElementById('rBulletInterest').textContent = fmt(bulletInterest) + ' (End of Tenure)';
+
+    window._lastGL = { weight, purity, maxLoan, perGramLoan, totalMarketVal };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('glBtnSave').addEventListener('click', () => {
+        const d = window._lastGL; if(!d) return;
+        const name = prompt('Save as:', `Gold Loan ${fmt(d.maxLoan)} (${d.weight}g)`);
+        if(name) saveCalculation(name, { Weight: d.weight+'g', Purity: d.purity+'K', MaxLoan: fmt(d.maxLoan), PerGram: fmt(d.perGramLoan) });
+    });
+    document.getElementById('glBtnShare').addEventListener('click', () => {
+        const d = window._lastGL; if(!d) return;
+        shareViaWhatsApp('Gold Loan Calculator', `Gold Weight: ${d.weight} Grams (${d.purity}K)\nMarket Value: ${fmt(d.totalMarketVal)}\nMax Loan Eligibility (75% LTV): ${fmt(d.maxLoan)}\nPer Gram Value: ${fmt(d.perGramLoan)}/g`);
+    });
+    document.getElementById('glBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

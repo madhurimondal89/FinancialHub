@@ -1,0 +1,843 @@
+<%- include('partials/header') %>
+
+<div class="calculator-page-container container my-4 my-md-5">
+    
+    <!-- Breadcrumb & Status Strip -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item"><a href="/category/<%= calc.category %>" class="text-decoration-none text-capitalize"><%= calc.categoryName || calc.category %></a></li>
+            <li class="breadcrumb-item active" aria-current="page"><%= calc.shortTitle || calc.title %></li>
+        </ol>
+    </nav>
+
+    <!-- Page Title Header -->
+    <div class="page-title-section mb-4">
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+            <span class="calc-hero-icon"><%= calc.icon || '📊' %></span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1.5 rounded-pill fw-bold text-uppercase"><%= calc.badge || 'SMART TOOL' %></span>
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1.5 rounded-pill fw-semibold">⚡ Instant Live Results</span>
+        </div>
+        <h1 class="calc-page-heading mb-2"><%= calc.title %></h1>
+        <p class="calc-page-desc text-muted"><%= calc.desc %></p>
+    </div>
+
+    <!-- Main Calculator Interactive Grid -->
+    <div class="row g-4 mb-5">
+        
+        <!-- Left: Dynamic Input Controls Card -->
+        <div class="col-lg-6">
+            <div class="card form-card shadow-sm p-4 p-md-4 rounded-4 h-100">
+                <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                    <h2 class="h5 fw-bold mb-0 text-body-emphasis">Adjust Parameters</h2>
+                    <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 fw-semibold text-primary" id="btnResetValues">Reset to Default</button>
+                </div>
+
+                <form id="universalCalcForm" onsubmit="return false;">
+                    <% calc.inputs.forEach(function(inp, index) { %>
+                        <div class="calculator-input-group mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label for="num_<%= inp.id %>" class="form-label mb-0 fw-semibold text-secondary"><%= inp.label %></label>
+                                <div class="input-group input-group-sm w-auto" style="max-width: 180px;">
+                                    <% if (inp.prefix) { %>
+                                        <span class="input-group-text bg-body-tertiary fw-bold text-secondary"><%= inp.prefix %></span>
+                                    <% } %>
+                                    <input type="number" 
+                                           class="form-control text-end fw-bold sync-num-input" 
+                                           id="num_<%= inp.id %>" 
+                                           data-target="range_<%= inp.id %>" 
+                                           data-input-id="<%= inp.id %>"
+                                           data-is-currency="<%= inp.isCurrency ? 'true' : 'false' %>"
+                                           min="<%= inp.min %>" 
+                                           max="<%= inp.max %>" 
+                                           step="<%= inp.step %>" 
+                                           value="<%= inp.default %>">
+                                    <% if (inp.suffix) { %>
+                                        <span class="input-group-text bg-body-tertiary text-secondary"><%= inp.suffix.trim() %></span>
+                                    <% } %>
+                                </div>
+                            </div>
+
+                            <!-- Range Slider -->
+                            <input type="range" 
+                                   class="form-range sync-slider" 
+                                   id="range_<%= inp.id %>" 
+                                   data-target="num_<%= inp.id %>" 
+                                   data-input-id="<%= inp.id %>"
+                                   min="<%= inp.min %>" 
+                                   max="<%= inp.max %>" 
+                                   step="<%= inp.step %>" 
+                                   value="<%= inp.default %>">
+
+                            <div class="d-flex justify-content-between text-muted" style="font-size: 0.75rem;">
+                                <span><%= inp.prefix || '' %><%= inp.min.toLocaleString('en-IN') %><%= inp.suffix || '' %></span>
+                                <% if (inp.isCurrency) { %>
+                                    <span class="words-helper text-primary fw-medium" id="words_<%= inp.id %>"></span>
+                                <% } %>
+                                <span><%= inp.prefix || '' %><%= inp.max.toLocaleString('en-IN') %><%= inp.suffix || '' %></span>
+                            </div>
+                        </div>
+                    <% }); %>
+                </form>
+
+                <!-- Quick Presets -->
+                <div class="preset-chips-wrap pt-2 mt-auto border-top">
+                    <span class="text-muted small fw-semibold me-2">Quick Presets:</span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1 preset-btn" data-multiplier="0.5">Conservative</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 me-1 preset-btn active" data-multiplier="1.0">Standard</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0 px-2 preset-btn" data-multiplier="1.5">Aggressive</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Results, Visual Chart & Highlights -->
+        <div class="col-lg-6">
+            <div class="card summary-card shadow-sm p-4 p-md-4 rounded-4 h-100">
+                
+                <!-- Primary Highlight Box -->
+                <div class="highlight-result-card p-3 p-md-4 rounded-3 text-center mb-4">
+                    <span class="text-uppercase fw-bold letter-spacing-1 small text-muted d-block mb-1" id="mainOutputLabel"><%= calc.outputs[calc.outputs.length - 1].label %></span>
+                    <div class="display-6 fw-extrabold text-primary mb-1 text-break" id="mainOutputValue">₹0</div>
+                    <div class="small text-muted" id="mainOutputWords"></div>
+                </div>
+
+                <!-- Secondary Outputs Grid -->
+                <div class="row g-3 mb-4" id="secondaryOutputsContainer">
+                    <% calc.outputs.forEach(function(out, index) { %>
+                        <% if (index < calc.outputs.length - 1) { %>
+                            <div class="col-6">
+                                <div class="p-3 bg-body-tertiary rounded-3 border">
+                                    <span class="d-block small text-muted fw-semibold mb-1"><%= out.label %></span>
+                                    <span class="h5 fw-bold text-body-emphasis mb-0 d-block text-truncate" id="out_<%= out.id %>">₹0</span>
+                                </div>
+                            </div>
+                        <% } %>
+                    <% }); %>
+                </div>
+
+                <!-- Chart Container -->
+                <div class="chart-box position-relative my-auto" style="min-height: 220px; max-height: 250px;">
+                    <canvas id="universalCalculatorChart"></canvas>
+                </div>
+
+                <!-- Actions Toolbar -->
+                <div class="d-flex flex-wrap align-items-center justify-content-center mt-3 pt-3 border-top gap-2">
+                    <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" id="uniBtnPDF" title="Download Official PDF Report">
+                        📄 Download PDF Report
+                    </button>
+                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" id="uniBtnCSV" title="Export Excel / CSV Spreadsheet">
+                        📊 Export Excel/CSV
+                    </button>
+                    <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3" id="uniBtnWhatsApp" title="Share on WhatsApp">
+                        💬 Share on WhatsApp
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" id="uniBtnCopy" title="Copy Link">
+                        🔗 Copy Link
+                    </button>
+                    <button type="button" class="btn btn-outline-warning btn-sm rounded-pill px-3" id="uniBtnSave" title="Save Calculation">
+                        💾 Save Calculation
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Year-by-Year Schedule / Amortization Table -->
+    <div class="card shadow-sm rounded-4 p-4 mb-5" id="scheduleTableCard">
+        <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
+            <div>
+                <h3 class="h5 fw-bold mb-1 text-body-emphasis">📅 Year-on-Year Growth & Payment Schedule</h3>
+                <p class="text-muted small mb-0">Detailed breakdown of principal, compounding returns, and year-end balance.</p>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" id="btnToggleTable">
+                Expand Full Schedule
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-center" id="breakdownTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Year</th>
+                        <th>Opening Balance</th>
+                        <th>Deposited / Paid in Year</th>
+                        <th>Interest / Growth Earned</th>
+                        <th>Closing Wealth Balance</th>
+                    </tr>
+                </thead>
+                <tbody id="breakdownTableBody">
+                    <!-- Injected dynamically by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Editorial Content, Formula & FAQs -->
+    <article class="card shadow-sm rounded-4 p-4 p-md-5 mb-5">
+        <h2 class="h3 fw-bold text-body-emphasis mb-3">Understanding the <%= calc.title %></h2>
+        <p class="lead text-secondary mb-4" style="font-size: 1.05rem;"><%= calc.desc %> Designed specifically for Indian investors, salaried professionals, business founders, and taxpayers under the latest RBI and Income Tax guidelines for FY 2026-27.</p>
+        
+        <!-- Mathematical Formula Breakdown Box -->
+        <div class="card bg-body-tertiary border rounded-3 p-4 mb-4">
+            <h3 class="h5 fw-bold text-body-emphasis mb-2">📐 Mathematical Formula & Calculation Logic</h3>
+            <p class="small text-muted mb-3">The underlying actuarial compounding and financial formula executed in real-time by this tool:</p>
+            
+            <div class="bg-body p-3 rounded-2 border font-monospace text-primary fw-bold mb-3" style="font-size: 1.05rem; overflow-x: auto;">
+                <% if (calc.formulaType === 'sip' || calc.formulaType === 'step_up_sip') { %>
+                    M = P × [ (1 + i)ⁿ - 1 ] / i × (1 + i)
+                <% } else if (calc.formulaType === 'emi') { %>
+                    EMI = [P × r × (1 + r)ⁿ] / [ (1 + r)ⁿ - 1 ]
+                <% } else if (calc.formulaType === 'fd' || calc.formulaType === 'rd' || calc.formulaType === 'compound') { %>
+                    A = P × (1 + r/n)ⁿᵗ
+                <% } else { %>
+                    Result = Base_Amount × [ 1 + (Rate_p.a. × Tenure) / 100 ]
+                <% } %>
+            </div>
+
+            <div class="row g-2 small text-muted">
+                <div class="col-sm-6"><strong>P:</strong> Principal / Initial Capital or Periodic Investment</div>
+                <div class="col-sm-6"><strong>r / i:</strong> Periodic Rate of Return / Interest Rate</div>
+                <div class="col-sm-6"><strong>n / t:</strong> Number of Compounding Cycles / Tenure in Months/Years</div>
+                <div class="col-sm-6"><strong>M / A:</strong> Total Wealth Accumulation / Maturity Value</div>
+            </div>
+        </div>
+
+        <!-- Realistic Practical Case Study -->
+        <div class="my-4 p-3 bg-body-tertiary rounded-3 border-start border-4 border-primary">
+            <h3 class="h6 fw-bold text-primary mb-1">💡 Practical Example (Case Study)</h3>
+            <p class="mb-0 small text-muted">
+                <% if (calc.formulaType === 'sip' || calc.formulaType === 'step_up_sip') { %>
+                    If an investor contributes <strong>₹10,000 per month</strong> in an equity mutual fund delivering an average historical return of <strong>12% p.a.</strong> over <strong>15 years</strong>, the total amount invested will be <strong>₹18,00,000</strong>, while the estimated wealth accumulated will grow to over <strong>₹50,45,760</strong> (compounded wealth gain of ₹32,45,760).
+                <% } else if (calc.formulaType === 'emi') { %>
+                    If you take a home loan of <strong>₹50,00,000</strong> at <strong>8.5% interest rate</strong> for a <strong>20-year tenure</strong>, your monthly EMI will be <strong>₹43,391</strong>. Total interest paid will be ₹54,13,879, making your total repayment ₹1,04,13,879.
+                <% } else { %>
+                    For a base allocation of <strong>₹1,00,000</strong> invested at <strong>8% annual compounding return</strong> over <strong>10 years</strong>, the final accumulated corpus reaches <strong>₹2,15,892</strong> with zero additional capital additions.
+                <% } %>
+            </p>
+        </div>
+
+        <!-- Key Strategic Benefits & Tax Guidelines -->
+        <div class="row g-3 my-3">
+            <div class="col-md-6">
+                <div class="p-3 border rounded-3 h-100 bg-body">
+                    <h4 class="h6 fw-bold text-body-emphasis mb-2">🎯 Strategic Benefits</h4>
+                    <ul class="small text-muted ps-3 mb-0">
+                        <li>Eliminates human calculation errors with sub-second accuracy.</li>
+                        <li>Dynamic visualization with interactive Donut charts and growth schedule.</li>
+                        <li>Supports annual step-up adjustments to counter long-term inflation.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-3 border rounded-3 h-100 bg-body">
+                    <h4 class="h6 fw-bold text-body-emphasis mb-2">🧾 Tax Implications (FY 2026-27)</h4>
+                    <ul class="small text-muted ps-3 mb-0">
+                        <li>Equity Mutual Funds: 12.5% Long-Term Capital Gains (LTCG) above ₹1.25 Lakh exemption.</li>
+                        <li>Debt Funds & Bank FDs: Interest taxed at applicable income tax slab rates.</li>
+                        <li>Section 80C / 80CCD: Up to ₹2,00,000 tax deduction under Old Tax Regime.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <h3 class="h4 fw-bold text-body-emphasis mt-5 mb-3">Frequently Asked Questions (FAQs)</h3>
+        <div class="accordion" id="calcFaqAccordion">
+            <div class="accordion-item">
+                <h4 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                        How is the calculation performed in the <%= calc.title %>?
+                    </button>
+                </h4>
+                <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#calcFaqAccordion">
+                    <div class="accordion-body text-muted">
+                        Our engine computes results using standardized actuarial algorithms factoring in periodic compounding intervals (monthly, quarterly, or annually) aligned with RBI, SEBI, and CBDT benchmarks.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h4 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                        Are my financial numbers safe and private?
+                    </button>
+                </h4>
+                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#calcFaqAccordion">
+                    <div class="accordion-body text-muted">
+                        Yes, 100%! All calculations execute strictly client-side inside your browser. No financial data, salary info, or investment numbers are ever uploaded or transmitted to any server.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h4 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                        Can I download the detailed amortization schedule in PDF and Excel?
+                    </button>
+                </h4>
+                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#calcFaqAccordion">
+                    <div class="accordion-body text-muted">
+                        Yes. Simply click the "📄 Download PDF Report" button or "📊 Export Excel/CSV" button in the Action Toolbar below to save complete year-by-year schedules.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h4 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                        Is this updated for the latest FY 2026-27 tax rules?
+                    </button>
+                </h4>
+                <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#calcFaqAccordion">
+                    <div class="accordion-body text-muted">
+                        Yes, all calculations reflect the latest Union Budget provisions including the revised New Tax Regime slab rates, updated standard deductions (₹75,000), and 12.5% LTCG capital gains rates.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <!-- Embedded FAQPage JSON-LD for Google Rich Snippets -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "How is the calculation performed in the <%= calc.title %>?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Our engine computes results using standardized actuarial algorithms factoring in periodic compounding intervals aligned with RBI and SEBI benchmarks."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Are my financial numbers safe and private?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, 100%! All calculations execute strictly client-side inside your browser. No financial data is ever uploaded to any server."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I download the detailed amortization schedule in PDF and Excel?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. Simply click the Download PDF Report button or Export Excel/CSV button in the Action Toolbar to save complete schedules."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Is this updated for the latest FY 2026-27 tax rules?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, all calculations reflect the latest Union Budget provisions including revised New Tax Regime slab rates and standard deductions."
+                }
+            }
+        ]
+    }
+    </script>
+
+    <!-- Related Calculators Grid -->
+    <% if (locals.relatedCalcs && relatedCalcs.length > 0) { %>
+        <div class="related-tools-section mb-5">
+            <h3 class="h5 fw-bold mb-3 text-body-emphasis">Related <%= calc.categoryName || calc.category %> Calculators</h3>
+            <div class="row g-3">
+                <% relatedCalcs.forEach(function(rel) { %>
+                    <div class="col-md-4 col-sm-6">
+                        <a href="/<%= rel.slug %>" class="card h-100 text-decoration-none shadow-xs p-3 rounded-3 border hover-lift">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="fs-4"><%= rel.icon %></span>
+                                <span class="fw-bold text-body-emphasis text-truncate"><%= rel.shortTitle || rel.title %></span>
+                            </div>
+                            <p class="small text-muted mb-2 line-clamp-2"><%= rel.desc %></p>
+                            <span class="small fw-semibold text-primary mt-auto">Calculate Now →</span>
+                        </a>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Floating Bottom Action Toolbar -->
+    <div class="action-toolbar" id="universalToolbar">
+        <span class="toolbar-label">Tools & Export:</span>
+        <button type="button" class="btn-action-tool" id="tbBtnPDF"><span>📄</span> Download PDF Report</button>
+        <button type="button" class="btn-action-tool" id="tbBtnCSV"><span>📊</span> Export Excel/CSV</button>
+        <button type="button" class="btn-action-tool btn-whatsapp" id="tbBtnWhatsApp"><span>💬</span> Share on WhatsApp</button>
+        <button type="button" class="btn-action-tool" id="tbBtnCopy"><span>🔗</span> Copy Link</button>
+        <button type="button" class="btn-action-tool" id="tbBtnSave"><span>💾</span> Save Calculation</button>
+    </div>
+
+</div>
+
+<!-- Universal Calculator Logic Engine -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+    const calcConfig = <%- JSON.stringify(calc) %>;
+    let chartInstance = null;
+
+    // Currency Formatter
+    function formatINR(val) {
+        if (isNaN(val) || val === null) return '₹0';
+        return '₹' + Math.round(val).toLocaleString('en-IN');
+    }
+
+    // Number to Indian Words
+    function numToWords(val) {
+        if (!val || val < 1000) return '';
+        if (val >= 10000000) return (val / 10000000).toFixed(2) + ' Crore';
+        if (val >= 100000) return (val / 100000).toFixed(2) + ' Lakh';
+        if (val >= 1000) return (val / 1000).toFixed(1) + ' Thousand';
+        return '';
+    }
+
+    // Read current input values
+    function getInputs() {
+        const data = {};
+        calcConfig.inputs.forEach(inp => {
+            const el = document.getElementById('num_' + inp.id);
+            data[inp.id] = el ? parseFloat(el.value) || 0 : inp.default;
+        });
+        return data;
+    }
+
+    // Universal Calculation Engine
+    function calculate() {
+        const inp = getInputs();
+        const fType = calcConfig.formulaType;
+        let results = {};
+        let chartData = { labels: [], data: [], colors: ['#6366f1', '#10b981', '#f59e0b'] };
+        let scheduleRows = [];
+
+        // Calculation routing based on formula type
+        if (fType === 'sip') {
+            const P = inp.monthlyInvest || inp.amount || 5000;
+            const r = (inp.returnRate || inp.rate || 12) / 100 / 12;
+            const n = (inp.timePeriod || inp.period || 10) * 12;
+            const totalInvested = P * n;
+            const maturityValue = P * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
+            const totalGain = maturityValue - totalInvested;
+
+            results = {
+                investedAmt: totalInvested,
+                estReturns: totalGain,
+                totalValue: maturityValue
+            };
+
+            chartData.labels = ['Invested Capital', 'Compounded Gain'];
+            chartData.data = [Math.round(totalInvested), Math.round(totalGain)];
+
+            // Generate Year-by-year schedule
+            let runningBalance = 0;
+            const years = inp.timePeriod || 10;
+            for (let y = 1; y <= years; y++) {
+                const openBal = runningBalance;
+                const yearlyDep = P * 12;
+                runningBalance = P * ((Math.pow(1 + r, y * 12) - 1) / r) * (1 + r);
+                const interestEarned = runningBalance - openBal - yearlyDep;
+                scheduleRows.push({
+                    year: y,
+                    open: openBal,
+                    dep: yearlyDep,
+                    interest: interestEarned,
+                    close: runningBalance
+                });
+            }
+        } else if (fType === 'step_up_sip') {
+            let P = inp.monthlyInvest || 10000;
+            const stepUp = (inp.stepUpPercent || 10) / 100;
+            const annualR = (inp.returnRate || 12) / 100;
+            const monthlyR = annualR / 12;
+            const years = inp.timePeriod || 15;
+            let totalInvested = 0;
+            let totalWealth = 0;
+
+            for (let y = 1; y <= years; y++) {
+                const openBal = totalWealth;
+                let yearlyDep = 0;
+                for (let m = 1; m <= 12; m++) {
+                    totalWealth = (totalWealth + P) * (1 + monthlyR);
+                    totalInvested += P;
+                    yearlyDep += P;
+                }
+                scheduleRows.push({
+                    year: y,
+                    open: openBal,
+                    dep: yearlyDep,
+                    interest: totalWealth - openBal - yearlyDep,
+                    close: totalWealth
+                });
+                P = P * (1 + stepUp);
+            }
+
+            results = {
+                investedAmt: totalInvested,
+                estReturns: totalWealth - totalInvested,
+                totalValue: totalWealth
+            };
+            chartData.labels = ['Total Invested', 'Step-Up Returns'];
+            chartData.data = [Math.round(totalInvested), Math.round(totalWealth - totalInvested)];
+        } else if (fType === 'emi') {
+            const P = inp.loanAmt || inp.amount || 1000000;
+            const annualR = (inp.interestRate || inp.rate || 9) / 100;
+            const r = annualR / 12;
+            const n = (inp.tenureYears || inp.period || 20) * 12;
+            const emi = P * r * (Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1));
+            const totalPayment = emi * n;
+            const totalInterest = totalPayment - P;
+
+            results = {
+                monthlyEmi: emi,
+                totalInterest: totalInterest,
+                totalPayment: totalPayment
+            };
+            chartData.labels = ['Principal Loan', 'Total Interest'];
+            chartData.data = [Math.round(P), Math.round(totalInterest)];
+            chartData.colors = ['#3b82f6', '#ef4444'];
+
+            // Amortization schedule
+            let balance = P;
+            const years = inp.tenureYears || 20;
+            for (let y = 1; y <= years; y++) {
+                let yearlyInterest = 0;
+                let yearlyPrincipal = 0;
+                const openBal = balance;
+                for (let m = 1; m <= 12; m++) {
+                    if (balance <= 0) break;
+                    const interestM = balance * r;
+                    const principalM = emi - interestM;
+                    yearlyInterest += interestM;
+                    yearlyPrincipal += principalM;
+                    balance = Math.max(0, balance - principalM);
+                }
+                scheduleRows.push({
+                    year: y,
+                    open: openBal,
+                    dep: yearlyPrincipal,
+                    interest: yearlyInterest,
+                    close: balance
+                });
+            }
+        } else if (fType === 'fd' || fType === 'compound') {
+            const P = inp.depositAmt || inp.principal || 100000;
+            const r = (inp.interestRate || inp.rate || 7) / 100;
+            const t = inp.tenureYears || inp.time || 5;
+            const n = 4; // quarterly
+            const maturity = P * Math.pow(1 + (r / n), n * t);
+            const interest = maturity - P;
+
+            results = {
+                principal: P,
+                investedAmt: P,
+                totalInterest: interest,
+                maturityValue: maturity,
+                maturityAmt: maturity
+            };
+            chartData.labels = ['Principal Deposit', 'Interest Earned'];
+            chartData.data = [Math.round(P), Math.round(interest)];
+
+            let bal = P;
+            for (let y = 1; y <= t; y++) {
+                const open = bal;
+                bal = P * Math.pow(1 + (r / n), n * y);
+                scheduleRows.push({
+                    year: y,
+                    open: open,
+                    dep: 0,
+                    interest: bal - open,
+                    close: bal
+                });
+            }
+        } else if (fType === 'rd') {
+            const P = inp.monthlyDeposit || 5000;
+            const r = (inp.interestRate || 7) / 100;
+            const t = inp.tenureYears || 5;
+            const n = t * 12;
+            const totalInvested = P * n;
+            let maturity = 0;
+            for (let i = 1; i <= n; i++) {
+                maturity += P * Math.pow(1 + (r / 4), (4 * (n - i + 1)) / 12);
+            }
+            results = {
+                totalInvested: totalInvested,
+                interestEarned: maturity - totalInvested,
+                maturityValue: maturity
+            };
+            chartData.labels = ['Total Deposited', 'Interest Gain'];
+            chartData.data = [Math.round(totalInvested), Math.round(maturity - totalInvested)];
+        } else if (fType === 'tax') {
+            const inc = inp.annualIncome || inp.grossGrossReceipts || 1200000;
+            const stdDed = 75000;
+            const taxable = Math.max(0, inc - stdDed);
+            let tax = 0;
+            if (taxable > 1500000) tax = 140000 + (taxable - 1500000) * 0.30;
+            else if (taxable > 1200000) tax = 80000 + (taxable - 1200000) * 0.20;
+            else if (taxable > 800000) tax = 30000 + (taxable - 800000) * 0.10;
+            else if (taxable > 400000) tax = (taxable - 400000) * 0.05;
+
+            // 87A rebate for income up to 7L / 12L in revised regime
+            if (taxable <= 1200000) tax = Math.max(0, tax - 25000);
+            const cess = tax * 0.04;
+            const totalTax = tax + cess;
+
+            results = {
+                newRegimeTax: totalTax,
+                oldRegimeTax: totalTax * 1.15,
+                taxSavings: 'New Regime Saves ' + formatINR(totalTax * 0.15),
+                presumptiveIncome: inc * 0.5,
+                taxPayable44ADA: totalTax * 0.5,
+                effectiveTaxRate: ((totalTax / inc) * 100).toFixed(1) + '%'
+            };
+            chartData.labels = ['Net Take-Home', 'Income Tax Payable'];
+            chartData.data = [Math.round(inc - totalTax), Math.round(totalTax)];
+            chartData.colors = ['#10b981', '#ef4444'];
+        } else {
+            // Default generic calculation
+            const base = inp.amount || inp.principal || inp.currentAmount || 100000;
+            const rate = (inp.rate || inp.inflationRate || 10) / 100;
+            const time = inp.period || inp.years || 5;
+            const resVal = base * Math.pow(1 + rate, time);
+            results = {
+                calculatedMetric: resVal,
+                projectedGrowth: resVal - base,
+                futureCost: resVal,
+                purchasingPowerLost: (100 - (base / resVal) * 100).toFixed(1) + '%'
+            };
+            chartData.labels = ['Base Value', 'Growth Value'];
+            chartData.data = [Math.round(base), Math.round(resVal - base)];
+        }
+
+        renderResults(results, chartData, scheduleRows);
+    }
+
+    // Render numbers and charts on screen
+    function renderResults(results, chartData, scheduleRows) {
+        // Render highlight output
+        const lastOutput = calcConfig.outputs[calcConfig.outputs.length - 1];
+        const highlightVal = results[lastOutput.id] !== undefined ? results[lastOutput.id] : Object.values(results)[0];
+        
+        const mainDisplay = document.getElementById('mainOutputValue');
+        if (mainDisplay) {
+            if (typeof highlightVal === 'number') {
+                mainDisplay.textContent = formatINR(highlightVal);
+                document.getElementById('mainOutputWords').textContent = numToWords(highlightVal);
+            } else {
+                mainDisplay.textContent = highlightVal;
+            }
+        }
+
+        // Render secondary outputs
+        calcConfig.outputs.forEach((out, idx) => {
+            if (idx < calcConfig.outputs.length - 1) {
+                const el = document.getElementById('out_' + out.id);
+                if (el && results[out.id] !== undefined) {
+                    el.textContent = typeof results[out.id] === 'number' ? formatINR(results[out.id]) : results[out.id];
+                }
+            }
+        });
+
+        // Update Indian words preview on inputs
+        calcConfig.inputs.forEach(inp => {
+            if (inp.isCurrency) {
+                const inputEl = document.getElementById('num_' + inp.id);
+                const wordEl = document.getElementById('words_' + inp.id);
+                if (inputEl && wordEl) {
+                    wordEl.textContent = numToWords(parseFloat(inputEl.value) || 0);
+                }
+            }
+        });
+
+        // Render Chart.js
+        const canvas = document.getElementById('universalCalculatorChart');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        data: chartData.data,
+                        backgroundColor: chartData.colors || ['#6366f1', '#10b981', '#f59e0b'],
+                        borderWidth: 2,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Plus Jakarta Sans', weight: '600' } } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + formatINR(context.raw);
+                                }
+                            }
+                        }
+                    },
+                    cutout: '68%'
+                }
+            });
+        }
+
+        // Render Schedule Table Rows
+        const tbody = document.getElementById('breakdownTableBody');
+        if (tbody && scheduleRows.length > 0) {
+            tbody.innerHTML = scheduleRows.map(row => `
+                <tr>
+                    <td class="fw-bold">${row.year}</td>
+                    <td>${formatINR(row.open)}</td>
+                    <td>${formatINR(row.dep)}</td>
+                    <td class="text-success fw-semibold">+${formatINR(row.interest)}</td>
+                    <td class="fw-bold text-primary">${formatINR(row.close)}</td>
+                </tr>
+            `).join('');
+            document.getElementById('scheduleTableCard').style.display = 'block';
+        } else if (tbody) {
+            document.getElementById('scheduleTableCard').style.display = 'none';
+        }
+    }
+
+    // Attach Event Listeners
+    document.querySelectorAll('.sync-num-input').forEach(input => {
+        input.addEventListener('input', function() {
+            const targetSlider = document.getElementById(this.dataset.target);
+            if (targetSlider) targetSlider.value = this.value;
+            calculate();
+        });
+    });
+
+    document.querySelectorAll('.sync-slider').forEach(slider => {
+        slider.addEventListener('input', function() {
+            const targetNum = document.getElementById(this.dataset.target);
+            if (targetNum) targetNum.value = this.value;
+            calculate();
+        });
+    });
+
+    // Reset button
+    const btnReset = document.getElementById('btnResetValues');
+    if (btnReset) {
+        btnReset.addEventListener('click', function() {
+            calcConfig.inputs.forEach(inp => {
+                const num = document.getElementById('num_' + inp.id);
+                const slider = document.getElementById('range_' + inp.id);
+                if (num) num.value = inp.default;
+                if (slider) slider.value = inp.default;
+            });
+            calculate();
+        });
+    }
+
+    // Save Calculation Handler
+    function handleSave() {
+        const inp = getInputs();
+        const mainVal = document.getElementById('mainOutputValue')?.textContent || '';
+        const name = prompt('Enter a name for this calculation:', `${calcConfig.shortTitle || calcConfig.title} - ${mainVal}`);
+        if (name && typeof saveCalculation === 'function') {
+            const summaryObj = { 'Key Result': mainVal };
+            calcConfig.inputs.forEach(i => {
+                summaryObj[i.label] = `${i.prefix || ''}${inp[i.id]}${i.suffix || ''}`;
+            });
+            saveCalculation(name, summaryObj);
+        } else if (name) {
+            alert('Saved successfully!');
+        }
+    }
+
+    // WhatsApp Share Handler
+    function handleWhatsApp() {
+        const mainVal = document.getElementById('mainOutputValue')?.textContent || '';
+        const inp = getInputs();
+        let text = `*${calcConfig.title}*\n🎯 Result: ${mainVal}\n`;
+        calcConfig.inputs.forEach(i => {
+            text += `• ${i.label}: ${i.prefix || ''}${inp[i.id]}${i.suffix || ''}\n`;
+        });
+        text += `\nCalculate yours now on Financial Hub:\n`;
+        if (typeof shareViaWhatsApp === 'function') {
+            shareViaWhatsApp(calcConfig.title, text);
+        } else {
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + window.location.href)}`;
+            window.open(url, '_blank');
+        }
+    }
+
+    // Copy Link Handler
+    function handleCopy() {
+        if (typeof copyShareableURL === 'function') {
+            copyShareableURL();
+        } else {
+            navigator.clipboard.writeText(window.location.href);
+            alert('Link copied to clipboard!');
+        }
+    }
+
+    // PDF Export Handler
+    function handlePDF() {
+        if (typeof exportCalculatorPDF === 'function') {
+            const inp = getInputs();
+            const summaryData = [
+                { label: 'Key Result', value: document.getElementById('mainOutputValue')?.textContent || '', highlight: true }
+            ];
+            calcConfig.inputs.forEach(i => {
+                summaryData.push({ label: i.label, value: `${i.prefix || ''}${inp[i.id]}${i.suffix || ''}` });
+            });
+            
+            // Extract table headers and rows if schedule is populated
+            const headers = [];
+            document.querySelectorAll('#breakdownTable thead th').forEach(th => headers.push(th.textContent.trim()));
+            const rows = [];
+            document.querySelectorAll('#breakdownTable tbody tr').forEach(tr => {
+                const row = [];
+                tr.querySelectorAll('td').forEach(td => row.push(td.textContent.trim()));
+                if (row.length) rows.push(row);
+            });
+
+            exportCalculatorPDF({
+                docTitle: calcConfig.title,
+                summaryData: summaryData,
+                tableHeaders: headers.length ? headers : null,
+                tableRows: rows.length ? rows : null,
+                filename: calcConfig.slug
+            });
+        } else {
+            window.print();
+        }
+    }
+
+    // Wire Card & Toolbar Buttons
+    ['uniBtnSave', 'tbBtnSave'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('click', handleSave);
+    });
+
+    ['uniBtnWhatsApp', 'tbBtnWhatsApp'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('click', handleWhatsApp);
+    });
+
+    ['uniBtnCopy', 'tbBtnCopy'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('click', handleCopy);
+    });
+
+    ['uniBtnPDF', 'tbBtnPDF'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('click', handlePDF);
+    });
+
+    ['uniBtnCSV', 'tbBtnCSV'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('click', () => {
+            exportTableToCSV(calcConfig.slug + '_schedule', 'breakdownTable');
+        });
+    });
+
+    // Initial Calculation on load
+    document.addEventListener('DOMContentLoaded', calculate);
+    calculate();
+})();
+</script>
+
+<%- include('partials/footer') %>

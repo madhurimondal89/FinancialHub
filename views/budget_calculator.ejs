@@ -96,10 +96,13 @@
 
             if (income === 0 && totalExpenses === 0 && savings === 0) {
                 initialState.style.display = 'flex'; resultsState.style.display = 'none';
+                document.getElementById('budgetToolbar').style.display = 'none';
                 if (budgetPieChart) budgetPieChart.destroy();
                 return;
             }
             initialState.style.display = 'none'; resultsState.style.display = 'block';
+            document.getElementById('budgetToolbar').style.display = 'flex';
+            window._lastBudget = { income, totalExpenses, savings, netBalance: income - (totalExpenses + savings) };
 
             totalIncomeEl.textContent = formatCurrency(income);
             totalExpensesEl.textContent = formatCurrency(totalExpenses);
@@ -154,7 +157,27 @@
         });
 
         calculateAndDisplay();
+
+        document.getElementById('budgetBtnSave').addEventListener('click', () => {
+            const d = window._lastBudget; if(!d) return;
+            const name = prompt('Save this budget plan as:', 'Monthly Budget: ' + formatCurrency(d.income));
+            if(name) saveCalculation(name, { income: formatCurrency(d.income), expenses: formatCurrency(d.totalExpenses), savings: formatCurrency(d.savings), balance: formatCurrency(d.netBalance) });
+        });
+        document.getElementById('budgetBtnShare').addEventListener('click', () => {
+            const d = window._lastBudget; if(!d) return;
+            shareViaWhatsApp('50/30/20 Budget Planner', `Monthly Income: ${formatCurrency(d.income)}\nTotal Expenses: ${formatCurrency(d.totalExpenses)}\nSavings: ${formatCurrency(d.savings)}\nNet Balance: ${formatCurrency(d.netBalance)}`);
+        });
+        document.getElementById('budgetBtnCopy').addEventListener('click', copyShareableURL);
     });
 </script>
+
+
+<!-- Save & Share Toolbar -->
+<div class="action-toolbar" id="budgetToolbar" style="display:none;">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="budgetBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="budgetBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="budgetBtnCopy">🔗 Copy Link</button>
+</div>
 
 <%- include('partials/footer') %>

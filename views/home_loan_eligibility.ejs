@@ -1,0 +1,106 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">🏡 Home Loan Eligibility Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate maximum loan amount based on net monthly salary & FOIR limits</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <label class="form-label">Net Monthly Income (In-Hand) (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="hlSalary" value="85000" step="5000" oninput="calculate()"></div>
+                <div id="hlWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Existing Monthly EMIs / Liabilities (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="hlExistingEmi" value="10000" step="1000" oninput="calculate()"></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Home Loan Interest Rate (% p.a.)</label>
+                <div class="input-group"><input type="number" class="form-control" id="hlRate" value="8.5" step="0.1" oninput="calculate()"><span class="input-group-text">% p.a.</span></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Desired Loan Tenure (Years)</label>
+                <div class="input-group"><input type="number" class="form-control" id="hlTenure" value="20" step="1" min="1" max="30" oninput="calculate()"><span class="input-group-text">Years</span></div>
+            </div>
+            <div class="highlight-box">
+                <h4>🏦 FOIR (Fixed Obligation to Income Ratio)</h4>
+                <p>Banks typically cap total EMI obligations at <strong>50% to 60%</strong> of your take-home monthly salary to ensure comfortable repayment.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Maximum Home Loan Eligibility</p><p class="amount" id="hlMaxLoan">₹36,78,000</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Max Affordable EMI</div><div class="value" style="color:var(--accent-green);" id="rMaxEmi">₹32,500 / month</div></div>
+                    <div class="summary-item"><div class="label">Net Monthly Salary</div><div class="value" id="rSalary">₹85,000</div></div>
+                    <div class="summary-item"><div class="label">Existing EMI Commitments</div><div class="value" id="rExist">₹10,000</div></div>
+                    <div class="summary-item"><div class="label">Loan Tenure</div><div class="value" id="rTenure">20 Years (240 Mo)</div></div>
+                    <div class="summary-item"><div class="label">FOIR Utilization</div><div class="value" style="color:var(--gold);" id="rFoir">50% Max Cap</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/emi-calculator" class="related-card"><span class="icon">🏠</span><div class="title">Loan EMI Calculator</div><div class="desc">Monthly installment</div></a></div>
+            <div class="col-md-4"><a href="/loan-prepayment-calculator" class="related-card"><span class="icon">⚡</span><div class="title">Loan Prepayment</div><div class="desc">Save home loan interest</div></a></div>
+            <div class="col-md-4"><a href="/loan-transfer-calculator" class="related-card"><span class="icon">🔄</span><div class="title">Balance Transfer</div><div class="desc">Refinance home loan</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="hlToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="hlBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="hlBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="hlBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const salary = parseFloat(document.getElementById('hlSalary').value)||0;
+    const exist = parseFloat(document.getElementById('hlExistingEmi').value)||0;
+    const rateAnnual = (parseFloat(document.getElementById('hlRate').value)||0) / 100;
+    const tenureYrs = parseFloat(document.getElementById('hlTenure').value)||0;
+
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('hlWords');
+        if(el) el.textContent = convertNumberToIndianWords(salary);
+    }
+
+    if(salary <= 0 || tenureYrs <= 0 || rateAnnual <= 0) return;
+
+    // FOIR = 50% for standard salary bracket
+    const foirCap = salary * 0.50;
+    const availableEmi = Math.max(0, foirCap - exist);
+
+    // Present Value of Loan Formula: PV = EMI * [ (1 - (1+r)^-n) / r ]
+    const r = rateAnnual / 12;
+    const n = tenureYrs * 12;
+    const maxLoan = availableEmi * ((1 - Math.pow(1 + r, -n)) / r);
+
+    document.getElementById('hlMaxLoan').textContent = fmt(maxLoan);
+    document.getElementById('rMaxEmi').textContent = fmt(availableEmi) + ' / month';
+    document.getElementById('rSalary').textContent = fmt(salary);
+    document.getElementById('rExist').textContent = fmt(exist);
+    document.getElementById('rTenure').textContent = tenureYrs + ' Years (' + n + ' Mo)';
+    document.getElementById('rFoir').textContent = '50% (₹' + Math.round(foirCap).toLocaleString('en-IN') + ')';
+
+    window._lastHL = { salary, exist, tenureYrs, availableEmi, maxLoan };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('hlBtnSave').addEventListener('click', () => {
+        const d = window._lastHL; if(!d) return;
+        const name = prompt('Save as:', `Eligibility ${fmt(d.maxLoan)}`);
+        if(name) saveCalculation(name, { Salary: fmt(d.salary), AffordableEMI: fmt(d.availableEmi), MaxLoanEligibility: fmt(d.maxLoan) });
+    });
+    document.getElementById('hlBtnShare').addEventListener('click', () => {
+        const d = window._lastHL; if(!d) return;
+        shareViaWhatsApp('Home Loan Eligibility Calculator', `Salary: ${fmt(d.salary)}\nTenure: ${d.tenureYrs} Years\nAffordable EMI: ${fmt(d.availableEmi)}/mo\nMax Loan Eligibility: ${fmt(d.maxLoan)}`);
+    });
+    document.getElementById('hlBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

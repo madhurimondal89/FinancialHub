@@ -1,0 +1,109 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">🎓 Education Loan EMI & Section 80E Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate student loan EMI with moratorium grace period & 100% tax deduction under Section 80E</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <label class="form-label">Total Education Loan Amount (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="eduAmount" value="1500000" step="50000" oninput="calculate()"></div>
+                <div id="eduWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Interest Rate (% p.a.)</label>
+                <div class="input-group"><input type="number" class="form-control" id="eduRate" value="9.5" step="0.25" oninput="calculate()"><span class="input-group-text">% p.a.</span></div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <label class="form-label">Course Moratorium (Yrs)</label>
+                    <div class="input-group"><input type="number" class="form-control" id="eduMoratorium" value="3" step="1" min="0" max="6" oninput="calculate()"><span class="input-group-text">Yrs</span></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Repayment Tenure (Yrs)</label>
+                    <div class="input-group"><input type="number" class="form-control" id="eduTenure" value="7" step="1" min="1" max="15" oninput="calculate()"><span class="input-group-text">Yrs</span></div>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <h4>📜 Section 80E Tax Deduction Benefit</h4>
+                <p>Entire interest paid on higher education loans is <strong>100% deductible with NO UPPER LIMIT</strong> for up to 8 continuous assessment years!</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Monthly EMI (Post Moratorium)</p><p class="amount" id="eduEmi">₹26,890</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Original Loan Disbursed</div><div class="value" id="rOriginal">₹15,00,000</div></div>
+                    <div class="summary-item"><div class="label">Principal at Repayment Start</div><div class="value" style="color:var(--gold);" id="rStartPrincipal">₹19,27,500</div></div>
+                    <div class="summary-item"><div class="label">Total Interest (Moratorium + Tenure)</div><div class="value" style="color:var(--accent-red);" id="rTotalInterest">₹7,58,760</div></div>
+                    <div class="summary-item"><div class="label">Total Tax Saved (30% Slab - 80E)</div><div class="value" style="color:var(--accent-green);" id="rTaxSaved">~₹2,27,628</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/income-tax-calculator" class="related-card"><span class="icon">🧾</span><div class="title">Income Tax Calculator</div><div class="desc">Section 80E deduction</div></a></div>
+            <div class="col-md-4"><a href="/personal-loan-calculator" class="related-card"><span class="icon">💳</span><div class="title">Personal Loan</div><div class="desc">Unsecured instant loan</div></a></div>
+            <div class="col-md-4"><a href="/emi-calculator" class="related-card"><span class="icon">🏠</span><div class="title">Loan EMI</div><div class="desc">General repayment plan</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="eduToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="eduBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="eduBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="eduBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const P = parseFloat(document.getElementById('eduAmount').value)||0;
+    const rateAnnual = (parseFloat(document.getElementById('eduRate').value)||0) / 100;
+    const moratYrs = parseFloat(document.getElementById('eduMoratorium').value)||0;
+    const tenureYrs = parseFloat(document.getElementById('eduTenure').value)||0;
+
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('eduWords');
+        if(el) el.textContent = convertNumberToIndianWords(P);
+    }
+
+    if(P <= 0 || tenureYrs <= 0 || rateAnnual <= 0) return;
+
+    // Simple interest accumulated during course moratorium
+    const moratInterest = P * rateAnnual * moratYrs;
+    const principalAtStart = P + moratInterest;
+
+    const r = rateAnnual / 12;
+    const n = tenureYrs * 12;
+    const emi = (principalAtStart * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+    const totalTenurePay = emi * n;
+    const tenureInterest = totalTenurePay - principalAtStart;
+    const totalInterestAll = moratInterest + tenureInterest;
+    const taxSaved30 = totalInterestAll * 0.30;
+
+    document.getElementById('eduEmi').textContent = fmt(emi);
+    document.getElementById('rOriginal').textContent = fmt(P);
+    document.getElementById('rStartPrincipal').textContent = fmt(principalAtStart);
+    document.getElementById('rTotalInterest').textContent = fmt(totalInterestAll);
+    document.getElementById('rTaxSaved').textContent = '~' + fmt(taxSaved30);
+
+    window._lastEdu = { P, rateAnnual: rateAnnual*100, moratYrs, tenureYrs, emi, totalInterestAll };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('eduBtnSave').addEventListener('click', () => {
+        const d = window._lastEdu; if(!d) return;
+        const name = prompt('Save as:', `Education Loan ${fmt(d.P)}`);
+        if(name) saveCalculation(name, { LoanAmount: fmt(d.P), EMI: fmt(d.emi)+'/mo', TotalInterest: fmt(d.totalInterestAll) });
+    });
+    document.getElementById('eduBtnShare').addEventListener('click', () => {
+        const d = window._lastEdu; if(!d) return;
+        shareViaWhatsApp('Education Loan Calculator', `Loan: ${fmt(d.P)}\nMoratorium: ${d.moratYrs} Yrs\nTenure: ${d.tenureYrs} Yrs\nMonthly EMI: ${fmt(d.emi)}\nTotal Interest: ${fmt(d.totalInterestAll)}`);
+    });
+    document.getElementById('eduBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

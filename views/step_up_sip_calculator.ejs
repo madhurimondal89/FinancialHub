@@ -46,6 +46,14 @@
     </div>
 <%- include('partials/ad_unit') %>
 </div>
+
+<!-- Save & Share Toolbar -->
+<div class="action-toolbar" id="stepupToolbar" style="display:none;">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="stepupBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="stepupBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="stepupBtnCopy">🔗 Copy Link</button>
+</div>
 <script>
 const fmt = n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
 let stepChart=null;
@@ -71,10 +79,24 @@ function calc(){
     document.getElementById('returns').textContent=fmt(corpus-totalInv);
     document.getElementById('mult').textContent=(corpus/totalInv).toFixed(2)+'x';
     document.getElementById('vsNormal').textContent='+'+fmt(corpus-normalCorpus);
+    document.getElementById('stepupToolbar').style.display='flex';
+    window._lastStepup={sip,ret:parseFloat(document.getElementById('retInput').value),ten,step:parseFloat(document.getElementById('stepInput').value),corpus,totalInv,normalCorpus};
     const ctx=document.getElementById('stepChart').getContext('2d');
     if(stepChart)stepChart.destroy();
-    stepChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Step-Up SIP Corpus',data:corpora,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',fill:true,tension:0.4}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8'}}},scales:{x:{ticks:{color:'#64748b'},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#64748b',callback:v=>{if(v>=10000000)return'₹'+(v/10000000).toFixed(1)+'Cr';if(v>=100000)return'₹'+(v/100000).toFixed(0)+'L';return'₹'+v;}},grid:{color:'rgba(255,255,255,0.05)'}}}}});
+    stepChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Step-Up SIP Corpus',data:corpora,borderColor:'#22d3ee',backgroundColor:'rgba(34,211,238,0.1)',fill:true,tension:0.4}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8'}}},scales:{x:{ticks:{color:'#64748b'},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#64748b',callback:v=>{if(v>=10000000)return'\u20b9'+(v/10000000).toFixed(1)+'Cr';if(v>=100000)return'\u20b9'+(v/100000).toFixed(0)+'L';return'\u20b9'+v;}},grid:{color:'rgba(255,255,255,0.05)'}}}}});
 }
 calc();
+document.addEventListener('DOMContentLoaded',function(){
+    document.getElementById('stepupBtnSave').addEventListener('click',function(){
+        const d=window._lastStepup; if(!d)return;
+        const name=prompt('Save this Step-Up SIP as:','Step-Up SIP: '+fmt(d.corpus));
+        if(name) saveCalculation(name,{initialSIP:fmt(d.sip)+'/mo',stepUp:d.step+'%/yr',returns:d.ret+'%',years:d.ten,corpus:fmt(d.corpus),totalInvested:fmt(d.totalInv)});
+    });
+    document.getElementById('stepupBtnShare').addEventListener('click',function(){
+        const d=window._lastStepup; if(!d)return;
+        shareViaWhatsApp('Step-Up SIP Calculator','Initial SIP: '+fmt(d.sip)+'/mo\nStep-Up: '+d.step+'%/yr\nReturn: '+d.ret+'%\nYears: '+d.ten+'\nFinal Corpus: '+fmt(d.corpus)+'\nExtra vs Normal SIP: +'+fmt(d.corpus-d.normalCorpus));
+    });
+    document.getElementById('stepupBtnCopy').addEventListener('click',copyShareableURL);
+});
 </script>
 <%- include('partials/footer') %>

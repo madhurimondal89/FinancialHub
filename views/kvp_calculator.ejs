@@ -1,0 +1,89 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">🌾 Kisan Vikas Patra (KVP) Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate exact money doubling period & maturity amount for post office KVP certificates</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <label class="form-label">Total Investment Amount (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="kvpDeposit" value="250000" step="10000" min="1000" oninput="calculate()"></div>
+                <div id="kvpWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Govt Interest Rate (% p.a.)</label>
+                <div class="input-group"><input type="number" class="form-control" id="kvpRate" value="7.5" step="0.1" readonly><span class="input-group-text">% p.a. (Annual Compounding)</span></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Maturity / Doubling Period</label>
+                <div class="input-group"><input type="text" class="form-control" value="115 Months (9 Years 7 Months)" readonly><span class="input-group-text">Fixed</span></div>
+            </div>
+            <div class="highlight-box">
+                <h4>🌾 Sovereign Govt Guarantee</h4>
+                <p>Kisan Vikas Patra is backed by the Government of India with <strong>100% sovereign safety</strong> and guaranteed money doubling.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Guaranteed Doubled Maturity</p><p class="amount" id="kvpMaturity" style="color:var(--accent-green);">₹5,00,000</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Principal Amount Invested</div><div class="value" id="rDeposit">₹2,50,000</div></div>
+                    <div class="summary-item"><div class="label">Total Interest Earned</div><div class="value" style="color:var(--gold);" id="rTotalInterest">+₹2,50,000</div></div>
+                    <div class="summary-item"><div class="label">Doubling Period</div><div class="value" id="rDuration">115 Months (9.58 Yrs)</div></div>
+                    <div class="summary-item"><div class="label">Wealth Multiplier</div><div class="value" style="color:var(--accent-green);" id="rMultiplier">2.0x Guaranteed</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/nsc-calculator" class="related-card"><span class="icon">📜</span><div class="title">NSC Calculator</div><div class="desc">7.7% 5-year savings</div></a></div>
+            <div class="col-md-4"><a href="/ppf-calculator" class="related-card"><span class="icon">🏛️</span><div class="title">PPF Calculator</div><div class="desc">15-year tax-free fund</div></a></div>
+            <div class="col-md-4"><a href="/compound-interest" class="related-card"><span class="icon">📈</span><div class="title">Compound Interest</div><div class="desc">Power of compounding</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="kvpToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="kvpBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="kvpBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="kvpBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const P = parseFloat(document.getElementById('kvpDeposit').value)||0;
+
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('kvpWords');
+        if(el) el.textContent = convertNumberToIndianWords(P);
+    }
+
+    if(P <= 0) return;
+
+    const maturity = P * 2;
+    const interest = P;
+
+    document.getElementById('kvpMaturity').textContent = fmt(maturity);
+    document.getElementById('rDeposit').textContent = fmt(P);
+    document.getElementById('rTotalInterest').textContent = '+' + fmt(interest);
+
+    window._lastKVP = { P, maturity, interest };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('kvpBtnSave').addEventListener('click', () => {
+        const d = window._lastKVP; if(!d) return;
+        const name = prompt('Save as:', `KVP Double ${fmt(d.maturity)}`);
+        if(name) saveCalculation(name, { Invested: fmt(d.P), DoubledMaturity: fmt(d.maturity), Tenure: '115 Months' });
+    });
+    document.getElementById('kvpBtnShare').addEventListener('click', () => {
+        const d = window._lastKVP; if(!d) return;
+        shareViaWhatsApp('KVP Calculator', `Invested: ${fmt(d.P)}\nDoubling Period: 115 Months (9 Yrs 7 Mo)\nGuaranteed Doubled Maturity: ${fmt(d.maturity)}`);
+    });
+    document.getElementById('kvpBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

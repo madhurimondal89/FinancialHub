@@ -1,0 +1,91 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">🪙 Dividend Yield Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate dividend income, yield percentage & yield on cost for stocks</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <label class="form-label">Current Stock Price (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="stockPrice" value="450" step="10" oninput="calculate()"></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Annual Dividend Per Share (DPS) (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="dividendPerShare" value="18" step="1" oninput="calculate()"></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Number of Shares Owned</label>
+                <div class="input-group"><input type="number" class="form-control" id="sharesCount" value="1000" step="50" oninput="calculate()"><span class="input-group-text">Shares</span></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Original Purchase Price (Optional - for Yield on Cost)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="buyPrice" value="300" step="10" oninput="calculate()"></div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Dividend Yield</p><p class="amount" id="divYield">4.00%</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Annual Dividend Income</div><div class="value" style="color:var(--accent-green);" id="rTotalIncome">₹18,000 / year</div></div>
+                    <div class="summary-item"><div class="label">Current Portfolio Value</div><div class="value" id="rPortValue">₹4,50,000</div></div>
+                    <div class="summary-item"><div class="label">Yield on Cost (YOC)</div><div class="value" style="color:var(--gold);" id="rYoc">6.00%</div></div>
+                    <div class="summary-item"><div class="label">Monthly Passive Income</div><div class="value" id="rMonthly">₹1,500 / month</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/schd-dividend-calculator" class="related-card"><span class="icon">💰</span><div class="title">SCHD DRIP Calculator</div><div class="desc">Dividend reinvestment</div></a></div>
+            <div class="col-md-4"><a href="/stock-profit-calculator" class="related-card"><span class="icon">📊</span><div class="title">Stock Profit Calculator</div><div class="desc">Brokerage & charges</div></a></div>
+            <div class="col-md-4"><a href="/cagr-calculator" class="related-card"><span class="icon">📐</span><div class="title">CAGR Calculator</div><div class="desc">Stock annual return</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="divToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="divBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="divBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="divBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const price = parseFloat(document.getElementById('stockPrice').value)||0;
+    const dps = parseFloat(document.getElementById('dividendPerShare').value)||0;
+    const shares = parseFloat(document.getElementById('sharesCount').value)||0;
+    const buy = parseFloat(document.getElementById('buyPrice').value)||price;
+
+    if(price <= 0 || dps < 0 || shares <= 0) return;
+
+    const yieldPct = (dps / price) * 100;
+    const totalIncome = dps * shares;
+    const portVal = price * shares;
+    const yoc = buy > 0 ? (dps / buy) * 100 : yieldPct;
+    const monthly = totalIncome / 12;
+
+    document.getElementById('divYield').textContent = yieldPct.toFixed(2) + '%';
+    document.getElementById('rTotalIncome').textContent = fmt(totalIncome) + ' / year';
+    document.getElementById('rPortValue').textContent = fmt(portVal);
+    document.getElementById('rYoc').textContent = yoc.toFixed(2) + '%';
+    document.getElementById('rMonthly').textContent = fmt(monthly) + ' / month';
+
+    window._lastDiv = { price, dps, shares, yieldPct, totalIncome, portVal, yoc };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('divBtnSave').addEventListener('click', () => {
+        const d = window._lastDiv; if(!d) return;
+        const name = prompt('Save as:', `Dividend Yield ${d.yieldPct.toFixed(2)}%`);
+        if(name) saveCalculation(name, { Yield: d.yieldPct.toFixed(2)+'%', AnnualIncome: fmt(d.totalIncome), PortfolioValue: fmt(d.portVal) });
+    });
+    document.getElementById('divBtnShare').addEventListener('click', () => {
+        const d = window._lastDiv; if(!d) return;
+        shareViaWhatsApp('Dividend Yield Calculator', `Stock Price: ${fmt(d.price)}\nDividend Per Share: ${fmt(d.dps)}\nDividend Yield: ${d.yieldPct.toFixed(2)}%\nAnnual Dividend: ${fmt(d.totalIncome)}`);
+    });
+    document.getElementById('divBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

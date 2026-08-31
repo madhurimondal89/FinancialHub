@@ -59,6 +59,14 @@
     </div>
 <%- include('partials/ad_unit') %>
 </div>
+
+<!-- Save & Share Toolbar -->
+<div class="action-toolbar" id="goldToolbar" style="display:none;">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="goldBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="goldBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="goldBtnCopy">🔗 Copy Link</button>
+</div>
 <script>
 const fmt=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
 let goldChart=null;
@@ -80,12 +88,26 @@ function calc(){
     const taxMap={physical:'LTCG 20% with indexation (after 3 yrs)',etf:'LTCG 20% with indexation (after 3 yrs)',sgb:'NIL tax if held to 8yr maturity 🎉'};
     document.getElementById('taxNote').textContent=taxMap[type];
     document.getElementById('netVal').textContent=fmt(netVal);
+    document.getElementById('goldToolbar').style.display='flex';
+    window._lastGold={amt,ret:parseFloat(document.getElementById('retInput').value),yr,type,netVal,gains};
     const labels=[],vals=[];
     for(let y=0;y<=yr;y++){labels.push('Y'+y);vals.push(Math.round(amt*Math.pow(1+ret,y)+(type==='sgb'?amt*0.025*y:0)));}
     const ctx=document.getElementById('goldChart').getContext('2d');
     if(goldChart)goldChart.destroy();
-    goldChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Gold Value',data:vals,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',fill:true,tension:0.4,pointRadius:3}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8'}}},scales:{x:{ticks:{color:'#64748b'},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#64748b',callback:v=>{if(v>=10000000)return'₹'+(v/10000000).toFixed(1)+'Cr';return'₹'+(v/100000).toFixed(0)+'L';}},grid:{color:'rgba(255,255,255,0.05)'}}}}});
+    goldChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Gold Value',data:vals,borderColor:'#22d3ee',backgroundColor:'rgba(34,211,238,0.1)',fill:true,tension:0.4,pointRadius:3}]},options:{responsive:true,plugins:{legend:{labels:{color:'#94a3b8'}}},scales:{x:{ticks:{color:'#64748b'},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'#64748b',callback:v=>{if(v>=10000000)return'\u20b9'+(v/10000000).toFixed(1)+'Cr';return'\u20b9'+(v/100000).toFixed(0)+'L';}},grid:{color:'rgba(255,255,255,0.05)'}}}}});
 }
 updateType();calc();
+document.addEventListener('DOMContentLoaded',function(){
+    document.getElementById('goldBtnSave').addEventListener('click',function(){
+        const d=window._lastGold; if(!d)return;
+        const name=prompt('Save this Gold calculation as:','Gold '+d.type.toUpperCase()+' ₹'+fmt(d.netVal));
+        if(name) saveCalculation(name,{invested:fmt(d.amt),type:d.type,returnRate:d.ret+'%',years:d.yr,finalValue:fmt(d.netVal),gains:fmt(d.gains)});
+    });
+    document.getElementById('goldBtnShare').addEventListener('click',function(){
+        const d=window._lastGold; if(!d)return;
+        shareViaWhatsApp('Gold Investment Calculator','Type: '+d.type.toUpperCase()+'\nInvested: '+fmt(d.amt)+'\nReturn Rate: '+d.ret+'%\nPeriod: '+d.yr+' Years\nFinal Value: '+fmt(d.netVal));
+    });
+    document.getElementById('goldBtnCopy').addEventListener('click',copyShareableURL);
+});
 </script>
 <%- include('partials/footer') %>

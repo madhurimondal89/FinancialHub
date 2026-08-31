@@ -1,0 +1,95 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">💎 Lump Sum Investment Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate wealth growth on one-time mutual fund & equity investments</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <label class="form-label">Total Investment Amount (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="totalInvestment" value="100000" step="5000" oninput="calculate()"></div>
+                <div id="amtWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Expected Annual Return Rate (%)</label>
+                <div class="input-group"><input type="number" class="form-control" id="expectedReturn" value="12" step="0.5" oninput="calculate()"><span class="input-group-text">% p.a.</span></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Time Period (Years)</label>
+                <div class="input-group"><input type="number" class="form-control" id="timePeriod" value="10" step="1" min="1" max="50" oninput="calculate()"><span class="input-group-text">Years</span></div>
+            </div>
+            <div class="highlight-box">
+                <h4>📌 Lump Sum Compounding Power</h4>
+                <p>Maturity Value = P × (1 + r)^t<br>A ₹1 Lakh investment at 12% grows to ₹3.1 Lakh in 10 years and ₹9.6 Lakh in 20 years without any extra deposits.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Total Maturity Value</p><p class="amount" id="totalValue">₹3,10,585</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Invested Amount</div><div class="value" id="rInvested">₹1,00,000</div></div>
+                    <div class="summary-item"><div class="label">Estimated Returns (Gain)</div><div class="value" style="color:var(--accent-green);" id="rReturns">₹2,10,585</div></div>
+                    <div class="summary-item"><div class="label">Total Future Wealth</div><div class="value" id="rTotal">₹3,10,585</div></div>
+                    <div class="summary-item"><div class="label">Wealth Multiplier</div><div class="value" style="color:var(--gold);" id="rMultiplier">3.1x</div></div>
+                    <div class="summary-item"><div class="label">Annualized Return</div><div class="value" id="rRate">12% p.a.</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/sip-calculator" class="related-card"><span class="icon">📊</span><div class="title">SIP Calculator</div><div class="desc">Monthly investment returns</div></a></div>
+            <div class="col-md-4"><a href="/cagr-calculator" class="related-card"><span class="icon">📐</span><div class="title">CAGR Calculator</div><div class="desc">Measure annual returns</div></a></div>
+            <div class="col-md-4"><a href="/swp-calculator" class="related-card"><span class="icon">💸</span><div class="title">SWP Calculator</div><div class="desc">Monthly pension withdrawal</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Save & Share Toolbar -->
+<div class="action-toolbar" id="lsToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="lsBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="lsBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="lsBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const p = parseFloat(document.getElementById('totalInvestment').value)||0;
+    const r = (parseFloat(document.getElementById('expectedReturn').value)||0) / 100;
+    const t = parseFloat(document.getElementById('timePeriod').value)||0;
+    
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('amtWords');
+        if(el) el.textContent = convertNumberToIndianWords(p);
+    }
+
+    if(p <= 0 || t <= 0) return;
+    const total = p * Math.pow(1 + r, t);
+    const returns = total - p;
+    const mult = (total / p).toFixed(1);
+
+    document.getElementById('totalValue').textContent = fmt(total);
+    document.getElementById('rInvested').textContent = fmt(p);
+    document.getElementById('rReturns').textContent = '+' + fmt(returns);
+    document.getElementById('rTotal').textContent = fmt(total);
+    document.getElementById('rMultiplier').textContent = mult + 'x';
+    document.getElementById('rRate').textContent = (r * 100).toFixed(1) + '% p.a.';
+
+    window._lastLS = { p, r: r*100, t, total, returns, mult };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('lsBtnSave').addEventListener('click', () => {
+        const d = window._lastLS; if(!d) return;
+        const name = prompt('Save as:', `Lump Sum ${fmt(d.p)} (${d.t}Y)`);
+        if(name) saveCalculation(name, { Invested: fmt(d.p), FutureValue: fmt(d.total), Gain: fmt(d.returns), Period: d.t+' Years' });
+    });
+    document.getElementById('lsBtnShare').addEventListener('click', () => {
+        const d = window._lastLS; if(!d) return;
+        shareViaWhatsApp('Lump Sum Calculator', `Invested: ${fmt(d.p)}\nExpected Return: ${d.r}%\nPeriod: ${d.t} Years\nEstimated Future Value: ${fmt(d.total)}\nGain: ${fmt(d.returns)}`);
+    });
+    document.getElementById('lsBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

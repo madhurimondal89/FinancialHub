@@ -1,0 +1,106 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">🏬 Rental Yield Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate Gross & Net rental yield percentage on residential & commercial properties</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <label class="form-label">Total Property Cost (Purchase + Registry) (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="ryPropCost" value="6500000" step="50000" oninput="calculate()"></div>
+                <div id="ryWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Expected Monthly Rent (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="ryMonthlyRent" value="22000" step="1000" oninput="calculate()"></div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <label class="form-label">Annual Maintenance (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="ryMaint" value="18000" step="1000" oninput="calculate()"></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Property Tax & Insurance (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="ryTax" value="8000" step="1000" oninput="calculate()"></div>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <h4>🏢 Typical Indian Rental Yields</h4>
+                <p>Residential properties in Tier-1 cities typically yield <strong>2.5% to 3.8%</strong>, while commercial properties yield <strong>6% to 9%</strong>.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Net Rental Yield</p><p class="amount" id="ryNetYield">3.66%</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Gross Annual Rent</div><div class="value" id="rGrossRent">₹2,64,000 / yr</div></div>
+                    <div class="summary-item"><div class="label">Gross Rental Yield</div><div class="value" style="color:var(--gold);" id="rGrossYield">4.06%</div></div>
+                    <div class="summary-item"><div class="label">Total Annual Expenses</div><div class="value" style="color:var(--accent-red);" id="rExpenses">-₹26,000</div></div>
+                    <div class="summary-item"><div class="label">Net Annual Rental Income</div><div class="value" style="color:var(--accent-green);" id="rNetIncome">₹2,38,000 / yr</div></div>
+                    <div class="summary-item"><div class="label">Monthly Net Cash Flow</div><div class="value" id="rMonthlyNet">₹19,833 / month</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/emi-calculator" class="related-card"><span class="icon">🏠</span><div class="title">Home Loan EMI</div><div class="desc">Mortgage payments</div></a></div>
+            <div class="col-md-4"><a href="/hra-calculator" class="related-card"><span class="icon">🏢</span><div class="title">HRA Exemption</div><div class="desc">Rent tax deduction</div></a></div>
+            <div class="col-md-4"><a href="/capital-gains-tax-calculator" class="related-card"><span class="icon">📉</span><div class="title">Capital Gains Tax</div><div class="desc">Real estate tax</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="ryToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="ryBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="ryBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="ryBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const cost = parseFloat(document.getElementById('ryPropCost').value)||0;
+    const rentMonthly = parseFloat(document.getElementById('ryMonthlyRent').value)||0;
+    const maint = parseFloat(document.getElementById('ryMaint').value)||0;
+    const tax = parseFloat(document.getElementById('ryTax').value)||0;
+
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('ryWords');
+        if(el) el.textContent = convertNumberToIndianWords(cost);
+    }
+
+    if(cost <= 0 || rentMonthly <= 0) return;
+
+    const grossAnnualRent = rentMonthly * 12;
+    const grossYield = (grossAnnualRent / cost) * 100;
+    const totalExpenses = maint + tax;
+    const netAnnualRent = Math.max(0, grossAnnualRent - totalExpenses);
+    const netYield = (netAnnualRent / cost) * 100;
+    const monthlyNet = netAnnualRent / 12;
+
+    document.getElementById('ryNetYield').textContent = netYield.toFixed(2) + '%';
+    document.getElementById('rGrossRent').textContent = fmt(grossAnnualRent) + ' / yr';
+    document.getElementById('rGrossYield').textContent = grossYield.toFixed(2) + '%';
+    document.getElementById('rExpenses').textContent = '-' + fmt(totalExpenses);
+    document.getElementById('rNetIncome').textContent = fmt(netAnnualRent) + ' / yr';
+    document.getElementById('rMonthlyNet').textContent = fmt(monthlyNet) + ' / month';
+
+    window._lastRY = { cost, rentMonthly, grossYield, netYield, netAnnualRent };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('ryBtnSave').addEventListener('click', () => {
+        const d = window._lastRY; if(!d) return;
+        const name = prompt('Save as:', `Rental Yield ${d.netYield.toFixed(2)}%`);
+        if(name) saveCalculation(name, { Cost: fmt(d.cost), MonthlyRent: fmt(d.rentMonthly), GrossYield: d.grossYield.toFixed(2)+'%', NetYield: d.netYield.toFixed(2)+'%' });
+    });
+    document.getElementById('ryBtnShare').addEventListener('click', () => {
+        const d = window._lastRY; if(!d) return;
+        shareViaWhatsApp('Rental Yield Calculator', `Property Cost: ${fmt(d.cost)}\nMonthly Rent: ${fmt(d.rentMonthly)}\nGross Yield: ${d.grossYield.toFixed(2)}%\nNet Rental Yield: ${d.netYield.toFixed(2)}%`);
+    });
+    document.getElementById('ryBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

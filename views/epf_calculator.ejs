@@ -1,0 +1,124 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">👔 EPF Calculator (Employee Provident Fund)</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate retirement maturity corpus at 8.25% interest rate with 12% employee + employer monthly contribution</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <label class="form-label">Monthly Basic Salary + DA (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="epfBasic" value="45000" step="2000" oninput="calculate()"></div>
+                <div id="epfWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <label class="form-label">Current Age (Years)</label>
+                    <div class="input-group"><input type="number" class="form-control" id="epfAge" value="28" step="1" min="18" max="58" oninput="calculate()"><span class="input-group-text">Yrs</span></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Retirement Age (Yrs)</label>
+                    <div class="input-group"><input type="number" class="form-control" id="epfRetAge" value="58" step="1" min="50" max="60" oninput="calculate()"><span class="input-group-text">Yrs</span></div>
+                </div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <label class="form-label">EPF Interest Rate (% p.a.)</label>
+                    <div class="input-group"><input type="number" class="form-control" id="epfRate" value="8.25" step="0.05" oninput="calculate()"><span class="input-group-text">%</span></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Annual Salary Increment (%)</label>
+                    <div class="input-group"><input type="number" class="form-control" id="epfIncr" value="7.0" step="0.5" oninput="calculate()"><span class="input-group-text">%</span></div>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <h4>📜 EPF Contribution Breakdown</h4>
+                <p>• <strong>Employee Share:</strong> 12% of Basic goes to EPF.<br>• <strong>Employer Share:</strong> 3.67% goes to EPF + 8.33% goes to EPS (Pension scheme, capped at ₹1,250/mo).</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Total EPF Maturity at Age 58</p><p class="amount" id="epfTotalCorpus" style="color:var(--accent-green);">₹1,84,52,430</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Total Employee Contribution</div><div class="value" id="rEmpShare">₹51,08,400</div></div>
+                    <div class="summary-item"><div class="label">Total Employer Contribution (EPF)</div><div class="value" id="rEmprShare">₹15,61,600</div></div>
+                    <div class="summary-item"><div class="label">Total Compound Interest Earned</div><div class="value" style="color:var(--gold);" id="rInterestEarned">₹1,17,82,430</div></div>
+                    <div class="summary-item"><div class="label">Accumulation Period</div><div class="value" id="rDuration">30 Years</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/retirement-calculator" class="related-card"><span class="icon">🎯</span><div class="title">Retirement Planner</div><div class="desc">Target corpus</div></a></div>
+            <div class="col-md-4"><a href="/nps-calculator" class="related-card"><span class="icon">🛡️</span><div class="title">NPS Calculator</div><div class="desc">National pension scheme</div></a></div>
+            <div class="col-md-4"><a href="/ppf-calculator" class="related-card"><span class="icon">🏛️</span><div class="title">PPF Calculator</div><div class="desc">Public provident fund</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="epfToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="epfBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="epfBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="epfBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    let basic = parseFloat(document.getElementById('epfBasic').value)||0;
+    const curAge = parseInt(document.getElementById('epfAge').value)||25;
+    const retAge = parseInt(document.getElementById('epfRetAge').value)||58;
+    const rateAnnual = (parseFloat(document.getElementById('epfRate').value)||8.25) / 100;
+    const incrPct = (parseFloat(document.getElementById('epfIncr').value)||5) / 100;
+
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('epfWords');
+        if(el) el.textContent = convertNumberToIndianWords(basic);
+    }
+
+    const years = Math.max(1, retAge - curAge);
+    let epfBalance = 0;
+    let totalEmp = 0;
+    let totalEmpr = 0;
+
+    for(let y = 1; y <= years; y++) {
+        const monthlyEmp = basic * 0.12;
+        const monthlyEmpr = basic * 0.0367; // 3.67% to EPF
+        const totalMonthly = monthlyEmp + monthlyEmpr;
+
+        totalEmp += monthlyEmp * 12;
+        totalEmpr += monthlyEmpr * 12;
+
+        for(let m = 1; m <= 12; m++) {
+            epfBalance += totalMonthly;
+            epfBalance += epfBalance * (rateAnnual / 12);
+        }
+        basic *= (1 + incrPct);
+    }
+
+    const totalInterest = epfBalance - (totalEmp + totalEmpr);
+
+    document.getElementById('epfTotalCorpus').textContent = fmt(epfBalance);
+    document.getElementById('rEmpShare').textContent = fmt(totalEmp);
+    document.getElementById('rEmprShare').textContent = fmt(totalEmpr);
+    document.getElementById('rInterestEarned').textContent = '+' + fmt(totalInterest);
+    document.getElementById('rDuration').textContent = years + ' Years (Age ' + curAge + ' ➔ ' + retAge + ')';
+
+    window._lastEPF = { basic, years, epfBalance, totalEmp, totalEmpr, totalInterest };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('epfBtnSave').addEventListener('click', () => {
+        const d = window._lastEPF; if(!d) return;
+        const name = prompt('Save as:', `EPF Corpus ${fmt(d.epfBalance)}`);
+        if(name) saveCalculation(name, { EmployeeShare: fmt(d.totalEmp), TotalInterest: fmt(d.totalInterest), MaturityCorpus: fmt(d.epfBalance) });
+    });
+    document.getElementById('epfBtnShare').addEventListener('click', () => {
+        const d = window._lastEPF; if(!d) return;
+        shareViaWhatsApp('EPF Calculator', `Service: ${d.years} Years\nEmployee Contribution: ${fmt(d.totalEmp)}\nInterest Earned: ${fmt(d.totalInterest)}\nTotal EPF Maturity: ${fmt(d.epfBalance)}`);
+    });
+    document.getElementById('epfBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

@@ -104,6 +104,14 @@
 <%- include('partials/ad_unit') %>
 </div>
 
+<!-- Save & Share Toolbar -->
+<div class="action-toolbar" id="hraToolbar" style="display:none;">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="hraBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="hraBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="hraBtnCopy">🔗 Copy Link</button>
+</div>
+
 <script>
 const fmt = (n) => new Intl.NumberFormat('en-IN', { style:'currency', currency:'INR', maximumFractionDigits:0 }).format(n);
 
@@ -128,6 +136,7 @@ function calculate() {
 
     document.getElementById('initialState').style.display = 'none';
     document.getElementById('resultsState').style.display = 'block';
+    document.getElementById('hraToolbar').style.display = 'flex';
 
     document.getElementById('hraExempt').textContent = fmt(exempt);
     document.getElementById('r1').textContent = fmt(rule1);
@@ -136,7 +145,20 @@ function calculate() {
     document.getElementById('r4').textContent = fmt(exempt);
     document.getElementById('r5').textContent = fmt(taxable);
     document.getElementById('r6').textContent = fmt(taxSaved);
+    window._lastHra = { basic, hraRcvd, rent, exempt, taxable, taxSaved, metro };
 }
+document.addEventListener('DOMContentLoaded', function(){
+    document.getElementById('hraBtnSave').addEventListener('click', function(){
+        const d = window._lastHra; if(!d) return;
+        const name = prompt('Save this HRA calculation as:', 'HRA Exempt: ' + fmt(d.exempt));
+        if(name) saveCalculation(name, { basic: fmt(d.basic), hraReceived: fmt(d.hraRcvd), rentPaid: fmt(d.rent), hraExemption: fmt(d.exempt), taxSaved: fmt(d.taxSaved) });
+    });
+    document.getElementById('hraBtnShare').addEventListener('click', function(){
+        const d = window._lastHra; if(!d) return;
+        shareViaWhatsApp('HRA Exemption Calculator', 'Basic: ' + fmt(d.basic) + '\nHRA Received: ' + fmt(d.hraRcvd) + '\nRent Paid: ' + fmt(d.rent) + '\nHRA Exemption: ' + fmt(d.exempt) + '\nTax Saved (30%): ' + fmt(d.taxSaved));
+    });
+    document.getElementById('hraBtnCopy').addEventListener('click', copyShareableURL);
+});
 </script>
 
 <%- include('partials/footer') %>

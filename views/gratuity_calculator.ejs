@@ -56,6 +56,13 @@
     </div>
 <%- include('partials/ad_unit') %>
 </div>
+<!-- Save & Share Toolbar -->
+<div class="action-toolbar" id="gratToolbar" style="display:none;">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="gratBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="gratBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="gratBtnCopy">🔗 Copy Link</button>
+</div>
 <script>
 const fmt=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
 function calculate(){
@@ -71,12 +78,27 @@ function calculate(){
     const taxFreeLimit=2000000;
     const taxable=Math.max(0,gratuity-taxFreeLimit);
     document.getElementById('gratuityAmt').textContent=fmt(gratuity);
+    document.getElementById('gratuityAmt').textContent=fmt(gratuity);
     document.getElementById('r1').textContent=fmt(sal);
     document.getElementById('r2').textContent=yrs+' Years';
     document.getElementById('r3').textContent='('+fmt(sal)+' × 15 × '+roundedYrs+') ÷ '+div;
     document.getElementById('r4').textContent=fmt(gratuity);
     document.getElementById('r6').textContent=fmt(taxable);
     document.getElementById('ineligible').style.display=yrs<5?'block':'none';
+    document.getElementById('gratToolbar').style.display='flex';
+    window._lastGrat={sal,yrs,gratuity,taxable};
 }
+document.addEventListener('DOMContentLoaded',()=>{
+    document.getElementById('gratBtnSave').addEventListener('click',()=>{
+        const d=window._lastGrat; if(!d) return;
+        const name=prompt('Save as:',`Gratuity: ${fmt(d.gratuity)}`); if(!name) return;
+        saveCalculation(name,{salary:fmt(d.sal),years:d.yrs,gratuity:fmt(d.gratuity),taxable:fmt(d.taxable)});
+    });
+    document.getElementById('gratBtnShare').addEventListener('click',()=>{
+        const d=window._lastGrat; if(!d) return;
+        shareViaWhatsApp('Gratuity Calculator',`Last Salary: ${fmt(d.sal)}\nYears: ${d.yrs}\nGratuity Amount: ${fmt(d.gratuity)}`);
+    });
+    document.getElementById('gratBtnCopy').addEventListener('click',copyShareableURL);
+});
 </script>
 <%- include('partials/footer') %>

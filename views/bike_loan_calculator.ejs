@@ -1,0 +1,99 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">🏍️ Bike & Two-Wheeler Loan Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate monthly EMI & down payment for motorcycles, scooters & EV two-wheelers</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <label class="form-label">On-Road Vehicle Price (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="bikePrice" value="120000" step="5000" oninput="calculate()"></div>
+                <div id="bikeWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Down Payment (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="bikeDown" value="25000" step="2000" oninput="calculate()"></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Annual Interest Rate (% p.a.)</label>
+                <div class="input-group"><input type="number" class="form-control" id="bikeRate" value="11.5" step="0.25" oninput="calculate()"><span class="input-group-text">% p.a.</span></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Tenure (Years)</label>
+                <div class="input-group"><input type="number" class="form-control" id="bikeTenure" value="3" step="1" min="1" max="5" oninput="calculate()"><span class="input-group-text">Years</span></div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Monthly Bike EMI</p><p class="amount" id="bikeEmi">₹3,132</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Net Loan Amount</div><div class="value" id="rNetLoan">₹95,000</div></div>
+                    <div class="summary-item"><div class="label">Total Interest Payable</div><div class="value" style="color:var(--accent-red);" id="rTotalInterest">₹17,752</div></div>
+                    <div class="summary-item"><div class="label">Total Amount Paid (Loan + Interest)</div><div class="value" id="rTotalPay">₹1,12,752</div></div>
+                    <div class="summary-item"><div class="label">Down Payment Percentage</div><div class="value" style="color:var(--gold);" id="rDownPct">20.8%</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/car-loan-calculator" class="related-card"><span class="icon">🚗</span><div class="title">Car Loan EMI</div><div class="desc">Four-wheeler loan</div></a></div>
+            <div class="col-md-4"><a href="/personal-loan-calculator" class="related-card"><span class="icon">💳</span><div class="title">Personal Loan</div><div class="desc">Instant unsecured loan</div></a></div>
+            <div class="col-md-4"><a href="/emi-calculator" class="related-card"><span class="icon">🏠</span><div class="title">Loan EMI</div><div class="desc">General loan calculator</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="bikeToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="bikeBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="bikeBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="bikeBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const price = parseFloat(document.getElementById('bikePrice').value)||0;
+    const down = parseFloat(document.getElementById('bikeDown').value)||0;
+    const rateAnnual = (parseFloat(document.getElementById('bikeRate').value)||0) / 100;
+    const tenureYrs = parseFloat(document.getElementById('bikeTenure').value)||0;
+
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('bikeWords');
+        if(el) el.textContent = convertNumberToIndianWords(price);
+    }
+
+    const P = Math.max(0, price - down);
+    if(P <= 0 || tenureYrs <= 0 || rateAnnual <= 0) return;
+
+    const r = rateAnnual / 12;
+    const n = tenureYrs * 12;
+    const emi = (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+    const totalPay = emi * n;
+    const totalInterest = totalPay - P;
+    const downPct = ((down / price) * 100).toFixed(1);
+
+    document.getElementById('bikeEmi').textContent = fmt(emi);
+    document.getElementById('rNetLoan').textContent = fmt(P);
+    document.getElementById('rTotalInterest').textContent = fmt(totalInterest);
+    document.getElementById('rTotalPay').textContent = fmt(totalPay);
+    document.getElementById('rDownPct').textContent = downPct + '%';
+
+    window._lastBike = { price, down, P, tenureYrs, emi, totalInterest };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('bikeBtnSave').addEventListener('click', () => {
+        const d = window._lastBike; if(!d) return;
+        const name = prompt('Save as:', `Bike EMI ${fmt(d.emi)}/mo`);
+        if(name) saveCalculation(name, { OnRoadPrice: fmt(d.price), DownPayment: fmt(d.down), LoanAmount: fmt(d.P), EMI: fmt(d.emi)+'/mo' });
+    });
+    document.getElementById('bikeBtnShare').addEventListener('click', () => {
+        const d = window._lastBike; if(!d) return;
+        shareViaWhatsApp('Bike Loan EMI Calculator', `Price: ${fmt(d.price)}\nDown Payment: ${fmt(d.down)}\nLoan: ${fmt(d.P)}\nMonthly EMI: ${fmt(d.emi)}\nTenure: ${d.tenureYrs} Years`);
+    });
+    document.getElementById('bikeBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

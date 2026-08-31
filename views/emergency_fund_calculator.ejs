@@ -1,0 +1,111 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">🦺 Emergency Fund Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate exact liquid safety cushion needed for 3, 6, 9 or 12 months of living expenses</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label class="form-label">Rent / Home EMI (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="efRent" value="25000" step="1000" oninput="calculate()"></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Food & Groceries (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="efFood" value="15000" step="1000" oninput="calculate()"></div>
+                </div>
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label class="form-label">Utilities & Bills (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="efBills" value="6000" step="500" oninput="calculate()"></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Insurance & Meds (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="efMeds" value="5000" step="500" oninput="calculate()"></div>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Safety Cushion Duration</label>
+                <select class="form-select" id="efMonths" onchange="calculate()">
+                    <option value="3">3 Months (Dual-income, secure job)</option>
+                    <option value="6" selected>6 Months (Standard recommended)</option>
+                    <option value="9">9 Months (Freelancer / Consultant)</option>
+                    <option value="12">12 Months (Business owner / Startup)</option>
+                </select>
+            </div>
+            <div class="highlight-box">
+                <h4>🛡️ Where to Keep Emergency Funds?</h4>
+                <p>Keep <strong>50% in Liquid Mutual Funds</strong> + <strong>30% in Sweep-in Bank FDs</strong> + <strong>20% in Savings Account</strong> for instant 24/7 ATM/UPI access.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Target Emergency Fund Cushion</p><p class="amount" id="efTotalCushion" style="color:var(--accent-green);">₹3,06,000</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Monthly Essential Expense</div><div class="value" id="rMonthlyExp">₹51,000 / month</div></div>
+                    <div class="summary-item"><div class="label">Duration Coverage</div><div class="value" style="color:var(--gold);" id="rDurationCoverage">6 Months Cushion</div></div>
+                    <div class="summary-item"><div class="label">50% in Liquid Mutual Funds</div><div class="value" id="rLiquidFunds">₹1,53,000</div></div>
+                    <div class="summary-item"><div class="label">30% in Sweep-in Fixed Deposit</div><div class="value" id="rSweepFd">₹91,800</div></div>
+                    <div class="summary-item"><div class="label">20% in Liquid Savings A/C</div><div class="value" id="rSavingsAc">₹61,200</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/budget-calculator" class="related-card"><span class="icon">📋</span><div class="title">Budget Planner</div><div class="desc">50/30/20 Rule</div></a></div>
+            <div class="col-md-4"><a href="/fire-calculator" class="related-card"><span class="icon">🏖️</span><div class="title">FIRE Calculator</div><div class="desc">Early retirement</div></a></div>
+            <div class="col-md-4"><a href="/fd-calculator" class="related-card"><span class="icon">🏦</span><div class="title">FD Calculator</div><div class="desc">Safe fixed deposits</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="efToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="efBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="efBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="efBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const rent = parseFloat(document.getElementById('efRent').value)||0;
+    const food = parseFloat(document.getElementById('efFood').value)||0;
+    const bills = parseFloat(document.getElementById('efBills').value)||0;
+    const meds = parseFloat(document.getElementById('efMeds').value)||0;
+    const months = parseInt(document.getElementById('efMonths').value)||6;
+
+    const monthlyEssential = rent + food + bills + meds;
+    if(monthlyEssential <= 0) return;
+
+    const totalCushion = monthlyEssential * months;
+    const liquidFund = totalCushion * 0.50;
+    const sweepFd = totalCushion * 0.30;
+    const savingsAc = totalCushion * 0.20;
+
+    document.getElementById('efTotalCushion').textContent = fmt(totalCushion);
+    document.getElementById('rMonthlyExp').textContent = fmt(monthlyEssential) + ' / month';
+    document.getElementById('rDurationCoverage').textContent = months + ' Months Safety Cushion';
+    document.getElementById('rLiquidFunds').textContent = fmt(liquidFund);
+    document.getElementById('rSweepFd').textContent = fmt(sweepFd);
+    document.getElementById('rSavingsAc').textContent = fmt(savingsAc);
+
+    window._lastEF = { monthlyEssential, months, totalCushion };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('efBtnSave').addEventListener('click', () => {
+        const d = window._lastEF; if(!d) return;
+        const name = prompt('Save as:', `Emergency Fund ${fmt(d.totalCushion)}`);
+        if(name) saveCalculation(name, { MonthlyEssential: fmt(d.monthlyEssential), Months: d.months+' Mo', Cushion: fmt(d.totalCushion) });
+    });
+    document.getElementById('efBtnShare').addEventListener('click', () => {
+        const d = window._lastEF; if(!d) return;
+        shareViaWhatsApp('Emergency Fund Calculator', `Essential Monthly Expenses: ${fmt(d.monthlyEssential)}/mo\nSafety Duration: ${d.months} Months\nRequired Emergency Fund: ${fmt(d.totalCushion)}`);
+    });
+    document.getElementById('efBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

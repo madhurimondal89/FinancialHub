@@ -1,0 +1,107 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">📬 Post Office Monthly Income Scheme (POMIS) Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate guaranteed 7.4% p.a. monthly interest income for single & joint post office accounts</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-3">
+                <label class="form-label">Account Type</label>
+                <select class="form-select" id="pomisType" onchange="updateMax(); calculate();">
+                    <option value="single" selected>Single Account (Max Limit: ₹9,00,000)</option>
+                    <option value="joint">Joint Account (Max Limit: ₹15,00,000)</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Deposit Amount (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="pomisDeposit" value="900000" step="25000" min="1000" max="900000" oninput="calculate()"></div>
+                <div id="pomisWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Govt Interest Rate (% p.a.)</label>
+                <div class="input-group"><input type="number" class="form-control" id="pomisRate" value="7.4" step="0.1" readonly><span class="input-group-text">% p.a. (Fixed)</span></div>
+            </div>
+            <div class="highlight-box">
+                <h4>📬 Guaranteed Monthly Credit</h4>
+                <p>Interest is auto-credited to your Post Office Savings Account on the same date every month. 100% principal is returned at the end of 5 years.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Guaranteed Monthly Income</p><p class="amount" id="pomisMonthly" style="color:var(--accent-green);">₹5,550 / month</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Principal Deposit</div><div class="value" id="rDeposit">₹9,00,000</div></div>
+                    <div class="summary-item"><div class="label">Annual Interest Income</div><div class="value" style="color:var(--gold);" id="rAnnual">₹66,600 / year</div></div>
+                    <div class="summary-item"><div class="label">Total 5-Year Income Earned</div><div class="value" style="color:var(--accent-green);" id="rTotal5Yr">₹3,33,000</div></div>
+                    <div class="summary-item"><div class="label">Principal Returned at Maturity</div><div class="value" id="rReturnDeposit">₹9,00,000</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/swp-calculator" class="related-card"><span class="icon">💸</span><div class="title">SWP Calculator</div><div class="desc">Mutual fund monthly pension</div></a></div>
+            <div class="col-md-4"><a href="/scss-calculator" class="related-card"><span class="icon">👴</span><div class="title">SCSS Calculator</div><div class="desc">Senior citizen scheme</div></a></div>
+            <div class="col-md-4"><a href="/rd-calculator" class="related-card"><span class="icon">📅</span><div class="title">RD Calculator</div><div class="desc">Monthly recurring savings</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="pomisToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="pomisBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="pomisBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="pomisBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function updateMax() {
+    const type = document.getElementById('pomisType').value;
+    const input = document.getElementById('pomisDeposit');
+    if(type === 'joint') {
+        input.max = 1500000;
+        if(input.value < 1500000) input.value = 1500000;
+    } else {
+        input.max = 900000;
+        if(input.value > 900000) input.value = 900000;
+    }
+}
+function calculate() {
+    const P = parseFloat(document.getElementById('pomisDeposit').value)||0;
+    const rateAnnual = 0.074; // 7.4%
+
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('pomisWords');
+        if(el) el.textContent = convertNumberToIndianWords(P);
+    }
+
+    if(P <= 0) return;
+
+    const annualInterest = P * rateAnnual;
+    const monthlyIncome = annualInterest / 12;
+    const total5Yr = annualInterest * 5;
+
+    document.getElementById('pomisMonthly').textContent = fmt(monthlyIncome) + ' / month';
+    document.getElementById('rDeposit').textContent = fmt(P);
+    document.getElementById('rAnnual').textContent = fmt(annualInterest) + ' / year';
+    document.getElementById('rTotal5Yr').textContent = '+' + fmt(total5Yr);
+    document.getElementById('rReturnDeposit').textContent = fmt(P) + ' (100% Refund)';
+
+    window._lastPOMIS = { P, monthlyIncome, annualInterest, total5Yr };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('pomisBtnSave').addEventListener('click', () => {
+        const d = window._lastPOMIS; if(!d) return;
+        const name = prompt('Save as:', `POMIS ${fmt(d.monthlyIncome)}/mo`);
+        if(name) saveCalculation(name, { Deposit: fmt(d.P), MonthlyIncome: fmt(d.monthlyIncome)+'/mo', Total5YrInterest: fmt(d.total5Yr) });
+    });
+    document.getElementById('pomisBtnShare').addEventListener('click', () => {
+        const d = window._lastPOMIS; if(!d) return;
+        shareViaWhatsApp('POMIS Calculator', `Deposit: ${fmt(d.P)}\nRate: 7.4% p.a.\nMonthly Guaranteed Income: ${fmt(d.monthlyIncome)}/mo\nTotal 5-Yr Income: ${fmt(d.total5Yr)}`);
+    });
+    document.getElementById('pomisBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

@@ -93,6 +93,14 @@
     </div>
 </div>
 
+<!-- Save & Share Toolbar -->
+<div class="action-toolbar" id="siToolbar" style="display:none;">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="siBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="siBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="siBtnCopy">🔗 Copy Link</button>
+</div>
+
 <!-- JavaScript (এই অংশটি ঠিক আছে) -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -112,8 +120,10 @@
             initialState.style.display = 'none'; resultsState.style.display = 'block'; yearlyBreakdownSection.style.display = 'block';
             const simpleInterestTotal = (P * R * T) / 100; const totalAmount = P + simpleInterestTotal;
             totalPrincipal.textContent = formatCurrency(P); totalInterest.textContent = formatCurrency(simpleInterestTotal); totalMaturityValue.textContent = formatCurrency(totalAmount);
+            document.getElementById('siToolbar').style.display = 'flex';
+            window._lastSi = { P, R, T, simpleInterestTotal, totalAmount };
             if (siPieChart) siPieChart.destroy();
-            siPieChart = new Chart(pieChartCanvas, { type: 'doughnut', data: { labels: ['Principal Amount', 'Total Interest'], datasets: [{ data: [P, simpleInterestTotal], backgroundColor: ['#0d6efd', '#198754'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } } });
+            siPieChart = new Chart(pieChartCanvas, { type: 'doughnut', data: { labels: ['Principal Amount', 'Total Interest'], datasets: [{ data: [P, simpleInterestTotal], backgroundColor: ['#0891b2', '#22d3ee'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } } });
             yearlyBreakdownBody.innerHTML = ''; const interestPerYear = (P * R) / 100;
             for (let year = 1; year <= T; year++) {
                 const endOfYearBalance = P + (interestPerYear * year);
@@ -129,6 +139,17 @@
         timeSlider.addEventListener('input', () => syncAndCalculate(timeSlider, timeInput));
         timeInput.addEventListener('input', () => syncAndCalculate(timeInput, timeSlider));
         calculateAndDisplay();
+
+        document.getElementById('siBtnSave').addEventListener('click', () => {
+            const d = window._lastSi; if(!d) return;
+            const name = prompt('Save this SI calculation as:', `SI ${d.R}% over ${d.T}Y`);
+            if(name) saveCalculation(name, { principal: formatCurrency(d.P), rate: d.R+'%', years: d.T, interest: formatCurrency(d.simpleInterestTotal), maturity: formatCurrency(d.totalAmount) });
+        });
+        document.getElementById('siBtnShare').addEventListener('click', () => {
+            const d = window._lastSi; if(!d) return;
+            shareViaWhatsApp('Simple Interest Calculator', `Principal: ${formatCurrency(d.P)}\nRate: ${d.R}%\nYears: ${d.T}\nInterest: ${formatCurrency(d.simpleInterestTotal)}\nMaturity: ${formatCurrency(d.totalAmount)}`);
+        });
+        document.getElementById('siBtnCopy').addEventListener('click', copyShareableURL);
     });
 </script>
 

@@ -1,0 +1,118 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">📑 TDS Calculator (Tax Deducted at Source)</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate statutory TDS deduction & net payout under Section 194C, 194J, 194I, 194A & 194H</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-3">
+                <label class="form-label">TDS Section & Nature of Payment</label>
+                <select class="form-select" id="tdsSection" onchange="calculate()">
+                    <option value="194J_tech" selected>194J: Technical / Professional Fees (2%)</option>
+                    <option value="194J_prof">194J: Professional Fees / Legal / Medical (10%)</option>
+                    <option value="194C_ind">194C: Contractor (Individual / HUF) (1%)</option>
+                    <option value="194C_corp">194C: Contractor (Company / Firm) (2%)</option>
+                    <option value="194I_rent">194I: Rent on Land / Building (10%)</option>
+                    <option value="194I_plant">194I: Rent on Plant & Machinery (2%)</option>
+                    <option value="194H_comm">194H: Commission / Brokerage (5%)</option>
+                    <option value="194A_int">194A: Bank Interest / Fixed Deposit (10%)</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Gross Invoice / Payment Amount (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="tdsGross" value="150000" step="5000" oninput="calculate()"></div>
+                <div id="tdsWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="mb-4">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="tdsNoPan" onchange="calculate()">
+                    <label class="form-check-label" for="tdsNoPan" style="color:var(--text-secondary);font-size:0.85rem;">PAN Not Available (Deduct 20% flat under Sec 206AA)</label>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <h4>📜 Section 194 Details</h4>
+                <p>TDS is required to be deposited by the 7th of the following month. Form 16A TDS certificates must be issued quarterly.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Net Payable / Disbursed Amount</p><p class="amount" id="tdsNetPay" style="color:var(--accent-green);">₹1,47,000</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Gross Invoice Amount</div><div class="value" id="rGross">₹1,50,000</div></div>
+                    <div class="summary-item"><div class="label">TDS Rate Applied</div><div class="value" style="color:var(--gold);" id="rRateApplied">2.00%</div></div>
+                    <div class="summary-item"><div class="label">TDS Amount to Deposit (Govt)</div><div class="value" style="color:var(--accent-red);" id="rTdsAmount">₹3,000</div></div>
+                    <div class="summary-item"><div class="label">Net Amount to Beneficiary</div><div class="value" style="color:var(--accent-green);" id="rNet">₹1,47,000</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/freelance-tax-calculator" class="related-card"><span class="icon">💻</span><div class="title">Freelance Tax</div><div class="desc">Section 44ADA savings</div></a></div>
+            <div class="col-md-4"><a href="/gst-calculator" class="related-card"><span class="icon">🏷️</span><div class="title">GST Calculator</div><div class="desc">Invoice tax calculation</div></a></div>
+            <div class="col-md-4"><a href="/income-tax-calculator" class="related-card"><span class="icon">🧾</span><div class="title">Income Tax</div><div class="desc">Claim TDS credit in ITR</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="tdsToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="tdsBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="tdsBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="tdsBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const gross = parseFloat(document.getElementById('tdsGross').value)||0;
+    const sec = document.getElementById('tdsSection').value;
+    const noPan = document.getElementById('tdsNoPan').checked;
+
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('tdsWords');
+        if(el) el.textContent = convertNumberToIndianWords(gross);
+    }
+
+    if(gross <= 0) return;
+
+    let rate = 0.02; // default
+    if(noPan) {
+        rate = 0.20; // 20% under 206AA
+    } else {
+        if(sec === '194J_tech') rate = 0.02;
+        else if(sec === '194J_prof') rate = 0.10;
+        else if(sec === '194C_ind') rate = 0.01;
+        else if(sec === '194C_corp') rate = 0.02;
+        else if(sec === '194I_rent') rate = 0.10;
+        else if(sec === '194I_plant') rate = 0.02;
+        else if(sec === '194H_comm') rate = 0.05;
+        else if(sec === '194A_int') rate = 0.10;
+    }
+
+    const tdsAmount = gross * rate;
+    const netPay = gross - tdsAmount;
+
+    document.getElementById('tdsNetPay').textContent = fmt(netPay);
+    document.getElementById('rGross').textContent = fmt(gross);
+    document.getElementById('rRateApplied').textContent = (rate * 100).toFixed(1) + '%' + (noPan ? ' (No PAN)' : '');
+    document.getElementById('rTdsAmount').textContent = fmt(tdsAmount);
+    document.getElementById('rNet').textContent = fmt(netPay);
+
+    window._lastTDS = { gross, rate: rate*100, tdsAmount, netPay, sec };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('tdsBtnSave').addEventListener('click', () => {
+        const d = window._lastTDS; if(!d) return;
+        const name = prompt('Save as:', `TDS ${fmt(d.tdsAmount)}`);
+        if(name) saveCalculation(name, { Gross: fmt(d.gross), TDS: fmt(d.tdsAmount), NetPayable: fmt(d.netPay) });
+    });
+    document.getElementById('tdsBtnShare').addEventListener('click', () => {
+        const d = window._lastTDS; if(!d) return;
+        shareViaWhatsApp('TDS Calculator', `Gross Invoice: ${fmt(d.gross)}\nTDS Rate: ${d.rate}%\nTDS Deducted: ${fmt(d.tdsAmount)}\nNet Disbursed: ${fmt(d.netPay)}`);
+    });
+    document.getElementById('tdsBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

@@ -61,6 +61,7 @@
             const currentAge = parseInt(inputs.currentAge.value); const retirementAge = parseInt(inputs.retirementAge.value); const monthlyExpenses = parseFloat(inputs.monthlyExpenses.value);
             if (isNaN(currentAge) || isNaN(retirementAge) || isNaN(monthlyExpenses) || currentAge >= retirementAge || monthlyExpenses <= 0) { initialState.style.display = 'flex'; resultsState.style.display = 'none'; yearlyBreakdownSection.style.display = 'none'; if (barChart) barChart.destroy(); if (pieChart) pieChart.destroy(); return; }
             initialState.style.display = 'none'; resultsState.style.display = 'block'; yearlyBreakdownSection.style.display = 'block';
+            document.getElementById('retireToolbar').style.display = 'flex';
             const P = parseFloat(inputs.currentSavings.value) || 0; const M = parseFloat(inputs.monthlyContribution.value) || 0;
             const inflation = parseFloat(inputs.inflationRate.value) / 100; const r_pre = parseFloat(inputs.preRetirementReturn.value) / 100; const r_post = parseFloat(inputs.postRetirementReturn.value) / 100; const yearsToRetire = retirementAge - currentAge;
             const futureMonthlyExpenses = monthlyExpenses * Math.pow(1 + inflation, yearsToRetire);
@@ -72,6 +73,7 @@
             if (shortfall <= 0) { verdictEl.className = 'alert alert-success mt-3 text-center'; verdictEl.innerHTML = `Congratulations! You are on track to meet your retirement goal with a surplus of <strong>${formatCurrency(Math.abs(shortfall))}</strong>.`; }
             else { verdictEl.className = 'alert alert-warning mt-3 text-center'; const fv_factor = n > 0 ? ((Math.pow(1 + i_pre, n) - 1) / i_pre) * (1 + i_pre) : 0; const newMonthlyContribution = fv_factor > 0 ? (requiredCorpus - fv_of_P) / fv_factor : M; verdictEl.innerHTML = `You have a shortfall of <strong>${formatCurrency(shortfall)}</strong>. To reach your goal, you need to increase your monthly contribution to <strong>${formatCurrency(newMonthlyContribution > 0 ? newMonthlyContribution : M)}</strong>.`; }
             corpusNeededEl.textContent = formatCurrency(requiredCorpus); corpusProjectedEl.textContent = formatCurrency(projectedCorpus);
+            window._lastRetire = { currentAge, retirementAge, projectedCorpus, requiredCorpus, shortfall, monthlyExpenses };
             if (barChart) barChart.destroy(); if (pieChart) pieChart.destroy();
             barChart = new Chart(barCanvas, { type: 'bar', data: { labels: ['Required', 'Projected'], datasets: [{ data: [requiredCorpus, projectedCorpus], backgroundColor: ['#ef5350', '#66bb6a'] }] }, options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { ticks: { callback: (v) => v / 100000 + 'L' } } } } });
             const totalContributions = P + (M * n); const totalGrowth = projectedCorpus - totalContributions;
@@ -87,7 +89,27 @@
         function syncAndCalculate(source, target) { if (target) target.value = source.value; calculateAndDisplay(); }
         ids.forEach(id => { if (sliders[id]) sliders[id].addEventListener('input', () => syncAndCalculate(sliders[id], inputs[id])); if (inputs[id]) inputs[id].addEventListener('input', () => syncAndCalculate(inputs[id], sliders[id])); });
         calculateAndDisplay();
+
+        document.getElementById('retireBtnSave').addEventListener('click', () => {
+            const d = window._lastRetire; if(!d) return;
+            const name = prompt('Save this Retirement plan as:', 'Retirement by Age ' + d.retirementAge);
+            if(name) saveCalculation(name, { currentAge: d.currentAge, retirementAge: d.retirementAge, corpusNeeded: formatCurrency(d.requiredCorpus), corpusProjected: formatCurrency(d.projectedCorpus), shortfall: formatCurrency(Math.max(0, d.shortfall)) });
+        });
+        document.getElementById('retireBtnShare').addEventListener('click', () => {
+            const d = window._lastRetire; if(!d) return;
+            shareViaWhatsApp('Retirement Calculator', `Retirement Age: ${d.retirementAge}\nCorpus Needed: ${formatCurrency(d.requiredCorpus)}\nProjected Corpus: ${formatCurrency(d.projectedCorpus)}\nShortfall: ${formatCurrency(Math.max(0, d.shortfall))}`);
+        });
+        document.getElementById('retireBtnCopy').addEventListener('click', copyShareableURL);
     });
 </script>
+
+
+<!-- Save & Share Toolbar -->
+<div class="action-toolbar" id="retireToolbar" style="display:none;">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="retireBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="retireBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="retireBtnCopy">🔗 Copy Link</button>
+</div>
 
 <%- include('partials/footer') %>

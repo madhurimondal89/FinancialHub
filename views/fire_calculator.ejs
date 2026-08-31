@@ -1,0 +1,120 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">🏖️ FIRE Calculator (Financial Independence Retire Early)</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate your Lean, Standard & Fat FIRE target nest egg based on the Trinity 4% Safe Withdrawal Rule</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <label class="form-label">Current Monthly Expenses (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="fireExp" value="65000" step="5000" oninput="calculate()"></div>
+                <div id="fireWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <label class="form-label">Current Savings / Net Worth (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="fireNetWorth" value="1800000" step="100000" oninput="calculate()"></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Monthly Investment (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="fireMonthlyInvest" value="40000" step="5000" oninput="calculate()"></div>
+                </div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <label class="form-label">Safe Withdrawal Rate (SWR)</label>
+                    <div class="input-group"><input type="number" class="form-control" id="fireSwr" value="4.0" step="0.25" oninput="calculate()"><span class="input-group-text">% (4% Rule)</span></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Portfolio Growth (% p.a.)</label>
+                    <div class="input-group"><input type="number" class="form-control" id="fireReturn" value="12.0" step="0.5" oninput="calculate()"><span class="input-group-text">% p.a.</span></div>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <h4>🏖️ The 25x Rule of FIRE</h4>
+                <p>Standard FIRE Number = <strong>25 × Annual Expenses</strong>.<br>Lean FIRE = 20x | Fat FIRE = 35x (luxury lifestyle cushion).</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Target Standard FIRE Number</p><p class="amount" id="fireTargetCorpus" style="color:var(--accent-green);">₹1,95,00,000</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Years to Early Retirement</div><div class="value" style="color:var(--gold);" id="rFireYears">12.4 Years</div></div>
+                    <div class="summary-item"><div class="label">Lean FIRE (Essential 75%)</div><div class="value" id="rLeanFire">₹1,46,25,000</div></div>
+                    <div class="summary-item"><div class="label">Fat FIRE (Luxury 140%)</div><div class="value" id="rFatFire">₹2,73,00,000</div></div>
+                    <div class="summary-item"><div class="label">Current FIRE Readiness</div><div class="value" style="color:var(--accent-green);" id="rReadiness">9.2% Complete</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/retirement-calculator" class="related-card"><span class="icon">🎯</span><div class="title">Retirement Planner</div><div class="desc">Standard pension corpus</div></a></div>
+            <div class="col-md-4"><a href="/swp-calculator" class="related-card"><span class="icon">💸</span><div class="title">SWP Calculator</div><div class="desc">Safe withdrawal cash flow</div></a></div>
+            <div class="col-md-4"><a href="/emergency-fund-calculator" class="related-card"><span class="icon">🦺</span><div class="title">Emergency Fund</div><div class="desc">Safety cushion</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="fireToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="fireBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="fireBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="fireBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const monthlyExp = parseFloat(document.getElementById('fireExp').value)||0;
+    const netWorth = parseFloat(document.getElementById('fireNetWorth').value)||0;
+    const monthlyInvest = parseFloat(document.getElementById('fireMonthlyInvest').value)||0;
+    const swr = (parseFloat(document.getElementById('fireSwr').value)||4) / 100;
+    const rateAnnual = (parseFloat(document.getElementById('fireReturn').value)||12) / 100;
+
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('fireWords');
+        if(el) el.textContent = convertNumberToIndianWords(monthlyExp);
+    }
+
+    if(monthlyExp <= 0 || swr <= 0) return;
+
+    const annualExp = monthlyExp * 12;
+    const fireTarget = annualExp / swr; // e.g., 25x
+    const leanFire = fireTarget * 0.75;
+    const fatFire = fireTarget * 1.40;
+    const readiness = ((netWorth / fireTarget) * 100).toFixed(1);
+
+    // Calculate years to FIRE via compounding simulation
+    let currentCorpus = netWorth;
+    let months = 0;
+    const rMonthly = rateAnnual / 12;
+    while(currentCorpus < fireTarget && months < 600) {
+        currentCorpus = (currentCorpus + monthlyInvest) * (1 + rMonthly);
+        months++;
+    }
+    const yearsToFire = (months / 12).toFixed(1);
+
+    document.getElementById('fireTargetCorpus').textContent = fmt(fireTarget);
+    document.getElementById('rFireYears').textContent = months >= 600 ? '40+ Years' : yearsToFire + ' Years';
+    document.getElementById('rLeanFire').textContent = fmt(leanFire);
+    document.getElementById('rFatFire').textContent = fmt(fatFire);
+    document.getElementById('rReadiness').textContent = readiness + '% Complete';
+
+    window._lastFIRE = { monthlyExp, fireTarget, yearsToFire, readiness, leanFire, fatFire };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('fireBtnSave').addEventListener('click', () => {
+        const d = window._lastFIRE; if(!d) return;
+        const name = prompt('Save as:', `FIRE Target ${fmt(d.fireTarget)}`);
+        if(name) saveCalculation(name, { TargetNestEgg: fmt(d.fireTarget), YearsToFIRE: d.yearsToFire+' Yrs', Readiness: d.readiness+'%' });
+    });
+    document.getElementById('fireBtnShare').addEventListener('click', () => {
+        const d = window._lastFIRE; if(!d) return;
+        shareViaWhatsApp('FIRE Calculator', `Monthly Expenses: ${fmt(d.monthlyExp)}\nTarget FIRE Number: ${fmt(d.fireTarget)}\nEstimated Time to FIRE: ${d.yearsToFire} Years\nCurrent Progress: ${d.readiness}%`);
+    });
+    document.getElementById('fireBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

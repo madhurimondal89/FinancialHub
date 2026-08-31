@@ -52,6 +52,14 @@
     </div>
 <%- include('partials/ad_unit') %>
 </div>
+
+<!-- Save & Share Toolbar -->
+<div class="action-toolbar" id="npsToolbar" style="display:none;">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="npsBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="npsBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="npsBtnCopy">🔗 Copy Link</button>
+</div>
 <script>
 const fmt=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
 function s(f,v){const m={contrib:['contribInput','contribDisplay'],ret:['retInput','retDisplay']};const[i,d]=m[f];document.getElementById(i).value=v;document.getElementById(d).textContent=(f==='contrib'?'₹'+parseInt(v).toLocaleString('en-IN'):parseFloat(v).toFixed(1)+'%');}
@@ -75,7 +83,21 @@ function calc(){
     document.getElementById('interest').textContent=fmt(corpus-totalInv);
     document.getElementById('lumpsum').textContent=fmt(lumpsum);
     document.getElementById('pension').textContent=fmt(monthlyPension);
+    document.getElementById('npsToolbar').style.display='flex';
+    window._lastNps={contrib,cur,ret,rate:parseFloat(document.getElementById('retInput').value),corpus,totalInv,lumpsum,monthlyPension};
 }
 calc();
+document.addEventListener('DOMContentLoaded',function(){
+    document.getElementById('npsBtnSave').addEventListener('click',function(){
+        const d=window._lastNps; if(!d)return;
+        const name=prompt('Save this NPS calculation as:','NPS Corpus: '+fmt(d.corpus));
+        if(name) saveCalculation(name,{monthly:fmt(d.contrib),years:(d.ret-d.cur)+' Yrs',rate:d.rate+'%',corpus:fmt(d.corpus),lumpsum:fmt(d.lumpsum),pension:fmt(d.monthlyPension)+'/mo'});
+    });
+    document.getElementById('npsBtnShare').addEventListener('click',function(){
+        const d=window._lastNps; if(!d)return;
+        shareViaWhatsApp('NPS Calculator','Monthly: '+fmt(d.contrib)+'\nYears: '+(d.ret-d.cur)+'\nTotal Corpus: '+fmt(d.corpus)+'\nLump Sum (60%): '+fmt(d.lumpsum)+'\nMonthly Pension: '+fmt(d.monthlyPension));
+    });
+    document.getElementById('npsBtnCopy').addEventListener('click',copyShareableURL);
+});
 </script>
 <%- include('partials/footer') %>

@@ -1,0 +1,121 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">📊 Stock Profit & Brokerage Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate net realized profit after STT, GST, SEBI charges, stamp duty & exchange fees</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-3">
+                <label class="form-label">Trade Type</label>
+                <select class="form-select" id="tradeType" onchange="calculate()">
+                    <option value="delivery" selected>Equity Delivery (Zero Brokerage / ₹20 Flat)</option>
+                    <option value="intraday">Equity Intraday (0.03% or ₹20)</option>
+                </select>
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label class="form-label">Buy Price (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="buyPrice" value="500" step="1" oninput="calculate()"></div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Sell Price (₹)</label>
+                    <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="sellPrice" value="580" step="1" oninput="calculate()"></div>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Quantity (Number of Shares)</label>
+                <div class="input-group"><input type="number" class="form-control" id="tradeQty" value="200" step="10" oninput="calculate()"><span class="input-group-text">Qty</span></div>
+            </div>
+            <div class="highlight-box">
+                <h4>📜 Statutory Charges Included</h4>
+                <p>Includes STT (0.1% on buy & sell), Exchange txn fee (0.00345%), GST (18% on brokerage+txn charges), SEBI turnover fee & Stamp Duty (0.015%).</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Net Realized Profit</p><p class="amount" id="netProfit" style="color:var(--accent-green);">+₹15,738</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Total Buy Turnover</div><div class="value" id="rBuyTurnover">₹1,00,000</div></div>
+                    <div class="summary-item"><div class="label">Total Sell Turnover</div><div class="value" id="rSellTurnover">₹1,16,000</div></div>
+                    <div class="summary-item"><div class="label">Gross Profit</div><div class="value" id="rGrossProfit">₹16,000</div></div>
+                    <div class="summary-item"><div class="label">Total Taxes & Brokerage</div><div class="value" style="color:var(--accent-red);" id="rTotalCharges">₹262</div></div>
+                    <div class="summary-item"><div class="label">Net ROI / Return</div><div class="value" style="color:var(--gold);" id="rNetRoi">15.74%</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/capital-gains-tax-calculator" class="related-card"><span class="icon">📉</span><div class="title">Capital Gains Tax</div><div class="desc">LTCG / STCG tax</div></a></div>
+            <div class="col-md-4"><a href="/cagr-calculator" class="related-card"><span class="icon">📐</span><div class="title">CAGR Calculator</div><div class="desc">Annualized growth</div></a></div>
+            <div class="col-md-4"><a href="/advanced-profit-loss" class="related-card"><span class="icon">💼</span><div class="title">Profit & Loss</div><div class="desc">Business margins</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="spToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="spBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="spBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="spBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const buy = parseFloat(document.getElementById('buyPrice').value)||0;
+    const sell = parseFloat(document.getElementById('sellPrice').value)||0;
+    const qty = parseFloat(document.getElementById('tradeQty').value)||0;
+    const type = document.getElementById('tradeType').value;
+
+    if(buy <= 0 || sell <= 0 || qty <= 0) return;
+
+    const buyTurnover = buy * qty;
+    const sellTurnover = sell * qty;
+    const totalTurnover = buyTurnover + sellTurnover;
+    const grossProfit = sellTurnover - buyTurnover;
+
+    // Brokerage (assuming discount broker ₹20 cap)
+    let brokerage = type === 'delivery' ? 0 : Math.min(20, buyTurnover * 0.0003) + Math.min(20, sellTurnover * 0.0003);
+    // STT / CTT
+    let stt = type === 'delivery' ? (buyTurnover * 0.001) + (sellTurnover * 0.001) : (sellTurnover * 0.00025);
+    // Exchange txn charge (0.00345%)
+    let exch = totalTurnover * 0.0000345;
+    // GST (18% on brokerage + exchange txn charge)
+    let gst = (brokerage + exch) * 0.18;
+    // SEBI Turnover Charge (₹10 per Crore = 0.000001)
+    let sebi = totalTurnover * 0.000001;
+    // Stamp Duty (0.015% on buy turnover)
+    let stamp = buyTurnover * 0.00015;
+
+    const totalCharges = brokerage + stt + exch + gst + sebi + stamp;
+    const netProfit = grossProfit - totalCharges;
+    const netRoi = (netProfit / buyTurnover) * 100;
+
+    const netEl = document.getElementById('netProfit');
+    netEl.textContent = (netProfit >= 0 ? '+' : '') + fmt(netProfit);
+    netEl.style.color = netProfit >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+
+    document.getElementById('rBuyTurnover').textContent = fmt(buyTurnover);
+    document.getElementById('rSellTurnover').textContent = fmt(sellTurnover);
+    document.getElementById('rGrossProfit').textContent = (grossProfit >= 0 ? '+' : '') + fmt(grossProfit);
+    document.getElementById('rTotalCharges').textContent = fmt(totalCharges);
+    document.getElementById('rNetRoi').textContent = netRoi.toFixed(2) + '%';
+
+    window._lastSP = { buy, sell, qty, grossProfit, totalCharges, netProfit, netRoi };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('spBtnSave').addEventListener('click', () => {
+        const d = window._lastSP; if(!d) return;
+        const name = prompt('Save as:', `Trade Net ${fmt(d.netProfit)}`);
+        if(name) saveCalculation(name, { GrossProfit: fmt(d.grossProfit), Charges: fmt(d.totalCharges), NetProfit: fmt(d.netProfit), ROI: d.netRoi.toFixed(2)+'%' });
+    });
+    document.getElementById('spBtnShare').addEventListener('click', () => {
+        const d = window._lastSP; if(!d) return;
+        shareViaWhatsApp('Stock Profit Calculator', `Buy: ${fmt(d.buy)} | Sell: ${fmt(d.sell)} | Qty: ${d.qty}\nGross Profit: ${fmt(d.grossProfit)}\nTaxes & Charges: ${fmt(d.totalCharges)}\nNet Realized Profit: ${fmt(d.netProfit)} (${d.netRoi.toFixed(2)}%)`);
+    });
+    document.getElementById('spBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>

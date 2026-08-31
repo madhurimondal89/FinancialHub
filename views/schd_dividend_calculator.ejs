@@ -103,6 +103,7 @@
             const Tax_rate = parseFloat(inputs.taxRate.value) / 100 || 0; const Expense_ratio = parseFloat(inputs.expenseRatio.value) / 100 || 0;
             if (T === 0) { initialState.style.display = 'flex'; resultsState.style.display = 'none'; yearlyBreakdownSection.style.display = 'none'; if (schdPieChart) schdPieChart.destroy(); return; }
             initialState.style.display = 'none'; resultsState.style.display = 'block'; yearlyBreakdownSection.style.display = 'block';
+            document.getElementById('schdToolbar').style.display = 'flex';
             let currentBalance = P; let totalNetDivs = 0, totalPaidTaxes = 0, totalConts = P; yearlyBreakdownBody.innerHTML = '';
             for (let year = 1; year <= T; year++) {
                 const startOfYear = currentBalance; const contributionsThisYear = M * 12; currentBalance += contributionsThisYear; totalConts += contributionsThisYear;
@@ -116,13 +117,34 @@
             const totalGains = currentBalance - totalConts; const capitalGainsValue = totalGains - totalNetDivs;
             futureValue.textContent = formatCurrency(currentBalance); totalContributions.textContent = formatCurrency(totalConts);
             totalDividends.textContent = formatCurrency(totalNetDivs); capitalGains.textContent = formatCurrency(capitalGainsValue); taxesPaid.textContent = formatCurrency(totalPaidTaxes);
+            window._lastSchd = { T, totalConts, currentBalance, totalNetDivs, capitalGainsValue, totalPaidTaxes };
             if (schdPieChart) schdPieChart.destroy();
             schdPieChart = new Chart(pieChartCanvas, { type: 'doughnut', data: { labels: ['Contributions', 'Net Dividends', 'Capital Gains', 'Taxes Paid'], datasets: [{ data: [totalConts, totalNetDivs, capitalGainsValue, totalPaidTaxes], backgroundColor: ['#0d6efd', '#198754', '#ffca28', '#ef5350'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } } });
         }
         function syncAndCalculate(source, target) { if (target) target.value = source.value; calculateAndDisplay(); }
         ids.forEach(id => { if (sliders[id]) sliders[id].addEventListener('input', () => syncAndCalculate(sliders[id], inputs[id])); if (inputs[id]) inputs[id].addEventListener('input', () => syncAndCalculate(inputs[id], sliders[id])); });
         calculateAndDisplay();
+
+        document.getElementById('schdBtnSave').addEventListener('click', () => {
+            const d = window._lastSchd; if(!d) return;
+            const name = prompt('Save this SCHD plan as:', 'SCHD ' + d.T + 'Y: ' + formatCurrency(d.currentBalance));
+            if(name) saveCalculation(name, { years: d.T, invested: formatCurrency(d.totalConts), dividends: formatCurrency(d.totalNetDivs), finalValue: formatCurrency(d.currentBalance) });
+        });
+        document.getElementById('schdBtnShare').addEventListener('click', () => {
+            const d = window._lastSchd; if(!d) return;
+            shareViaWhatsApp('SCHD Dividend Calculator', `Years: ${d.T}\nTotal Invested: ${formatCurrency(d.totalConts)}\nNet Dividends: ${formatCurrency(d.totalNetDivs)}\nFinal Value: ${formatCurrency(d.currentBalance)}`);
+        });
+        document.getElementById('schdBtnCopy').addEventListener('click', copyShareableURL);
     });
 </script>
+
+
+<!-- Save & Share Toolbar -->
+<div class="action-toolbar" id="schdToolbar" style="display:none;">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="schdBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="schdBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="schdBtnCopy">🔗 Copy Link</button>
+</div>
 
 <%- include('partials/footer') %>

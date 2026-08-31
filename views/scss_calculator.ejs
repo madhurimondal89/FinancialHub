@@ -1,0 +1,94 @@
+<%- include('partials/header') %>
+<div class="form-card">
+    <h3 class="mb-1">👴 Senior Citizen Savings Scheme (SCSS) Calculator</h3>
+    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate guaranteed 8.2% p.a. quarterly pension payouts and 5-year post office maturity</p>
+<%- include('partials/ad_unit') %>
+    <div class="row g-5">
+        <div class="col-lg-6">
+            <div class="mb-4">
+                <label class="form-label">Total Deposit Amount (₹) (Max ₹30 Lakh)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="scssDeposit" value="1500000" step="50000" min="1000" max="3000000" oninput="calculate()"></div>
+                <div id="scssWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Govt Interest Rate (% p.a.)</label>
+                <div class="input-group"><input type="number" class="form-control" id="scssRate" value="8.2" step="0.1" oninput="calculate()"><span class="input-group-text">% p.a.</span></div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Tenure (Years)</label>
+                <div class="input-group"><input type="number" class="form-control" id="scssTenure" value="5" step="1" readonly><span class="input-group-text">5 Years (Extendable by 3 Yrs)</span></div>
+            </div>
+            <div class="highlight-box">
+                <h4>📜 SCSS Scheme Features</h4>
+                <p>• <strong>Quarterly Payout Dates:</strong> 1st of April, July, October & January.<br>• <strong>Tax Benefit:</strong> Eligible for Section 80C deduction up to ₹1.5 Lakh.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div id="resultsState">
+                <div class="emi-result-display"><p class="label">Quarterly Guaranteed Pension</p><p class="amount" id="scssQuarterly" style="color:var(--accent-green);">₹30,750</p></div>
+                <div class="emi-summary-card">
+                    <div class="summary-item"><div class="label">Total Principal Deposit</div><div class="value" id="rDeposit">₹15,00,000</div></div>
+                    <div class="summary-item"><div class="label">Monthly Equivalent Income</div><div class="value" style="color:var(--gold);" id="rMonthlyEquiv">₹10,250 / month</div></div>
+                    <div class="summary-item"><div class="label">Total Interest (5 Years)</div><div class="value" style="color:var(--accent-green);" id="rTotalInterest">₹6,15,000</div></div>
+                    <div class="summary-item"><div class="label">Total Principal Returned at Maturity</div><div class="value" id="rMaturity">₹15,00,000 (100% Safe)</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="related-section"><h5>🔗 Related Calculators</h5>
+        <div class="row g-3">
+            <div class="col-md-4"><a href="/pomis-calculator" class="related-card"><span class="icon">📬</span><div class="title">POMIS Calculator</div><div class="desc">Monthly income scheme</div></a></div>
+            <div class="col-md-4"><a href="/nps-calculator" class="related-card"><span class="icon">🛡️</span><div class="title">NPS Calculator</div><div class="desc">Pension system</div></a></div>
+            <div class="col-md-4"><a href="/fd-calculator" class="related-card"><span class="icon">🏦</span><div class="title">FD Calculator</div><div class="desc">Bank fixed deposit</div></a></div>
+        </div>
+    </div>
+<%- include('partials/ad_unit') %>
+</div>
+<!-- Toolbar -->
+<div class="action-toolbar" id="scssToolbar">
+    <span class="toolbar-label">Tools:</span>
+    <button type="button" class="btn-action-tool" id="scssBtnSave">💾 Save Calculation</button>
+    <button type="button" class="btn-action-tool btn-whatsapp" id="scssBtnShare">💬 Share on WhatsApp</button>
+    <button type="button" class="btn-action-tool" id="scssBtnCopy">🔗 Copy Link</button>
+</div>
+<script>
+const fmt = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(n);
+function calculate() {
+    const P = parseFloat(document.getElementById('scssDeposit').value)||0;
+    const rateAnnual = (parseFloat(document.getElementById('scssRate').value)||8.2) / 100;
+
+    if(typeof attachNumberToWords === 'function') {
+        const el = document.getElementById('scssWords');
+        if(el) el.textContent = convertNumberToIndianWords(P);
+    }
+
+    if(P <= 0) return;
+
+    const annualInterest = P * rateAnnual;
+    const quarterlyPayout = annualInterest / 4;
+    const monthlyEquiv = annualInterest / 12;
+    const total5YrInterest = annualInterest * 5;
+
+    document.getElementById('scssQuarterly').textContent = fmt(quarterlyPayout);
+    document.getElementById('rDeposit').textContent = fmt(P);
+    document.getElementById('rMonthlyEquiv').textContent = fmt(monthlyEquiv) + ' / month';
+    document.getElementById('rTotalInterest').textContent = '+' + fmt(total5YrInterest);
+    document.getElementById('rMaturity').textContent = fmt(P) + ' (Full Refund)';
+
+    window._lastSCSS = { P, quarterlyPayout, monthlyEquiv, total5YrInterest };
+}
+document.addEventListener('DOMContentLoaded', () => {
+    calculate();
+    document.getElementById('scssBtnSave').addEventListener('click', () => {
+        const d = window._lastSCSS; if(!d) return;
+        const name = prompt('Save as:', `SCSS Deposit ${fmt(d.P)}`);
+        if(name) saveCalculation(name, { Deposit: fmt(d.P), QuarterlyPayout: fmt(d.quarterlyPayout), Total5YrInterest: fmt(d.total5YrInterest) });
+    });
+    document.getElementById('scssBtnShare').addEventListener('click', () => {
+        const d = window._lastSCSS; if(!d) return;
+        shareViaWhatsApp('SCSS Calculator', `Deposit: ${fmt(d.P)}\nQuarterly Payout: ${fmt(d.quarterlyPayout)}\nMonthly Equivalent: ${fmt(d.monthlyEquiv)}/mo\nTotal 5-Yr Interest: ${fmt(d.total5YrInterest)}`);
+    });
+    document.getElementById('scssBtnCopy').addEventListener('click', copyShareableURL);
+});
+</script>
+<%- include('partials/footer') %>
