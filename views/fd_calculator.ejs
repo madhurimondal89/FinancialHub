@@ -2,7 +2,7 @@
 
 <div class="page-title-section fade-in-up">
     <h1>Fixed Deposit (FD) Calculator</h1>
-    <p>Calculate your Fixed Deposit maturity value, quarterly compounding interest, and effective annual yield with PDF download.</p>
+    <p>Calculate your Fixed Deposit maturity value, quarterly compounding interest, effective annual yield (APY), and download a complete year-by-year statement.</p>
 </div>
 
 <div class="form-card fade-in-up">
@@ -12,7 +12,9 @@
         <!-- Left: Inputs -->
         <div class="col-lg-6">
             <div class="slider-container">
-                <label for="principalInput" class="form-label d-flex justify-content-between fw-bold">Principal Deposit Amount</label>
+                <label for="principalInput" class="form-label d-flex justify-content-between fw-bold">
+                    <span>Principal Deposit Amount</span>
+                </label>
                 <div class="input-group">
                     <span class="input-group-text">₹</span>
                     <input type="number" class="form-control" id="principalInput" value="100000" min="1000" max="10000000" step="1000">
@@ -23,20 +25,34 @@
             </div>
 
             <div class="slider-container">
-                <label for="rateInput" class="form-label d-flex justify-content-between fw-bold">Annual Interest Rate (%)</label>
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label for="rateInput" class="form-label fw-bold mb-0">Annual Interest Rate (%)</label>
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="seniorCitizenToggle">
+                        <label class="form-check-label text-warning small fw-bold" for="seniorCitizenToggle">🧓 Sr. Citizen (+0.50%)</label>
+                    </div>
+                </div>
                 <div class="input-group">
-                    <input type="number" class="form-control" id="rateInput" value="7.1" step="0.05" min="1" max="15">
+                    <input type="number" class="form-control" id="rateInput" value="7.10" step="0.05" min="1" max="15">
                     <span class="input-group-text">%</span>
                 </div>
-                <input type="range" id="rateSlider" min="3" max="12" step="0.1" value="7.1" class="form-range mt-2">
+                <input type="range" id="rateSlider" min="3" max="12" step="0.05" value="7.10" class="form-range mt-2">
                 <div id="fdRatePresets"></div>
             </div>
 
             <div class="slider-container">
-                <label for="tenureInput" class="form-label d-flex justify-content-between fw-bold">Tenure (Months)</label>
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label for="tenureInput" class="form-label fw-bold mb-0">Tenure</label>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <input type="radio" class="btn-check" name="tenureType" id="tenureTypeMonths" checked>
+                        <label class="btn btn-outline-secondary btn-sm" for="tenureTypeMonths">Months</label>
+                        <input type="radio" class="btn-check" name="tenureType" id="tenureTypeYears">
+                        <label class="btn btn-outline-secondary btn-sm" for="tenureTypeYears">Years</label>
+                    </div>
+                </div>
                 <div class="input-group">
                     <input type="number" class="form-control" id="tenureInput" value="36" min="1" max="120" step="1">
-                    <span class="input-group-text">Months</span>
+                    <span class="input-group-text" id="tenureUnitLabel">Months</span>
                 </div>
                 <input type="range" id="tenureSlider" min="1" max="120" step="1" value="36" class="form-range mt-2">
                 <div id="fdTenurePresets"></div>
@@ -46,36 +62,62 @@
                 <label for="compound" class="form-label fw-bold">Compounding Frequency</label>
                 <select class="form-select" id="compound">
                     <option value="4" selected>Quarterly (Indian Banks Standard)</option>
-                    <option value="12">Monthly</option>
-                    <option value="2">Half-Yearly</option>
-                    <option value="1">Annually</option>
+                    <option value="12">Monthly (Discounted Cash Flow)</option>
+                    <option value="2">Half-Yearly (Semi-Annual)</option>
+                    <option value="1">Annually (Once a year)</option>
                 </select>
+                <small class="text-muted d-block mt-1">Almost all Scheduled Commercial Banks (SBI, HDFC, ICICI) compound interest every 3 months (Quarterly).</small>
             </div>
         </div>
 
         <!-- Right: Results -->
         <div class="col-lg-6">
-            <div class="emi-result-display mt-3 mb-3">
-                <p class="label">Maturity Amount</p>
-                <p class="amount" id="maturityAmount">₹0</p>
-            </div>
-            <div class="emi-summary-card">
-                <div class="summary-item"><div class="label">Principal Invested</div><div class="value" id="resPrincipal">₹0</div></div>
-                <div class="summary-item"><div class="label">Total Interest Earned</div><div class="value" style="color:var(--accent);" id="resInterest">₹0</div></div>
-                <div class="summary-item"><div class="label">Effective Annual Yield</div><div class="value" id="resYield">0%</div></div>
+            <div class="emi-result-display mb-3">
+                <p class="label">Total Maturity Amount</p>
+                <p class="amount" id="maturityAmount">₹1,23,508</p>
             </div>
 
-            <div class="chart-container mt-4" style="max-height: 200px;">
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <div class="summary-card">
+                        <div class="label">Principal Invested</div>
+                        <div class="value gold" id="resPrincipal">₹1,00,000</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="summary-card">
+                        <div class="label">Total Interest Earned</div>
+                        <div class="value profit" id="resInterest" style="color:var(--accent,#10b981);">₹23,508</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="summary-card">
+                        <div class="label">Effective Annual Yield (APY)</div>
+                        <div class="value" id="resYield" style="color:var(--text-primary,#38bdf8);">7.29%</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="summary-card">
+                        <div class="label">Avg. Monthly Interest</div>
+                        <div class="value" id="resMonthlyInterest">₹653</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container" style="max-height: 220px; position: relative;">
                 <canvas id="fdChart"></canvas>
             </div>
         </div>
     </div>
 
     <!-- Action Toolbar -->
-    <div class="action-toolbar" id="fdActionToolbar">
+    <div class="action-toolbar mt-4" id="fdActionToolbar">
         <span class="toolbar-label">Tools & Export:</span>
         <button type="button" class="btn-action-tool" id="btnExportPDF">
             <span>📄</span> Download FD Receipt PDF
+        </button>
+        <button type="button" class="btn-action-tool" id="btnExportCSV">
+            <span>📊</span> Export Excel/CSV
         </button>
         <button type="button" class="btn-action-tool btn-whatsapp" id="btnShareWA">
             <span>💬</span> Share on WhatsApp
@@ -88,34 +130,88 @@
         </button>
     </div>
 
+    <!-- Year-by-Year Growth Table -->
+    <div class="yearly-breakdown-section mt-5" id="fdBreakdownSection">
+        <h4 class="fw-bold mb-3" style="color:var(--heading-color, #f8fafc);">📅 Year-by-Year FD Compounding Schedule</h4>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle custom-breakdown-table">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Opening Balance</th>
+                        <th>Interest Earned</th>
+                        <th>Closing Maturity Balance</th>
+                    </tr>
+                </thead>
+                <tbody id="fdScheduleBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Top Bank FD Benchmark Rates Reference -->
+    <div class="mt-5 p-4 rounded-4" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);">
+        <h5 class="fw-bold mb-3" style="color:var(--accent-gold, #f59e0b);">🏦 Top Bank FD Rates (FY 2026-27 Reference)</h5>
+        <div class="row g-3 text-center">
+            <div class="col-6 col-md-3">
+                <div class="p-3 rounded-3" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05);">
+                    <div class="fw-bold text-muted small">SBI (State Bank)</div>
+                    <div class="fs-5 fw-extrabold text-white">6.80% - 7.10%</div>
+                    <small class="text-warning">7.60% Senior</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-3 rounded-3" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05);">
+                    <div class="fw-bold text-muted small">HDFC / ICICI</div>
+                    <div class="fs-5 fw-extrabold text-white">7.00% - 7.25%</div>
+                    <small class="text-warning">7.75% Senior</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-3 rounded-3" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05);">
+                    <div class="fw-bold text-muted small">Post Office TD (5Y)</div>
+                    <div class="fs-5 fw-extrabold text-white">7.50%</div>
+                    <small class="text-success">Govt Sovereign Backed</small>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-3 rounded-3" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05);">
+                    <div class="fw-bold text-muted small">Small Finance Banks</div>
+                    <div class="fs-5 fw-extrabold text-white">8.50% - 9.00%</div>
+                    <small class="text-info">DICGC ₹5 Lakh Insured</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Related Section -->
-    <div class="related-calculators-section">
-        <h5 class="related-calc-title">💡 Related Safe Investment Calculators</h5>
+    <div class="related-calculators-section mt-5">
+        <h5 class="related-calc-title">💡 Related Safe Investment & Fixed Income Calculators</h5>
         <div class="row g-3">
+            <div class="col-md-3 col-6">
+                <a href="/rd-calculator" class="related-mini-card">
+                    <span class="icon">🔄</span>
+                    <div>
+                        <div class="title">RD Calculator</div>
+                        <div class="desc">Monthly Recurring Deposit</div>
+                    </div>
+                </a>
+            </div>
             <div class="col-md-3 col-6">
                 <a href="/ppf-calculator" class="related-mini-card">
                     <span class="icon">🏛️</span>
                     <div>
                         <div class="title">PPF Calculator</div>
-                        <div class="desc">7.1% Tax-Free</div>
+                        <div class="desc">7.1% Tax-Free Govt</div>
                     </div>
                 </a>
             </div>
             <div class="col-md-3 col-6">
-                <a href="/sip-calculator" class="related-mini-card">
-                    <span class="icon">📊</span>
+                <a href="/scss-calculator" class="related-mini-card">
+                    <span class="icon">👴</span>
                     <div>
-                        <div class="title">SIP Calculator</div>
-                        <div class="desc">12%+ Mutual Funds</div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-3 col-6">
-                <a href="/gold-calculator" class="related-mini-card">
-                    <span class="icon">🥇</span>
-                    <div>
-                        <div class="title">Gold / SGB</div>
-                        <div class="desc">2.5% Bonus + Capital</div>
+                        <div class="title">SCSS Scheme</div>
+                        <div class="desc">8.2% Senior Citizens</div>
                     </div>
                 </a>
             </div>
@@ -129,142 +225,345 @@
                 </a>
             </div>
         </div>
+    <!-- FAQ & Information Accordion Section -->
+    <div class="info-accordion mt-5">
+        <h4 class="fw-bold mb-3" style="color:var(--heading-color, #f8fafc);">❓ Frequently Asked Questions (FD FAQs)</h4>
+        <div class="accordion" id="fdFaqAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="fdFaqH1">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#fdFaqC1" aria-expanded="true">
+                        How is Fixed Deposit maturity amount calculated?
+                    </button>
+                </h2>
+                <div id="fdFaqC1" class="accordion-collapse collapse show" data-bs-parent="#fdFaqAccordion">
+                    <div class="accordion-body text-muted">
+                        Indian banks compound interest quarterly using the formula: <strong>A = P × (1 + r/n)^(n × t)</strong>, where <em>P</em> is the deposit amount, <em>r</em> is annual interest rate divided by 100, <em>n</em> = 4 (for quarterly compounding), and <em>t</em> is the tenure in years.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="fdFaqH2">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fdFaqC2">
+                        Do Senior Citizens get extra interest on Bank FDs?
+                    </button>
+                </h2>
+                <div id="fdFaqC2" class="accordion-collapse collapse" data-bs-parent="#fdFaqAccordion">
+                    <div class="accordion-body text-muted">
+                        Yes! Most commercial banks (SBI, HDFC, ICICI, etc.) provide an additional <strong>0.50% to 0.75%</strong> higher interest rate for depositors aged 60 years and above. You can toggle the <em>"🧓 Sr. Citizen (+0.50%)"</em> switch in this calculator to see exact returns.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="fdFaqH3">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fdFaqC3">
+                        What are the TDS rules and tax limits on FD interest (FY 2026-27)?
+                    </button>
+                </h2>
+                <div id="fdFaqC3" class="accordion-collapse collapse" data-bs-parent="#fdFaqAccordion">
+                    <div class="accordion-body text-muted">
+                        Bank FD interest is fully taxable under <em>"Income from Other Sources"</em> according to your income tax slab. Banks deduct 10% TDS if interest income exceeds <strong>₹40,000 per year</strong> for regular individuals, or <strong>₹50,000 per year</strong> (under Section 80TTB) for senior citizens.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="fdFaqH4">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fdFaqC4">
+                        Are bank Fixed Deposits safe?
+                    </button>
+                </h2>
+                <div id="fdFaqC4" class="accordion-collapse collapse" data-bs-parent="#fdFaqAccordion">
+                    <div class="accordion-body text-muted">
+                        Yes. Deposits in all Scheduled Commercial Banks and Small Finance Banks are guaranteed and insured up to <strong>₹5,00,000 (Principal + Interest)</strong> per depositor per bank by the <em>Deposit Insurance and Credit Guarantee Corporation (DICGC)</em>, a wholly owned subsidiary of RBI.
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-<%- include('partials/ad_unit') %>
+    <%- include('partials/ad_unit') %>
 </div>
 
 <script>
-    const fmt = (n) => new Intl.NumberFormat('en-IN', { style:'currency', currency:'INR', maximumFractionDigits:0 }).format(n);
-    let fdChart = null;
-    let lastFDData = null;
+    function initFDCalculator() {
+        const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n);
+        let fdChart = null;
+        let lastFDData = null;
 
-    // Attach Number to Words
-    attachNumberToWords('principalInput', 'fdPrincipalWords');
+        const pIn = document.getElementById('principalInput'), pSl = document.getElementById('principalSlider');
+        const rIn = document.getElementById('rateInput'), rSl = document.getElementById('rateSlider');
+        const tIn = document.getElementById('tenureInput'), tSl = document.getElementById('tenureSlider');
+        const freqEl = document.getElementById('compound');
+        const seniorToggle = document.getElementById('seniorCitizenToggle');
+        const tenureTypeMonths = document.getElementById('tenureTypeMonths');
+        const tenureTypeYears = document.getElementById('tenureTypeYears');
+        const tenureUnitLabel = document.getElementById('tenureUnitLabel');
+        const scheduleBody = document.getElementById('fdScheduleBody');
 
-    // Preset Chips
-    createPresetChips('fdPrincipalPresets', 'principalInput', 'principalSlider', [
-        { label: '₹25K', value: 25000 },
-        { label: '₹50K', value: 50000 },
-        { label: '₹1 Lakh', value: 100000 },
-        { label: '₹5 Lakhs', value: 500000 },
-        { label: '₹10 Lakhs', value: 1000000 }
-    ], calculateFD);
+        // Attach Number to Words
+        if (typeof attachNumberToWords === 'function') {
+            attachNumberToWords('principalInput', 'fdPrincipalWords');
+        }
 
-    createPresetChips('fdRatePresets', 'rateInput', 'rateSlider', [
-        { label: '6.5% (1 Year)', value: 6.5 },
-        { label: '7.1% (Standard)', value: 7.1 },
-        { label: '7.6% (Sr. Citizen)', value: 7.6 }
-    ], calculateFD);
+        // Preset Chips
+        if (typeof createPresetChips === 'function') {
+            createPresetChips('fdPrincipalPresets', 'principalInput', 'principalSlider', [
+                { label: '₹25K', value: 25000 },
+                { label: '₹50K', value: 50000 },
+                { label: '₹1 Lakh', value: 100000 },
+                { label: '₹5 Lakhs', value: 500000 },
+                { label: '₹10 Lakhs', value: 1000000 }
+            ], calculateFD);
 
-    createPresetChips('fdTenurePresets', 'tenureInput', 'tenureSlider', [
-        { label: '1 Year', value: 12 },
-        { label: '2 Years', value: 24 },
-        { label: '3 Years', value: 36 },
-        { label: '5 Years', value: 60 }
-    ], calculateFD);
+            createPresetChips('fdRatePresets', 'rateInput', 'rateSlider', [
+                { label: '6.80% (1 Yr SBI)', value: 6.80 },
+                { label: '7.10% (General)', value: 7.10 },
+                { label: '7.60% (Senior)', value: 7.60 },
+                { label: '8.50% (SFB High)', value: 8.50 }
+            ], calculateFD);
 
-    // Sync helpers
-    const pIn = document.getElementById('principalInput'), pSl = document.getElementById('principalSlider');
-    const rIn = document.getElementById('rateInput'), rSl = document.getElementById('rateSlider');
-    const tIn = document.getElementById('tenureInput'), tSl = document.getElementById('tenureSlider');
-    const freqEl = document.getElementById('compound');
+            createPresetChips('fdTenurePresets', 'tenureInput', 'tenureSlider', [
+                { label: '1 Year', value: 12 },
+                { label: '2 Years', value: 24 },
+                { label: '3 Years', value: 36 },
+                { label: '5 Years', value: 60 }
+            ], calculateFD);
+        }
 
-    pSl.addEventListener('input', () => { pIn.value = pSl.value; calculateFD(); });
-    pIn.addEventListener('input', () => { pSl.value = pIn.value; calculateFD(); });
-    rSl.addEventListener('input', () => { rIn.value = rSl.value; calculateFD(); });
-    rIn.addEventListener('input', () => { rSl.value = rIn.value; calculateFD(); });
-    tSl.addEventListener('input', () => { tIn.value = tSl.value; calculateFD(); });
-    tIn.addEventListener('input', () => { tSl.value = tIn.value; calculateFD(); });
-    freqEl.addEventListener('change', calculateFD);
+        // Tenure Radio switcher
+        function updateTenureMode() {
+            if (tenureTypeYears.checked) {
+                tenureUnitLabel.textContent = 'Years';
+                tSl.min = 1;
+                tSl.max = 10;
+                tSl.step = 1;
+                if (parseFloat(tIn.value) > 10) {
+                    tIn.value = Math.round(parseFloat(tIn.value) / 12) || 3;
+                    tSl.value = tIn.value;
+                }
+            } else {
+                tenureUnitLabel.textContent = 'Months';
+                tSl.min = 1;
+                tSl.max = 120;
+                tSl.step = 1;
+                if (parseFloat(tIn.value) <= 10) {
+                    tIn.value = Math.round(parseFloat(tIn.value) * 12) || 36;
+                    tSl.value = tIn.value;
+                }
+            }
+            calculateFD();
+        }
 
-    // URL load
-    const urlParams = loadParamsFromURL();
-    if (urlParams.p) pIn.value = pSl.value = urlParams.p;
-    if (urlParams.r) rIn.value = rSl.value = urlParams.r;
-    if (urlParams.t) tIn.value = tSl.value = urlParams.t;
-    if (urlParams.n) freqEl.value = urlParams.n;
+        tenureTypeMonths.addEventListener('change', updateTenureMode);
+        tenureTypeYears.addEventListener('change', updateTenureMode);
 
-    function calculateFD() {
-        const P = parseFloat(pIn.value) || 0;
-        const r = (parseFloat(rIn.value) || 0) / 100;
-        const months = parseInt(tIn.value) || 0;
-        const n = parseInt(freqEl.value);
-        const t = months / 12;
-
-        if (P <= 0 || r <= 0 || months <= 0) return;
-
-        const A = P * Math.pow(1 + r/n, n*t);
-        const interest = A - P;
-        const ear = (Math.pow(1 + r/n, n) - 1) * 100;
-
-        document.getElementById('maturityAmount').textContent = fmt(A);
-        document.getElementById('resPrincipal').textContent = fmt(P);
-        document.getElementById('resInterest').textContent = fmt(interest);
-        document.getElementById('resYield').textContent = ear.toFixed(2) + '%';
-
-        // Sync URL
-        syncParamsToURL({ p: P, r: rIn.value, t: months, n: freqEl.value });
-
-        // Chart
-        const ctx = document.getElementById('fdChart').getContext('2d');
-        if (fdChart) fdChart.destroy();
-        fdChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Principal', 'Interest Earned'],
-                datasets: [{ data: [P, interest], backgroundColor: ['#0d6efd', '#10b981'], borderWidth: 0 }]
-            },
-            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } }
-        });
-
-        lastFDData = { P, r: rIn.value, months, t: (months/12).toFixed(1), A, interest, ear: ear.toFixed(2) };
-    }
-
-    // Toolbar
-    document.getElementById('btnExportPDF').addEventListener('click', () => {
-        if (!lastFDData) return;
-        exportCalculatorPDF({
-            docTitle: `Fixed Deposit (FD) Certificate Summary (${fmt(lastFDData.P)} @ ${lastFDData.r}%)`,
-            summaryData: [
-                { label: 'Deposit Principal', value: fmt(lastFDData.P) },
-                { label: 'Total Interest', value: fmt(lastFDData.interest) },
-                { label: 'Final Maturity Value', value: fmt(lastFDData.A), highlight: true },
-                { label: 'Effective Yield (EAR)', value: `${lastFDData.ear}%` }
-            ],
-            tableHeaders: ['Deposit Detail', 'Value'],
-            tableRows: [
-                ['Principal Invested', fmt(lastFDData.P)],
-                ['Interest Rate', `${lastFDData.r}% p.a.`],
-                ['Tenure', `${lastFDData.months} Months (${lastFDData.t} Years)`],
-                ['Compounding Frequency', freqEl.options[freqEl.selectedIndex].text],
-                ['Total Interest Earned', fmt(lastFDData.interest)],
-                ['Maturity Amount', fmt(lastFDData.A)]
-            ],
-            filename: 'fd_maturity_statement'
-        });
-    });
-
-    document.getElementById('btnShareWA').addEventListener('click', () => {
-        if (!lastFDData) return;
-        const summary = `🏦 *FD Principal:* ${fmt(lastFDData.P)}\n📈 *Interest Rate:* ${lastFDData.r}% p.a.\n⏳ *Tenure:* ${lastFDData.months} Months (${lastFDData.t} Yrs)\n\n💵 *Total Interest:* ${fmt(lastFDData.interest)}\n🏆 *Maturity Amount:* ${fmt(lastFDData.A)}`;
-        shareViaWhatsApp('Fixed Deposit Maturity Calculation', summary);
-    });
-
-    document.getElementById('btnCopyLink').addEventListener('click', copyShareableURL);
-
-    document.getElementById('btnSaveCalc').addEventListener('click', () => {
-        if (!lastFDData) return;
-        const name = prompt('Label this FD calculation:', `FD ${fmt(lastFDData.P)} (${lastFDData.t}Y @ ${lastFDData.r}%)`);
-        if (name) {
-            saveCalculation(name, {
-                deposit: fmt(lastFDData.P),
-                maturity: fmt(lastFDData.A)
+        // Senior Citizen toggle
+        if (seniorToggle) {
+            seniorToggle.addEventListener('change', () => {
+                let current = parseFloat(rIn.value) || 7.10;
+                if (seniorToggle.checked) {
+                    current += 0.50;
+                } else {
+                    current = Math.max(1, current - 0.50);
+                }
+                rIn.value = current.toFixed(2);
+                rSl.value = current.toFixed(2);
+                calculateFD();
             });
         }
-    });
 
-    calculateFD();
+        // Sync slider and inputs
+        pSl.addEventListener('input', () => { pIn.value = pSl.value; calculateFD(); });
+        pIn.addEventListener('input', () => { pSl.value = pIn.value; calculateFD(); });
+        rSl.addEventListener('input', () => { rIn.value = rSl.value; calculateFD(); });
+        rIn.addEventListener('input', () => { rSl.value = rIn.value; calculateFD(); });
+        tSl.addEventListener('input', () => { tIn.value = tSl.value; calculateFD(); });
+        tIn.addEventListener('input', () => { tSl.value = tIn.value; calculateFD(); });
+        freqEl.addEventListener('change', calculateFD);
+
+        // Load URL Params
+        if (typeof loadParamsFromURL === 'function') {
+            const urlParams = loadParamsFromURL();
+            if (urlParams.p) pIn.value = pSl.value = urlParams.p;
+            if (urlParams.r) rIn.value = rSl.value = urlParams.r;
+            if (urlParams.t) tIn.value = tSl.value = urlParams.t;
+            if (urlParams.n) freqEl.value = urlParams.n;
+            if (urlParams.type === 'y') {
+                tenureTypeYears.checked = true;
+                updateTenureMode();
+            }
+        }
+
+        function calculateFD() {
+            const P = parseFloat(pIn.value) || 0;
+            const r = (parseFloat(rIn.value) || 0) / 100;
+            const isYears = tenureTypeYears.checked;
+            const tenureVal = parseFloat(tIn.value) || 0;
+            const totalMonths = isYears ? tenureVal * 12 : tenureVal;
+            const n = parseInt(freqEl.value) || 4;
+            const t = totalMonths / 12;
+
+            if (P <= 0 || r <= 0 || totalMonths <= 0) return;
+
+            const A = P * Math.pow(1 + r/n, n*t);
+            const interest = A - P;
+            const ear = (Math.pow(1 + r/n, n) - 1) * 100;
+            const avgMonthly = totalMonths > 0 ? interest / totalMonths : 0;
+
+            document.getElementById('maturityAmount').textContent = fmt(A);
+            document.getElementById('resPrincipal').textContent = fmt(P);
+            document.getElementById('resInterest').textContent = fmt(interest);
+            document.getElementById('resYield').textContent = ear.toFixed(2) + '%';
+            document.getElementById('resMonthlyInterest').textContent = fmt(avgMonthly);
+
+            // Sync URL
+            if (typeof syncParamsToURL === 'function') {
+                syncParamsToURL({ p: P, r: rIn.value, t: tIn.value, n: freqEl.value, type: isYears ? 'y' : 'm' });
+            }
+
+            // Chart
+            const ctx = document.getElementById('fdChart').getContext('2d');
+            if (fdChart) fdChart.destroy();
+            fdChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Principal Invested', 'Total Interest'],
+                    datasets: [{
+                        data: [P, Math.round(interest)],
+                        backgroundColor: ['#3b82f6', '#10b981'],
+                        borderColor: 'transparent',
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#94a3b8',
+                                font: { size: 12 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ' ' + context.label + ': ' + fmt(context.raw);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Schedule Table
+            if (scheduleBody) {
+                scheduleBody.innerHTML = '';
+                const totalYears = Math.ceil(t);
+                const scheduleRows = [];
+
+                for (let y = 1; y <= totalYears; y++) {
+                    const yearTime = Math.min(y, t);
+                    const prevYearTime = y - 1;
+                    const closingForYear = P * Math.pow(1 + r/n, n * yearTime);
+                    const openingForYear = prevYearTime === 0 ? P : P * Math.pow(1 + r/n, n * prevYearTime);
+                    const yearInterest = closingForYear - openingForYear;
+
+                    scheduleRows.push([
+                        `Year ${y}`,
+                        fmt(openingForYear),
+                        fmt(yearInterest),
+                        fmt(closingForYear)
+                    ]);
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="fw-bold text-white">Year ${y}</td>
+                        <td class="text-muted">${fmt(openingForYear)}</td>
+                        <td class="text-success fw-semibold">+ ${fmt(yearInterest)}</td>
+                        <td class="fw-bold text-warning">${fmt(closingForYear)}</td>
+                    `;
+                    scheduleBody.appendChild(row);
+                }
+                lastFDData = { P, r: rIn.value, totalMonths, t: t.toFixed(1), A, interest, ear: ear.toFixed(2), avgMonthly, scheduleRows };
+            } else {
+                lastFDData = { P, r: rIn.value, totalMonths, t: t.toFixed(1), A, interest, ear: ear.toFixed(2), avgMonthly };
+            }
+        }
+
+        // PDF Export
+        document.getElementById('btnExportPDF').addEventListener('click', () => {
+            if (!lastFDData || typeof exportCalculatorPDF !== 'function') return;
+            exportCalculatorPDF({
+                docTitle: `Fixed Deposit (FD) Maturity Certificate (${fmt(lastFDData.P)} @ ${lastFDData.r}%)`,
+                summaryData: [
+                    { label: 'Deposit Principal', value: fmt(lastFDData.P) },
+                    { label: 'Total Interest Earned', value: fmt(lastFDData.interest) },
+                    { label: 'Final Maturity Value', value: fmt(lastFDData.A), highlight: true },
+                    { label: 'Effective Annual Yield (APY)', value: `${lastFDData.ear}%` }
+                ],
+                tableHeaders: ['Year / Period', 'Opening Balance', 'Interest Accrued', 'Closing Maturity Value'],
+                tableRows: lastFDData.scheduleRows || [
+                    ['Principal Invested', fmt(lastFDData.P), '-', fmt(lastFDData.P)],
+                    ['Full Tenure Interest', '-', fmt(lastFDData.interest), fmt(lastFDData.A)]
+                ],
+                filename: 'fd_maturity_certificate'
+            });
+        });
+
+        // CSV Export
+        document.getElementById('btnExportCSV').addEventListener('click', () => {
+            if (!lastFDData || !lastFDData.scheduleRows) return;
+            let csvContent = 'data:text/csv;charset=utf-8,';
+            csvContent += 'Year,Opening Balance,Interest Earned,Closing Maturity Balance\n';
+            lastFDData.scheduleRows.forEach(row => {
+                csvContent += row.map(cell => `"${cell.replace(/₹|,/g, '')}"`).join(',') + '\n';
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', 'fd_compounding_schedule.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // Share WhatsApp
+        document.getElementById('btnShareWA').addEventListener('click', () => {
+            if (!lastFDData || typeof shareViaWhatsApp !== 'function') return;
+            const summary = `🏦 *FD Principal:* ${fmt(lastFDData.P)}\n📈 *Interest Rate:* ${lastFDData.r}% p.a.\n⏳ *Tenure:* ${lastFDData.totalMonths} Months (${lastFDData.t} Yrs)\n\n💵 *Total Interest:* ${fmt(lastFDData.interest)}\n🏆 *Maturity Amount:* ${fmt(lastFDData.A)}\n📊 *Effective APY:* ${lastFDData.ear}%`;
+            shareViaWhatsApp('Fixed Deposit Maturity Calculation', summary);
+        });
+
+        // Copy Link
+        document.getElementById('btnCopyLink').addEventListener('click', () => {
+            if (typeof copyShareableURL === 'function') copyShareableURL();
+        });
+
+        // Save Calculation
+        document.getElementById('btnSaveCalc').addEventListener('click', () => {
+            if (!lastFDData || typeof saveCalculation !== 'function') return;
+            const name = prompt('Label this FD calculation:', `FD ${fmt(lastFDData.P)} (${lastFDData.t}Y @ ${lastFDData.r}%)`);
+            if (name) {
+                saveCalculation(name, {
+                    deposit: fmt(lastFDData.P),
+                    maturity: fmt(lastFDData.A)
+                });
+            }
+        });
+
+        // Initial Calculation
+        calculateFD();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initFDCalculator);
+    } else {
+        initFDCalculator();
+    }
 </script>
 
 <%- include('partials/footer') %>

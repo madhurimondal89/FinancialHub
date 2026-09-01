@@ -22,23 +22,6 @@
                 Calculate Mutual Fund SIP growth, loan EMIs, New Tax Regime FY 2026-27 liability, in-hand salary, FD rates, and early retirement across 300+ fast, accurate tools.
             </p>
 
-            <!-- Search Bar with Live Filter & Shortcut -->
-            <div class="hero-search-wrapper mx-auto mb-3" style="max-width: 680px;">
-                <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden border bg-body search-pill-box">
-                    <span class="input-group-text bg-transparent border-0 ps-3 ps-md-4 text-primary">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    </span>
-                    <input type="text" 
-                           id="globalCalcSearchInput" 
-                           class="form-control border-0 py-3 ps-2 shadow-none" 
-                           placeholder="Search 300+ calculators (e.g. SIP, Home Loan, 44ADA, FD, HRA)..." 
-                           autocomplete="off">
-                    <span class="input-group-text bg-transparent border-0 pe-3 pe-md-4 d-none d-sm-flex align-items-center">
-                        <kbd class="kbd-badge shadow-2xs">Ctrl + K</kbd>
-                    </span>
-                </div>
-            </div>
-
             <!-- ===== LIVE CONTINUOUS MOVING MARKET TICKER (HERO SECTION) ===== -->
             <div class="hero-live-ticker-container" id="heroLiveTicker">
                 <div class="hero-ticker-badge">
@@ -262,17 +245,44 @@
             </div>
         </section>
 
-        <!-- ===== CATEGORY FILTER TABS ===== -->
-        <div class="category-filter-nav mb-4 sticky-top py-2 bg-body-glass" style="z-index: 20;">
-            <div class="d-flex flex-nowrap overflow-x-auto gap-2 pb-2 hide-scrollbar">
-                <button type="button" class="btn btn-sm btn-category-pill active" data-filter="all">
-                    ✨ All Calculators (<%= calculators.length %>)
-                </button>
-                <% categories.forEach(function(cat) { %>
-                    <button type="button" class="btn btn-sm btn-category-pill" data-filter="<%= cat.id %>">
-                        <%= cat.icon %> <%= cat.name %> (<%= cat.count %>)
-                    </button>
-                <% }); %>
+        <!-- ===== CALCULATOR DIRECTORY & SEARCH HUB ===== -->
+        <div class="directory-search-hub-section mb-4" id="directorySearchHub">
+            <div class="card p-3 p-md-4 rounded-4 shadow-sm border mb-3" style="background: rgba(255,255,255,0.025); border-color: rgba(255,255,255,0.08) !important;">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+                    <div>
+                        <h3 class="h5 fw-bold text-body-emphasis mb-1">🔍 Search & Filter 300+ Calculators</h3>
+                        <p class="text-muted small mb-0">Instant live search across all categories (SIP, Loans, Taxes, FD, FIRE, Business)</p>
+                    </div>
+                </div>
+
+                <!-- Instant Search Input Box -->
+                <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden border bg-body search-pill-box mb-3">
+                    <span class="input-group-text bg-transparent border-0 ps-3 ps-md-4 text-primary">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </span>
+                    <input type="text" 
+                           id="globalCalcSearchInput" 
+                           class="form-control border-0 py-3 ps-2 shadow-none" 
+                           placeholder="Type to search 300+ calculators (e.g. SIP, Home Loan, 44ADA, FD, HRA, NPS)..." 
+                           autocomplete="off">
+                    <span class="input-group-text bg-transparent border-0 pe-3 pe-md-4 d-none d-sm-flex align-items-center">
+                        <kbd class="kbd-badge shadow-2xs">Ctrl + K</kbd>
+                    </span>
+                </div>
+
+                <!-- Category Filter Tabs -->
+                <div class="category-filter-nav">
+                    <div class="d-flex flex-nowrap overflow-x-auto gap-2 pb-1 hide-scrollbar">
+                        <button type="button" class="btn btn-sm btn-category-pill active" data-filter="all">
+                            ✨ All Calculators (<%= calculators.length %>)
+                        </button>
+                        <% categories.forEach(function(cat) { %>
+                            <button type="button" class="btn btn-sm btn-category-pill" data-filter="<%= cat.id %>">
+                                <%= cat.icon %> <%= cat.name %> (<%= cat.count %>)
+                            </button>
+                        <% }); %>
+                    </div>
+                </div>
             </div>
         </div>
 

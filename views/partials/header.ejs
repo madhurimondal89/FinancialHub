@@ -73,6 +73,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Core Calculator Dependencies & Charting Engine -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="/js/financial-core.js"></script>
 </head>
 <body>
 
@@ -105,47 +111,52 @@
     <nav class="navbar navbar-expand site-header sticky-top">
         <div class="container-fluid px-lg-5 px-3 d-flex align-items-center justify-content-between">
             
-            <!-- Left: Brand Logo & Optional Back Button on Subpages -->
-            <div class="d-flex align-items-center gap-3">
+            <!-- Left: Brand Logo & Portal Links -->
+            <div class="d-flex align-items-center gap-2 gap-lg-3">
                 <a class="navbar-brand d-inline-flex align-items-center m-0" href="/" style="white-space: nowrap;">
                     <span class="brand-badge-icon">₹</span>
                     <span class="fw-bold">Financial</span><span class="fw-normal ms-1 brand-subtext">Hub</span>
                 </a>
 
-                <% if (typeof path !== 'undefined' && path !== '/') { %>
-                    <a class="nav-btn-back d-none d-sm-inline-flex align-items-center" href="/" title="Back to All 50 Calculators">
-                        <span class="nav-back-arrow">←</span>
-                        <span>Back to Home</span>
+                <!-- Navigation Portal Links -->
+                <div class="d-none d-lg-flex align-items-center gap-1 ms-2">
+                    <a href="/" class="nav-portal-link <%= (locals.isHomePage) ? 'active' : '' %>" title="Financial Hub Home">
+                        <span>🏠</span> <span>Home</span>
                     </a>
-                <% } %>
+                    <a href="https://health-hub.calculatorfree.in/" target="_blank" rel="noopener noreferrer" class="nav-portal-link" title="Health Hub Calculators">
+                        <span>❤️</span> <span>HealthHub</span>
+                    </a>
+                    <a href="https://engineering.calculatorfree.in/" target="_blank" rel="noopener noreferrer" class="nav-portal-link" title="Engineering Hub Tools">
+                        <span>⚙️</span> <span>EnggHub</span>
+                    </a>
+                </div>
             </div>
 
             <!-- Center: Spotlight Search Bar -->
-            <div class="d-none d-md-flex align-items-center flex-grow-1 justify-content-center mx-3" style="max-width: 520px;">
+            <div class="d-none d-xl-flex align-items-center flex-grow-1 justify-content-center mx-3" style="max-width: 420px;">
                 <button type="button" class="nav-search-trigger w-100" onclick="openSpotlightSearch()">
                     <span class="search-icon">🔍</span>
-                    <span class="search-placeholder-text">Search 300+ calculators (SIP, EMI, Tax, Salary, FD, FIRE...)...</span>
+                    <span class="search-placeholder-text">Search 300+ calculators...</span>
                     <span class="search-badge ms-auto">Ctrl K</span>
                 </button>
             </div>
 
-            <!-- Right: Actions (Mobile Search, Saved, Theme, Main Link) -->
+            <!-- Right: Actions (Mobile Links, Saved, Theme, Main Button) -->
             <div class="d-flex align-items-center gap-2">
-                <!-- Mobile Search Icon -->
-                <button type="button" class="btn btn-link btn-nav-action d-md-none p-1 px-2" onclick="openSpotlightSearch()" aria-label="Search" title="Search Calculators">
+                <!-- Mobile / Tablet Quick Links -->
+                <a href="/" class="btn btn-nav-action d-lg-none p-1 px-2" title="Home">🏠</a>
+                <a href="https://health-hub.calculatorfree.in/" target="_blank" rel="noopener noreferrer" class="btn btn-nav-action d-lg-none p-1 px-2" title="HealthHub">❤️</a>
+                <a href="https://engineering.calculatorfree.in/" target="_blank" rel="noopener noreferrer" class="btn btn-nav-action d-lg-none p-1 px-2" title="EnggHub">⚙️</a>
+
+                <!-- Spotlight Search Trigger Icon -->
+                <button type="button" class="btn btn-link btn-nav-action d-xl-none p-1 px-2" onclick="openSpotlightSearch()" aria-label="Search" title="Search Calculators">
                     🔍
                 </button>
-
-                <% if (typeof path !== 'undefined' && path !== '/') { %>
-                    <a class="btn btn-nav-action d-sm-none p-1 px-2" href="/" title="Back to Home">
-                        ← Home
-                    </a>
-                <% } %>
 
                 <!-- Saved Calculations Button -->
                 <button type="button" class="btn btn-nav-action" onclick="openSavedModal()" title="Saved Calculations">
                     <span>💾</span>
-                    <span class="d-none d-lg-inline ms-1">Saved</span>
+                    <span class="d-none d-sm-inline ms-1">Saved</span>
                 </button>
 
                 <!-- Theme Toggle -->
@@ -154,9 +165,9 @@
                     <span class="theme-label d-none d-sm-inline" id="themeLabel">Dark</span>
                 </button>
 
-                <!-- Main Site Link -->
-                <a href="https://www.calculatorfree.in" target="_blank" rel="noopener noreferrer" class="btn btn-outline-light btn-sm ms-1 d-none d-xl-inline-flex align-items-center gap-1">
-                    <span>calculatorfree.in</span> ↗
+                <!-- Main Portal Button -->
+                <a href="https://www.calculatorfree.in" target="_blank" rel="noopener noreferrer" class="nav-portal-main ms-1 d-inline-flex align-items-center gap-1" title="Go to Main CalculatorFree Portal">
+                    <span>Main</span> ↗
                 </a>
             </div>
         </div>
