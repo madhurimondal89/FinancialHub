@@ -2823,3 +2823,77 @@ input[type="range"]::-moz-range-thumb {
         padding-top: 8px;
     }
 }
+
+/* ===== Google AdSense Contained Slots & Defensive UI Guard ===== */
+.ad-slot-container {
+    margin: 1.75rem auto;
+    padding: 10px 14px 14px;
+    max-width: 970px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+    clear: both;
+}
+
+[data-theme="light"] .ad-slot-container {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.ad-slot-label {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    opacity: 0.75;
+    user-select: none;
+}
+
+.ad-slot-wrapper {
+    width: 100%;
+    min-height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media print {
+    .ad-slot-container,
+    .adsbygoogle,
+    .google-auto-placed {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+    }
+}
+
+/* Guard: Prevent Google from auto-placing ads inside interactive forms/cards/headers */
+.form-card .google-auto-placed,
+.calculator-container .google-auto-placed,
+.slider-container .google-auto-placed,
+.chart-box .google-auto-placed,
+.chart-container .google-auto-placed,
+.quick-results .google-auto-placed,
+.table-responsive .google-auto-placed,
+.action-toolbar .google-auto-placed,
+.site-header .google-auto-placed,
+.navbar .google-auto-placed,
+.hero-clean-modern .google-auto-placed {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
