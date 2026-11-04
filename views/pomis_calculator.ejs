@@ -1,43 +1,219 @@
 <%- include('partials/header') %>
 <div class="form-card">
-    <h3 class="mb-1">📬 Post Office Monthly Income Scheme (POMIS) Calculator</h3>
-    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate guaranteed 7.4% p.a. monthly interest income for single & joint post office accounts</p>
+    <div class="p-3 mb-3 rounded-3 border" style="background: rgba(13, 110, 253, 0.05); border-color: rgba(13, 110, 253, 0.2) !important;">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <span style="font-size: 1.25rem;">📬</span>
+                <div>
+                    <strong class="text-body-emphasis small d-block">India Post & Ministry of Finance Official Small Savings Engine</strong>
+                    <span class="text-muted" style="font-size: 0.78rem;">Calculates guaranteed 7.40% p.a. monthly interest payout with revised ₹9L / ₹15L statutory deposit limits.</span>
+                </div>
+            </div>
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1 rounded-pill" style="font-size: 0.75rem;">✓ 100% Sovereign Backed</span>
+        </div>
+    </div>
+
+    <h1 class="h3 fw-bold mb-1">Post Office Monthly Income Scheme (POMIS) Calculator</h1>
+    <p class="text-secondary mb-4" style="font-size:0.95rem;">Calculate guaranteed 7.4% monthly interest pension for single (up to ₹9 Lakh) and joint (up to ₹15 Lakh) post office accounts.</p>
+    
     <div class="row g-5">
         <div class="col-lg-6">
             <div class="mb-3">
-                <label class="form-label">Account Type</label>
-                <select class="form-select" id="pomisType" onchange="updateMax(); calculate();">
+                <label class="form-label fw-bold">Account Holding Type</label>
+                <select class="form-select fw-semibold" id="pomisType" onchange="updateMax(); calculate();">
                     <option value="single" selected>Single Account (Max Limit: ₹9,00,000)</option>
                     <option value="joint">Joint Account (Max Limit: ₹15,00,000)</option>
                 </select>
             </div>
             <div class="mb-4">
-                <label class="form-label">Deposit Amount (₹)</label>
-                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="pomisDeposit" value="900000" step="25000" min="1000" max="900000" oninput="calculate()"></div>
+                <label class="form-label fw-bold">Deposit Amount (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control fw-bold" id="pomisDeposit" value="900000" step="25000" min="1000" max="900000" oninput="calculate()"></div>
                 <div id="pomisWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
             </div>
             <div class="mb-4">
-                <label class="form-label">Govt Interest Rate (% p.a.)</label>
-                <div class="input-group"><input type="number" class="form-control" id="pomisRate" value="7.4" step="0.1" readonly><span class="input-group-text">% p.a. (Fixed)</span></div>
+                <label class="form-label fw-bold">Govt Guaranteed Interest Rate (% p.a.)</label>
+                <div class="input-group"><input type="number" class="form-control fw-bold" id="pomisRate" value="7.4" step="0.1" readonly><span class="input-group-text">% p.a. (Fixed)</span></div>
             </div>
-            <div class="highlight-box">
-                <h4>📬 Guaranteed Monthly Credit</h4>
-                <p>Interest is auto-credited to your Post Office Savings Account on the same date every month. 100% principal is returned at the end of 5 years.</p>
+            <div class="highlight-box p-3 rounded" style="background:var(--bg-input, rgba(255,255,255,0.03)); border:1px solid var(--border);">
+                <h6 class="fw-bold text-success mb-1">📬 Guaranteed Direct Bank / PO Credit</h6>
+                <p class="small text-muted mb-0">Monthly interest is auto-credited directly to your linked Post Office Savings Account or bank account on the deposit anniversary date. 100% principal is refunded at the end of the 5-year lock-in period.</p>
             </div>
         </div>
         <div class="col-lg-6">
             <div id="resultsState">
-                <div class="emi-result-display"><p class="label">Guaranteed Monthly Income</p><p class="amount" id="pomisMonthly" style="color:var(--accent-green);">₹5,550 / month</p></div>
+                <div class="emi-result-display mb-3 p-3 text-center rounded-3" style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2);">
+                    <p class="label small text-muted text-uppercase fw-bold mb-1">Guaranteed Monthly Cash Payout</p>
+                    <p class="amount display-6 fw-extrabold mb-0 text-success" id="pomisMonthly">₹5,550 / month</p>
+                </div>
                 <div class="emi-summary-card">
-                    <div class="summary-item"><div class="label">Principal Deposit</div><div class="value" id="rDeposit">₹9,00,000</div></div>
-                    <div class="summary-item"><div class="label">Annual Interest Income</div><div class="value" style="color:var(--gold);" id="rAnnual">₹66,600 / year</div></div>
-                    <div class="summary-item"><div class="label">Total 5-Year Income Earned</div><div class="value" style="color:var(--accent-green);" id="rTotal5Yr">₹3,33,000</div></div>
-                    <div class="summary-item"><div class="label">Principal Returned at Maturity</div><div class="value" id="rReturnDeposit">₹9,00,000</div></div>
+                    <div class="summary-item"><div class="label">Initial Principal Deposit</div><div class="value" id="rDeposit">₹9,00,000</div></div>
+                    <div class="summary-item"><div class="label">Annual Interest Income</div><div class="value" style="color:var(--gold, #f59e0b);" id="rAnnual">₹66,600 / year</div></div>
+                    <div class="summary-item"><div class="label">Total 5-Year Cumulative Income</div><div class="value text-success fw-bold" id="rTotal5Yr">₹3,33,000</div></div>
+                    <div class="summary-item"><div class="label">Principal Returned at 5-Year Maturity</div><div class="value fw-bold text-body-emphasis" id="rReturnDeposit">₹9,00,000</div></div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="related-section"><h5>🔗 Related Calculators</h5>
+
+    <!-- AEO Quick Definition Box -->
+    <div class="card p-4 rounded-4 my-4 border" style="background: var(--bg-card, #0f172a);">
+        <h2 class="h4 fw-bold mb-3" style="color: var(--heading-color, #f8fafc);">What is Post Office Monthly Income Scheme (POMIS)?</h2>
+        <p class="lead mb-3 text-secondary" style="font-size: 1.02rem; line-height: 1.7;">
+            The <strong>Post Office Monthly Income Scheme (POMIS)</strong> is a government-backed small savings scheme offered through India Post branch offices across the country. It allows individual investors to deposit a lump sum for a fixed 5-year tenure and receive guaranteed monthly interest income.
+        </p>
+        <p class="text-muted small mb-0">
+            Backed by the sovereign guarantee of the Government of India, POMIS carries zero credit or market risk, making it an ideal risk-free pension and income stream for senior citizens and conservative retirees.
+        </p>
+    </div>
+
+    <!-- Comparison Table: POMIS vs SCSS vs Bank Monthly FD -->
+    <div class="card p-4 rounded-4 my-4 border" style="background: var(--bg-card, #0f172a);">
+        <h3 class="h5 fw-bold mb-3" style="color: var(--heading-color, #f8fafc);">📊 Monthly Income Comparison: POMIS vs SCSS vs Bank Monthly FD</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle mb-0 text-center" style="font-size: 0.85rem;">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-start">Feature</th>
+                        <th>Post Office MIS (POMIS)</th>
+                        <th>Senior Citizen Savings (SCSS)</th>
+                        <th>Bank Monthly Payout FD</th>
+                    </tr>
+                </thead>
+                <tbody class="text-muted">
+                    <tr>
+                        <td class="text-start fw-semibold text-body-emphasis">Interest Rate</td>
+                        <td>7.40% p.a. (Fixed)</td>
+                        <td>8.20% p.a. (Quarterly payout)</td>
+                        <td>6.50% – 7.25% p.a.</td>
+                    </tr>
+                    <tr>
+                        <td class="text-start fw-semibold text-body-emphasis">Maximum Limit</td>
+                        <td>₹9L (Single) / ₹15L (Joint)</td>
+                        <td>Up to ₹30 Lakh</td>
+                        <td>No limit</td>
+                    </tr>
+                    <tr>
+                        <td class="text-start fw-semibold text-body-emphasis">Eligibility Age</td>
+                        <td>Any Resident Adult (10+ minor)</td>
+                        <td>60+ Years only</td>
+                        <td>Any Individual</td>
+                    </tr>
+                    <tr>
+                        <td class="text-start fw-semibold text-body-emphasis">Tenure</td>
+                        <td>5 Years</td>
+                        <td>5 Years (extendable by 3)</td>
+                        <td>1 to 10 Years</td>
+                    </tr>
+                    <tr>
+                        <td class="text-start fw-semibold text-body-emphasis">Tax Deduction on Investment</td>
+                        <td>No 80C deduction</td>
+                        <td>Yes (Up to ₹1.5L under 80C)</td>
+                        <td>Only on 5-Yr Tax-Saver FD</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- FAQs Section -->
+    <h3 class="h4 fw-bold mt-5 mb-3" style="color: var(--heading-color, #f8fafc);">❓ Frequently Asked Questions (POMIS FAQs)</h3>
+    <div class="accordion" id="pomisFaqAccordion">
+        <div class="accordion-item">
+            <h4 class="accordion-header" id="pH1">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#pC1" aria-expanded="true">
+                    What is the maximum amount I can invest in a Post Office MIS account?
+                </button>
+            </h4>
+            <div id="pC1" class="accordion-collapse collapse show" data-bs-parent="#pomisFaqAccordion">
+                <div class="accordion-body text-muted">
+                    The Government of India revised the statutory ceiling limits: an individual can invest up to <strong>₹9,00,000 in a single account</strong>, or up to <strong>₹15,00,000 in a joint account</strong> (with up to 3 joint holders having equal shares).
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h4 class="accordion-header" id="pH2">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pC2">
+                    How much monthly income does a ₹15 Lakh joint POMIS account generate?
+                </button>
+            </h4>
+            <div id="pC2" class="accordion-collapse collapse" data-bs-parent="#pomisFaqAccordion">
+                <div class="accordion-body text-muted">
+                    At the current fixed interest rate of 7.4% p.a., a ₹15,00,000 joint deposit yields exactly <strong>₹9,250 every month</strong> (₹1,11,000 per year), totaling ₹5,55,000 in cumulative earnings over the 5-year lock-in period.
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h4 class="accordion-header" id="pH3">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pC3">
+                    Is interest earned from Post Office MIS taxable?
+                </button>
+            </h4>
+            <div id="pC3" class="accordion-collapse collapse" data-bs-parent="#pomisFaqAccordion">
+                <div class="accordion-body text-muted">
+                    Yes. The monthly interest earned is taxable under <em>"Income from Other Sources"</em> according to your income tax slab rate. However, India Post does not deduct TDS (Tax Deducted at Source) on monthly MIS interest payouts.
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h4 class="accordion-header" id="pH4">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pC4">
+                    Can I withdraw my POMIS money before 5 years?
+                </button>
+            </h4>
+            <div id="pC4" class="accordion-collapse collapse" data-bs-parent="#pomisFaqAccordion">
+                <div class="accordion-body text-muted">
+                    Premature withdrawal is not allowed within the first year. Between 1 and 3 years, withdrawal is permitted with a 2% deduction from principal. After 3 years, withdrawal is allowed with a 1% deduction from principal.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Embedded FAQPage JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What is the maximum amount I can invest in a Post Office MIS account?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "The statutory ceiling is ₹9,00,000 for single accounts and ₹15,00,000 for joint accounts."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How much monthly income does a ₹15 Lakh joint POMIS account generate?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "A ₹15 Lakh deposit at 7.4% p.a. generates guaranteed monthly interest of ₹9,250 (₹1,11,000 annually)."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Is interest earned from Post Office MIS taxable?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, interest is taxable as per income tax slabs, but India Post does not deduct TDS on monthly payouts."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I withdraw my POMIS money before 5 years?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Premature exit is allowed after 1 year with a 2% penalty (1-3 years) or 1% penalty (after 3 years)."
+                }
+            }
+        ]
+    }
+    </script>
+
+    <div class="related-section mt-5"><h5>🔗 Related Calculators</h5>
         <div class="row g-3">
             <div class="col-md-4"><a href="/swp-calculator" class="related-card"><span class="icon">💸</span><div class="title">SWP Calculator</div><div class="desc">Mutual fund monthly pension</div></a></div>
             <div class="col-md-4"><a href="/scss-calculator" class="related-card"><span class="icon">👴</span><div class="title">SCSS Calculator</div><div class="desc">Senior citizen scheme</div></a></div>

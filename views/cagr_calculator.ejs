@@ -1,24 +1,39 @@
 <%- include('partials/header') %>
 <div class="form-card">
-    <h3 class="mb-1">📐 CAGR Calculator</h3>
-    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Compound Annual Growth Rate — Measure true investment performance</p>
+    <div class="p-3 mb-3 rounded-3 border" style="background: rgba(13, 110, 253, 0.05); border-color: rgba(13, 110, 253, 0.2) !important;">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <span style="font-size: 1.25rem;">📈</span>
+                <div>
+                    <strong class="text-body-emphasis small d-block">SEBI & Portfolio Performance Standard Engine</strong>
+                    <span class="text-muted" style="font-size: 0.78rem;">Calculates true annualized geometric growth rate for stocks, mutual funds, gold, and real estate.</span>
+                </div>
+            </div>
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1 rounded-pill" style="font-size: 0.75rem;">✓ 100% Client-Side Private</span>
+        </div>
+    </div>
+
+    <h1 class="h3 fw-bold mb-1">CAGR Calculator (Compound Annual Growth Rate)</h1>
+    <p class="text-secondary mb-4" style="font-size:0.95rem;">Calculate the accurate annualized rate of return on your investments over any multi-year horizon, smoothing out market volatility.</p>
+    
     <div class="row g-5">
         <div class="col-lg-6">
             <div class="mb-4">
-                <label class="form-label">Initial Investment Value</label>
-                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="initialVal" placeholder="e.g., 100000" oninput="calculate()"></div>
+                <label class="form-label fw-bold">Initial Investment Value (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control fw-bold" id="initialVal" placeholder="e.g., 100000" oninput="calculate()"></div>
             </div>
             <div class="mb-4">
-                <label class="form-label">Final Investment Value</label>
-                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="finalVal" placeholder="e.g., 250000" oninput="calculate()"></div>
+                <label class="form-label fw-bold">Final / Current Value (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control fw-bold" id="finalVal" placeholder="e.g., 250000" oninput="calculate()"></div>
             </div>
             <div class="mb-4">
-                <label class="form-label">Investment Period</label>
-                <div class="input-group"><input type="number" class="form-control" id="years" placeholder="e.g., 5" step="0.5" oninput="calculate()"><span class="input-group-text" style="border-radius:0 var(--radius-sm) var(--radius-sm) 0;">Years</span></div>
+                <label class="form-label fw-bold">Investment Period (Years)</label>
+                <div class="input-group"><input type="number" class="form-control fw-bold" id="years" placeholder="e.g., 5" step="0.5" oninput="calculate()"><span class="input-group-text">Years</span></div>
             </div>
-            <div class="highlight-box">
-                <h4>📌 What is CAGR?</h4>
-                <p>CAGR = (Final Value / Initial Value)^(1/years) − 1<br>It tells you the steady annual return rate, ignoring volatility.</p>
+            <div class="highlight-box p-3 rounded" style="background:var(--bg-input, rgba(255,255,255,0.03)); border:1px solid var(--border);">
+                <h6 class="fw-bold text-primary mb-1">📐 Mathematical Formula</h6>
+                <p class="font-monospace fw-bold text-primary small mb-1">CAGR = (Final Value / Initial Value)^(1 / Years) − 1</p>
+                <p class="small text-muted mb-0">Unlike simple percentage returns, CAGR accounts for geometric compounding and eliminates intermediate year-to-year portfolio volatility.</p>
             </div>
         </div>
         <div class="col-lg-6">
@@ -26,20 +41,149 @@
                 <div><div style="font-size:3rem;">📐</div><p style="color:var(--text-muted);margin-top:12px;">Enter initial value, final value and period to calculate CAGR</p></div>
             </div>
             <div id="resultsState" style="display:none;">
-                <div class="emi-result-display"><p class="label">CAGR</p><p class="amount" id="cagrResult">0%</p></div>
+                <div class="emi-result-display mb-3 p-3 text-center rounded-3" style="background:rgba(13,110,253,0.08); border:1px solid rgba(13,110,253,0.2);">
+                    <p class="label small text-muted text-uppercase fw-bold mb-1">Annualized Compounded Growth (CAGR)</p>
+                    <p class="amount display-6 fw-extrabold mb-0 text-primary" id="cagrResult">0%</p>
+                </div>
                 <div class="emi-summary-card">
-                    <div class="summary-item"><div class="label">Initial Value</div><div class="value" id="r1">₹0</div></div>
-                    <div class="summary-item"><div class="label">Final Value</div><div class="value" id="r2">₹0</div></div>
-                    <div class="summary-item"><div class="label">Total Gain</div><div class="value" style="color:var(--accent);" id="r3">₹0</div></div>
-                    <div class="summary-item"><div class="label">Absolute Return</div><div class="value" id="r4">0%</div></div>
-                    <div class="summary-item"><div class="label">Period</div><div class="value" id="r5">0 Years</div></div>
+                    <div class="summary-item"><div class="label">Initial Capital Invested</div><div class="value" id="r1">₹0</div></div>
+                    <div class="summary-item"><div class="label">Final Portfolio Value</div><div class="value" id="r2">₹0</div></div>
+                    <div class="summary-item"><div class="label">Total Wealth Gain</div><div class="value" style="color:var(--accent-green, #10b981);" id="r3">₹0</div></div>
+                    <div class="summary-item"><div class="label">Absolute Point-to-Point Return</div><div class="value" id="r4">0%</div></div>
+                    <div class="summary-item"><div class="label">Tenure Duration</div><div class="value" id="r5">0 Years</div></div>
                     <hr style="border-color:var(--border);">
-                    <div class="summary-item"><div class="label" style="color:var(--gold); font-weight:700;">CAGR</div><div class="value" style="color:var(--gold); font-size:1.3rem; font-weight:800;" id="r6">0%</div></div>
+                    <div class="summary-item"><div class="label fw-bold" style="color:var(--gold, #f59e0b);">Annual Compounded Rate (CAGR)</div><div class="value fw-bold" style="color:var(--gold, #f59e0b); font-size:1.3rem;" id="r6">0%</div></div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="related-section"><h5>🔗 Related Calculators</h5>
+
+    <!-- AEO Quick Definition Box -->
+    <div class="card p-4 rounded-4 my-4 border" style="background: var(--bg-card, #0f172a);">
+        <h2 class="h4 fw-bold mb-3" style="color: var(--heading-color, #f8fafc);">What is Compound Annual Growth Rate (CAGR)?</h2>
+        <p class="lead mb-3 text-secondary" style="font-size: 1.02rem; line-height: 1.7;">
+            <strong>Compound Annual Growth Rate (CAGR)</strong> is the mean annual growth rate of an investment over a specified time period longer than one year. It represents the hypothetical constant rate at which an investment would have grown if it had compounded at a steady pace every single year without any fluctuation.
+        </p>
+        <p class="text-muted small mb-0">
+            CAGR is the globally accepted standard used by fund managers, institutional investors, and analysts to compare the true historical performance of mutual funds, equities, commodities, and business revenue.
+        </p>
+    </div>
+
+    <!-- Comparison Table: CAGR vs Absolute Return vs XIRR -->
+    <div class="card p-4 rounded-4 my-4 border" style="background: var(--bg-card, #0f172a);">
+        <h3 class="h5 fw-bold mb-3" style="color: var(--heading-color, #f8fafc);">📊 Performance Metrics Comparison: CAGR vs Absolute Return vs XIRR</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle mb-0 text-center" style="font-size: 0.85rem;">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-start">Metric</th>
+                        <th>Best Used For</th>
+                        <th>Factors in Time Duration?</th>
+                        <th>Handles Multiple Cash Flows?</th>
+                    </tr>
+                </thead>
+                <tbody class="text-muted">
+                    <tr>
+                        <td class="text-start fw-semibold text-body-emphasis">CAGR</td>
+                        <td>Lump-sum investments held over 1+ years</td>
+                        <td>Yes (Annualized rate)</td>
+                        <td>No (Single entry & exit)</td>
+                    </tr>
+                    <tr>
+                        <td class="text-start fw-semibold text-body-emphasis">Absolute Return</td>
+                        <td>Short-term horizons (< 1 year)</td>
+                        <td>No (Ignores tenure)</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td class="text-start fw-semibold text-body-emphasis">XIRR (Extended IRR)</td>
+                        <td>Periodic SIPs, SWPs, and irregular cash flows</td>
+                        <td>Yes (Exact transaction dates)</td>
+                        <td>Yes (Multiple dates)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- FAQs Section -->
+    <h3 class="h4 fw-bold mt-5 mb-3" style="color: var(--heading-color, #f8fafc);">❓ Frequently Asked Questions (CAGR FAQs)</h3>
+    <div class="accordion" id="cagrFaqAccordion">
+        <div class="accordion-item">
+            <h4 class="accordion-header" id="cH1">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#cC1" aria-expanded="true">
+                    Why is CAGR better than simple average return?
+                </button>
+            </h4>
+            <div id="cC1" class="accordion-collapse collapse show" data-bs-parent="#cagrFaqAccordion">
+                <div class="accordion-body text-muted">
+                    Arithmetic average returns are misleading due to market volatility. For example, if a ₹100 stock falls 50% in Year 1 (to ₹50) and rises 50% in Year 2 (to ₹75), the arithmetic average is 0%, but in reality, you lost 25% of your capital! CAGR accurately captures this compounding drag and reflects the actual -13.4% annual performance.
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h4 class="accordion-header" id="cH2">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cC2">
+                    Can CAGR be negative?
+                </button>
+            </h4>
+            <div id="cC2" class="accordion-collapse collapse" data-bs-parent="#cagrFaqAccordion">
+                <div class="accordion-body text-muted">
+                    Yes. If your investment’s final value is lower than your initial invested capital, the CAGR will be negative, representing the annualized rate of loss across the investment tenure.
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h4 class="accordion-header" id="cH3">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cC3">
+                    Can I use CAGR for calculating SIP mutual fund returns?
+                </button>
+            </h4>
+            <div id="cC3" class="accordion-collapse collapse" data-bs-parent="#cagrFaqAccordion">
+                <div class="accordion-body text-muted">
+                    No. CAGR only applies to single one-time lump-sum investments where all money is invested on Day 1. For monthly Systematic Investment Plans (SIP) with recurring cash flows, use our <a href="/sip-calculator" class="text-primary fw-semibold">SIP Calculator</a> which uses XIRR/actuarial compounding.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Embedded FAQPage JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Why is CAGR better than simple average return?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "CAGR eliminates the distortion caused by volatility and geometric compounding drag, reflecting the true steady annual growth rate of an investment."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can CAGR be negative?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, if the final value is lower than the beginning principal, CAGR is negative, indicating an annualized rate of loss."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I use CAGR for calculating SIP mutual fund returns?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "No, CAGR is designed for single lump-sum investments. For recurring monthly SIPs, XIRR (Extended Internal Rate of Return) must be used."
+                }
+            }
+        ]
+    }
+    </script>
+
+    <div class="related-section mt-5"><h5>🔗 Related Calculators</h5>
         <div class="row g-3">
             <div class="col-md-4"><a href="/sip-calculator" class="related-card"><span class="icon">📊</span><div class="title">SIP Calculator</div><div class="desc">Mutual fund returns</div></a></div>
             <div class="col-md-4"><a href="/compound-interest" class="related-card"><span class="icon">📈</span><div class="title">Compound Interest</div><div class="desc">Power of compounding</div></a></div>
