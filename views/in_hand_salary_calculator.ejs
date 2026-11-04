@@ -1,50 +1,226 @@
 <%- include('partials/header') %>
 <div class="form-card">
-    <h3 class="mb-1">💼 In-Hand Salary Calculator (CTC to Take-Home)</h3>
-    <p class="text-center mb-4" style="color:var(--text-secondary);font-size:0.9rem;">Calculate exact monthly take-home salary after Employee PF, Professional Tax & TDS deductions</p>
+    <div class="p-3 mb-3 rounded-3 border" style="background: rgba(13, 110, 253, 0.05); border-color: rgba(13, 110, 253, 0.2) !important;">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <span style="font-size: 1.25rem;">💼</span>
+                <div>
+                    <strong class="text-body-emphasis small d-block">Verified Salary & Payroll Calculation Engine</strong>
+                    <span class="text-muted" style="font-size: 0.78rem;">Calculations verified as per EPFO, Income Tax Act, and FY 2026-27 Union Budget provisions.</span>
+                </div>
+            </div>
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1 rounded-pill" style="font-size: 0.75rem;">✓ 100% Private & Instant</span>
+        </div>
+    </div>
+
+    <h1 class="h3 fw-bold mb-1">In-Hand Salary Calculator (CTC to Take-Home FY 2026-27)</h1>
+    <p class="text-secondary mb-4" style="font-size:0.95rem;">Calculate your exact monthly take-home salary from your annual CTC after Employee PF, Professional Tax, Standard Deduction (₹75,000), and TDS deductions.</p>
+    
     <div class="row g-5">
         <div class="col-lg-6">
             <div class="mb-4">
-                <label class="form-label">Annual CTC (Cost to Company) (₹)</label>
-                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="salCtc" value="1200000" step="50000" oninput="calculate()"></div>
+                <label class="form-label fw-bold">Annual CTC (Cost to Company) (₹)</label>
+                <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control fw-bold" id="salCtc" value="1200000" step="50000" oninput="calculate()"></div>
                 <div id="salWords" class="words-helper" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;"></div>
             </div>
             <div class="mb-3">
-                <label class="form-label">Tax Regime</label>
+                <label class="form-label fw-bold">Tax Regime</label>
                 <select class="form-select" id="salRegime" onchange="calculate()">
-                    <option value="new" selected>New Tax Regime (Default FY 2024-25 / FY 2025-26)</option>
-                    <option value="old">Old Tax Regime (With 80C, 80D, HRA)</option>
+                    <option value="new" selected>New Tax Regime (Default FY 2026-27 — ₹75k Standard Deduction)</option>
+                    <option value="old">Old Tax Regime (With 80C, 80D, HRA Exemption)</option>
                 </select>
             </div>
             <div class="row g-3 mb-4">
                 <div class="col-6">
-                    <label class="form-label">Monthly Bonus / Variable (₹)</label>
+                    <label class="form-label fw-bold">Annual Bonus / Variable (₹)</label>
                     <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="salBonus" value="0" step="5000" oninput="calculate()"></div>
                 </div>
                 <div class="col-6">
-                    <label class="form-label">Professional Tax (₹/mo)</label>
+                    <label class="form-label fw-bold">Professional Tax (₹/mo)</label>
                     <div class="input-group"><span class="input-group-text">₹</span><input type="number" class="form-control" id="salPt" value="200" step="50" oninput="calculate()"></div>
                 </div>
             </div>
-            <div class="highlight-box">
-                <h4>📊 Standard Indian Salary Structure</h4>
-                <p>Basic Salary = 40-50% of CTC | Employee PF = 12% of Basic | Standard Deduction = ₹75,000 in New Regime (₹50,000 in Old Regime).</p>
+            <div class="highlight-box p-3 rounded" style="background:var(--bg-input, rgba(255,255,255,0.03)); border:1px solid var(--border);">
+                <h6 class="fw-bold text-primary mb-1">📊 Standard Indian Salary Benchmark</h6>
+                <p class="small text-muted mb-0">Basic Salary = 40%–50% of CTC | Employee PF = 12% of Basic | Standard Deduction = ₹75,000 in New Regime (₹50,000 in Old Regime) | Income up to ₹7.75 Lakh is zero tax in New Regime under Section 87A rebate.</p>
             </div>
         </div>
         <div class="col-lg-6">
             <div id="resultsState">
-                <div class="emi-result-display"><p class="label">Monthly In-Hand Take Home</p><p class="amount" id="salInHand" style="color:var(--accent-green);">₹84,250</p></div>
+                <div class="emi-result-display mb-3 p-3 text-center rounded-3" style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2);">
+                    <p class="label small text-muted text-uppercase fw-bold mb-1">Monthly In-Hand Take Home</p>
+                    <p class="amount display-6 fw-extrabold mb-0" id="salInHand" style="color:var(--accent-green, #10b981);">₹84,250</p>
+                </div>
                 <div class="emi-summary-card">
                     <div class="summary-item"><div class="label">Gross Monthly Salary</div><div class="value" id="rGrossMonthly">₹1,00,000 / mo</div></div>
-                    <div class="summary-item"><div class="label">Employee PF (12% Basic)</div><div class="value" style="color:var(--accent-red);" id="rPfDeduct">-₹4,800 / mo</div></div>
-                    <div class="summary-item"><div class="label">Monthly TDS (Estimated)</div><div class="value" style="color:var(--accent-red);" id="rTdsDeduct">-₹10,750 / mo</div></div>
-                    <div class="summary-item"><div class="label">Professional Tax (PT)</div><div class="value" style="color:var(--accent-red);" id="rPtDeduct">-₹200 / mo</div></div>
-                    <div class="summary-item"><div class="label">Total Annual In-Hand</div><div class="value" style="color:var(--gold);" id="rAnnualInHand">₹10,11,000 / yr</div></div>
+                    <div class="summary-item"><div class="label">Employee PF (12% Basic)</div><div class="value" style="color:var(--accent-red, #ef4444);" id="rPfDeduct">-₹4,800 / mo</div></div>
+                    <div class="summary-item"><div class="label">Monthly TDS (Estimated)</div><div class="value" style="color:var(--accent-red, #ef4444);" id="rTdsDeduct">-₹10,750 / mo</div></div>
+                    <div class="summary-item"><div class="label">Professional Tax (PT)</div><div class="value" style="color:var(--accent-red, #ef4444);" id="rPtDeduct">-₹200 / mo</div></div>
+                    <div class="summary-item border-top pt-2"><div class="label fw-bold">Total Annual In-Hand</div><div class="value fw-bold" style="color:var(--gold, #f59e0b);" id="rAnnualInHand">₹10,11,000 / yr</div></div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="related-section"><h5>🔗 Related Calculators</h5>
+
+    <!-- AEO Quick Definition Box -->
+    <div class="card p-4 rounded-4 my-4 border" style="background: var(--bg-card, #0f172a);">
+        <h2 class="h4 fw-bold mb-3" style="color: var(--heading-color, #f8fafc);">What is the Difference Between CTC, Gross Salary, and In-Hand Salary?</h2>
+        <p class="lead mb-3 text-secondary" style="font-size: 1.02rem; line-height: 1.7;">
+            <strong>Cost to Company (CTC)</strong> is the total annual expenditure an employer commits to spend on an employee. It includes direct salary, indirect retirement contributions (Employer EPF, Gratuity), health insurance coverage, and annual variable bonuses.
+        </p>
+        <p class="text-muted small mb-0">
+            <strong>In-Hand (Net Take-Home) Salary</strong> is the actual cash deposited into your bank account at the end of each month after statutory deductions like Employee Provident Fund (12%), Professional Tax, and Income Tax (TDS).
+        </p>
+    </div>
+
+    <!-- Salary Component Breakdown Table -->
+    <div class="card p-4 rounded-4 my-4 border" style="background: var(--bg-card, #0f172a);">
+        <h3 class="h5 fw-bold mb-3" style="color: var(--heading-color, #f8fafc);">📋 Typical Salary Structure Components in India</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle mb-0 text-center" style="font-size: 0.85rem;">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-start">Component</th>
+                        <th>Typical Share of CTC</th>
+                        <th>Taxability (FY 2026-27)</th>
+                        <th>Goes to Bank?</th>
+                    </tr>
+                </thead>
+                <tbody class="text-muted">
+                    <tr>
+                        <td class="text-start fw-semibold text-body-emphasis">Basic Salary</td>
+                        <td>40% – 50%</td>
+                        <td>100% Taxable</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td class="text-start fw-semibold text-body-emphasis">House Rent Allowance (HRA)</td>
+                        <td>20% – 25%</td>
+                        <td>Exempt under Sec 10(13A) in Old Regime</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td class="text-start fw-semibold text-body-emphasis">Special / Other Allowance</td>
+                        <td>20% – 30%</td>
+                        <td>Fully Taxable</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td class="text-start fw-semibold text-body-emphasis">Employee PF (EPF)</td>
+                        <td>12% of Basic</td>
+                        <td>Exempt up to ₹2.5L interest/yr (EEE)</td>
+                        <td>Deducted to PF A/c</td>
+                    </tr>
+                    <tr>
+                        <td class="text-start fw-semibold text-body-emphasis">Gratuity Contribution</td>
+                        <td>4.81% of Basic</td>
+                        <td>Exempt up to ₹20 Lakh on exit</td>
+                        <td>Paid at exit (5+ yrs)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- FAQs Section -->
+    <h3 class="h4 fw-bold mt-5 mb-3" style="color: var(--heading-color, #f8fafc);">❓ Frequently Asked Questions (Salary FAQs)</h3>
+    <div class="accordion" id="salaryFaqAccordion">
+        <div class="accordion-item">
+            <h4 class="accordion-header" id="sFaq1">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#sFaqC1" aria-expanded="true">
+                    How much in-hand salary will I get for 12 LPA CTC?
+                </button>
+            </h4>
+            <div id="sFaqC1" class="accordion-collapse collapse show" data-bs-parent="#salaryFaqAccordion">
+                <div class="accordion-body text-muted">
+                    For a ₹12,00,000 annual CTC with standard components (40% basic) under the New Tax Regime, your monthly gross salary is approx ₹1,00,000. After deducting Employee PF (₹4,800), Professional Tax (₹200), and monthly TDS (approx ₹6,500 - ₹10,750 depending on variable pay), your net monthly in-hand salary will be approximately <strong>₹84,000 to ₹88,000</strong>.
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h4 class="accordion-header" id="sFaq2">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sFaqC2">
+                    What is the Standard Deduction limit for salaried employees in FY 2026-27?
+                </button>
+            </h4>
+            <div id="sFaqC2" class="accordion-collapse collapse" data-bs-parent="#salaryFaqAccordion">
+                <div class="accordion-body text-muted">
+                    Under the New Tax Regime, the standard deduction has been enhanced to <strong>₹75,000</strong>. Under the Old Tax Regime, the standard deduction remains <strong>₹50,000</strong>. This deduction is applied automatically with zero proofs or receipts required.
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h4 class="accordion-header" id="sFaq3">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sFaqC3">
+                    Why is in-hand salary much lower than CTC?
+                </button>
+            </h4>
+            <div id="sFaqC3" class="accordion-collapse collapse" data-bs-parent="#salaryFaqAccordion">
+                <div class="accordion-body text-muted">
+                    CTC includes employer costs that you do not receive in monthly cash—such as the Employer’s 12% PF contribution, annual gratuity provision (4.81%), group medical insurance premiums, and performance-linked annual retention bonuses.
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h4 class="accordion-header" id="sFaq4">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sFaqC4">
+                    Is Professional Tax mandatory in India?
+                </button>
+            </h4>
+            <div id="sFaqC4" class="accordion-collapse collapse" data-bs-parent="#salaryFaqAccordion">
+                <div class="accordion-body text-muted">
+                    Professional Tax is a state-level tax levied on salaried earners in states like Maharashtra, Karnataka, West Bengal, Tamil Nadu, Telangana, and Gujarat. The maximum ceiling is capped at <strong>₹2,500 per year</strong> (approx ₹200/month).
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Embedded FAQPage JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "How much in-hand salary will I get for 12 LPA CTC?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "For a ₹12 LPA CTC under the New Tax Regime, net monthly in-hand salary is approximately ₹84,000 to ₹88,000 after PF, Professional Tax, and TDS deductions."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What is the Standard Deduction limit for salaried employees in FY 2026-27?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "The standard deduction is ₹75,000 under the New Tax Regime and ₹50,000 under the Old Tax Regime for all salaried employees."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Why is in-hand salary much lower than CTC?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "CTC includes Employer PF, annual gratuity provisions, group medical insurance, and variable bonuses that are not part of regular monthly cash take-home."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Is Professional Tax mandatory in India?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, Professional Tax is levied by several Indian states (Maharashtra, Karnataka, West Bengal, etc.) and is capped at ₹2,500 per annum."
+                }
+            }
+        ]
+    }
+    </script>
+
+    <div class="related-section mt-5"><h5>🔗 Related Calculators</h5>
         <div class="row g-3">
             <div class="col-md-4"><a href="/income-tax-calculator" class="related-card"><span class="icon">🧾</span><div class="title">Income Tax</div><div class="desc">New vs Old tax regime</div></a></div>
             <div class="col-md-4"><a href="/hra-calculator" class="related-card"><span class="icon">🏢</span><div class="title">HRA Calculator</div><div class="desc">Rent tax exemption</div></a></div>

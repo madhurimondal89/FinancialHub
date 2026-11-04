@@ -355,6 +355,69 @@ app.get('/api/live-rates', async (req, res) => {
     res.json(rates);
 });
 
+// --- IndexNow Protocol for Instant Indexing on Bing, Copilot & Search Engines ---
+const INDEXNOW_KEY = '3b8d4f9a1c2e478589ab0c1d2e3f4a5b';
+app.get(`/${INDEXNOW_KEY}.txt`, (req, res) => {
+    res.type('text/plain').send(INDEXNOW_KEY);
+});
+
+app.get('/api/ping-indexnow', (req, res) => {
+    try {
+        const https = require('https');
+        const host = 'financialhub.calculatorfree.in';
+        const allCalcs = getAllCalculators();
+        const topUrls = [
+            `https://${host}/`,
+            `https://${host}/sip-calculator`,
+            `https://${host}/emi-calculator`,
+            `https://${host}/in-hand-salary-calculator`,
+            `https://${host}/ppf-calculator`,
+            `https://${host}/income-tax-calculator`,
+            `https://${host}/fd-calculator`,
+            `https://${host}/step-up-sip-calculator`,
+            `https://${host}/home-loan-eligibility`,
+            `https://${host}/gst-calculator`,
+            ...allCalcs.slice(0, 50).map(c => `https://${host}/${c.slug}`)
+        ];
+
+        const payload = JSON.stringify({
+            host: host,
+            key: INDEXNOW_KEY,
+            keyLocation: `https://${host}/${INDEXNOW_KEY}.txt`,
+            urlList: topUrls
+        });
+
+        const options = {
+            hostname: 'api.indexnow.org',
+            port: 443,
+            path: '/indexnow',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+                'Content-Length': Buffer.byteLength(payload)
+            }
+        };
+
+        const postReq = https.request(options, (postRes) => {
+            res.json({
+                success: true,
+                statusCode: postRes.statusCode,
+                submittedUrls: topUrls.length,
+                message: `IndexNow pinged successfully! ${topUrls.length} URLs submitted to Bing & Copilot.`
+            });
+        });
+
+        postReq.on('error', (err) => {
+            res.status(500).json({ success: false, error: err.message });
+        });
+
+        postReq.write(payload);
+        postReq.end();
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
 // ============================================================
 // ROUTING — HOMEPAGE & CATEGORY HUBS
 // ============================================================

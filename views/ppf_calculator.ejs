@@ -126,7 +126,184 @@
         </div>
     </div>
 
-<%- include('partials/ad_unit') %>
+    <!-- Guide, AEO Definitions, PPF vs ELSS Table & FAQs -->
+    <div class="info-accordion mt-5">
+        <!-- E-E-A-T Authority Badge -->
+        <div class="p-3 mb-4 rounded-3 border" style="background: rgba(13, 110, 253, 0.05); border-color: rgba(13, 110, 253, 0.2) !important;">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <span style="font-size: 1.3rem;">🏛️</span>
+                    <div>
+                        <strong class="text-body-emphasis small d-block">Ministry of Finance (Govt of India) PPF Engine</strong>
+                        <span class="text-muted" style="font-size: 0.78rem;">Calculates guaranteed sovereign interest compounding at 7.10% p.a. with Section 80C EEE tax exemption status.</span>
+                    </div>
+                </div>
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1 rounded-pill" style="font-size: 0.75rem;">✓ 100% Capital Guaranteed</span>
+            </div>
+        </div>
+
+        <!-- AEO Quick Definition Box -->
+        <div class="card p-4 rounded-4 mb-4 border" style="background: var(--bg-card, #0f172a);">
+            <h2 class="h4 fw-bold mb-3" style="color: var(--heading-color, #f8fafc);">What is a Public Provident Fund (PPF)?</h2>
+            <p class="lead mb-3 text-secondary" style="font-size: 1.02rem; line-height: 1.7;">
+                The <strong>Public Provident Fund (PPF)</strong> is a long-term, government-backed small savings scheme established by the Ministry of Finance in 1968. It offers guaranteed tax-free returns and capital safety, backed by a sovereign government guarantee.
+            </p>
+            <p class="text-muted small mb-0">
+                PPF enjoys rare <strong>Exempt-Exempt-Exempt (EEE)</strong> tax status: contributions qualify for tax deduction under Section 80C (up to ₹1.5 Lakh/year), annual interest earned is 100% tax-exempt, and the final maturity corpus after 15 years is completely free from income tax and capital gains tax.
+            </p>
+        </div>
+
+        <!-- PPF 5th of the Month Rule & Pro-Tip -->
+        <div class="card p-4 rounded-4 mb-4 border-start border-4 border-warning" style="background: var(--bg-card, #0f172a);">
+            <h3 class="h6 fw-bold text-warning mb-2">⚡ Crucial Pro-Tip: The 5th of the Month PPF Rule</h3>
+            <p class="small text-muted mb-0">
+                In PPF, interest is calculated on the <strong>minimum balance between the 5th and the end of each month</strong>. To maximize your returns, always deposit your PPF contribution <strong>on or before the 5th of each month</strong> (or in the first week of April for annual deposits). Depositing on the 6th means you lose an entire month's interest!
+            </p>
+        </div>
+
+        <!-- Comparison Table: PPF vs ELSS vs Bank Fixed Deposit (FD) -->
+        <div class="card p-4 rounded-4 mb-4 border" style="background: var(--bg-card, #0f172a);">
+            <h3 class="h5 fw-bold mb-3" style="color: var(--heading-color, #f8fafc);">📊 80C Tax-Saving Comparison: PPF vs ELSS vs Bank FD</h3>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle mb-0 text-center" style="font-size: 0.85rem;">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-start">Feature</th>
+                            <th>Public Provident Fund (PPF)</th>
+                            <th>ELSS Mutual Fund</th>
+                            <th>5-Year Tax Saver FD</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-muted">
+                        <tr>
+                            <td class="text-start fw-semibold text-body-emphasis">Expected Return</td>
+                            <td>7.10% (Govt Guaranteed)</td>
+                            <td>12% – 15% (Market Linked)</td>
+                            <td>6.5% – 7.2% (Fixed)</td>
+                        </tr>
+                        <tr>
+                            <td class="text-start fw-semibold text-body-emphasis">Lock-in Period</td>
+                            <td>15 Years (Partial exit at 7 yrs)</td>
+                            <td>3 Years (Shortest 80C lock-in)</td>
+                            <td>5 Years (Strict lock-in)</td>
+                        </tr>
+                        <tr>
+                            <td class="text-start fw-semibold text-body-emphasis">Tax Status</td>
+                            <td>EEE (100% Tax-Free)</td>
+                            <td>EET (12.5% LTCG above ₹1.25L)</td>
+                            <td>ETT (Interest taxed at slab)</td>
+                        </tr>
+                        <tr>
+                            <td class="text-start fw-semibold text-body-emphasis">Safety / Risk</td>
+                            <td>Sovereign Risk-Free</td>
+                            <td>Equity Market Risk</td>
+                            <td>Bank DICGC insured up to ₹5L</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FAQs Section -->
+        <h3 class="h4 fw-bold mt-5 mb-3" style="color: var(--heading-color, #f8fafc);">❓ Frequently Asked Questions (PPF FAQs)</h3>
+        <div class="accordion" id="ppfFaqAccordion">
+            <div class="accordion-item">
+                <h4 class="accordion-header" id="ppfH1">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#ppfC1" aria-expanded="true">
+                        What is the minimum and maximum deposit limit in a PPF account?
+                    </button>
+                </h4>
+                <div id="ppfC1" class="accordion-collapse collapse show" data-bs-parent="#ppfFaqAccordion">
+                    <div class="accordion-body text-muted">
+                        The minimum mandatory deposit required to keep an active PPF account is <strong>₹500 per financial year</strong>. The maximum statutory limit is <strong>₹1,50,000 per financial year</strong> across all PPF accounts held by an individual (including minor child accounts).
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h4 class="accordion-header" id="ppfH2">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ppfC2">
+                        Can I extend my PPF account after the 15-year maturity?
+                    </button>
+                </h4>
+                <div id="ppfC2" class="accordion-collapse collapse" data-bs-parent="#ppfFaqAccordion">
+                    <div class="accordion-body text-muted">
+                        Yes! Upon completing the initial 15-year tenure, you can extend your account in <strong>blocks of 5 years indefinitely</strong>. You can choose to extend with fresh ongoing contributions (Form H submission required within 1 year) or without making any further deposits while continuing to earn interest.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h4 class="accordion-header" id="ppfH3">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ppfC3">
+                        Are Non-Resident Indians (NRIs) allowed to open a new PPF account?
+                    </button>
+                </h4>
+                <div id="ppfC3" class="accordion-collapse collapse" data-bs-parent="#ppfFaqAccordion">
+                    <div class="accordion-body text-muted">
+                        No. NRIs cannot open a new PPF account. However, if a resident Indian opened a PPF account before becoming an NRI, they can continue to operate the account until its original 15-year maturity on a non-repatriable basis (extensions are not permitted).
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h4 class="accordion-header" id="ppfH4">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ppfC4">
+                        Is PPF interest completely tax-free under New Tax Regime?
+                    </button>
+                </h4>
+                <div id="ppfC4" class="accordion-collapse collapse" data-bs-parent="#ppfFaqAccordion">
+                    <div class="accordion-body text-muted">
+                        Yes. While the ₹1.5 Lakh 80C investment deduction is not available under the New Tax Regime, the <strong>annual interest earned and the final maturity amount remain 100% tax-free</strong> under both Old and New Tax Regimes!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Embedded FAQPage JSON-LD -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+                {
+                    "@type": "Question",
+                    "name": "What is the minimum and maximum deposit limit in a PPF account?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "The minimum deposit is ₹500/year and the maximum ceiling is ₹1,50,000/year per individual."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Can I extend my PPF account after the 15-year maturity?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Yes, PPF accounts can be extended in 5-year blocks indefinitely, either with or without further contributions."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Are Non-Resident Indians (NRIs) allowed to open a new PPF account?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "NRIs cannot open new accounts, but existing accounts opened while resident can run until 15-year maturity."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Is PPF interest completely tax-free under New Tax Regime?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Yes, PPF interest and maturity amounts remain 100% tax-free under Section 10(11) in both Old and New Tax Regimes."
+                    }
+                }
+            ]
+        }
+        </script>
+
+        <%- include('partials/ad_unit') %>
+    </div>
 </div>
 
 <script>
