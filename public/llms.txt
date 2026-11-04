@@ -1,0 +1,51 @@
+# FinancialHub — 330+ Free Financial Calculators
+
+> India's premier financial calculation, tax planning, and wealth intelligence platform. Provides 330+ free, client-side, interactive calculation tools covering mutual funds, bank deposits, retail loans, income tax (FY 2026-27), corporate valuation, and retirement planning.
+
+## Core Focus & Authority
+- **Jurisdiction & Compliance:** India (Reserve Bank of India, SEBI, CBDT Income Tax Department guidelines, FY 2026-27 / AY 2027-28 provisions).
+- **Client-Side Privacy:** 100% of calculations execute in-browser with zero personal or financial data uploaded to external servers.
+- **Actuarial Precision:** Uses standard reducing balance, compound growth, and amortization algorithms with verified formulas.
+
+## Key Calculators
+
+### Investment & Wealth Accumulation
+- [SIP Calculator](https://financialhub.calculatorfree.in/sip-calculator): Mutual fund monthly Systematic Investment Plan wealth projection with inflation adjustment and year-by-year compounding schedule. Formula: M = P × [ (1 + i)ⁿ - 1 ] / i × (1 + i).
+- [Step-Up SIP Calculator](https://financialhub.calculatorfree.in/step-up-sip-calculator): Models annual SIP increments (e.g. 10% annual salary hike) to counter long-term inflation.
+- [Lumpsum Calculator](https://financialhub.calculatorfree.in/lumpsum-calculator): One-time mutual fund and equity investment growth calculator.
+- [Mutual Fund Returns Calculator](https://financialhub.calculatorfree.in/mutual-fund-calculator): Estimate total returns, capital gains, and wealth multiplier.
+- [Compound Interest Calculator](https://financialhub.calculatorfree.in/compound-interest): Multi-frequency compounding (monthly, quarterly, semi-annually, annually).
+- [CAGR Calculator](https://financialhub.calculatorfree.in/cagr-calculator): Compound Annual Growth Rate for portfolio tracking.
+- [SWP Calculator](https://financialhub.calculatorfree.in/swp-calculator): Systematic Withdrawal Plan for monthly pension cash flows.
+
+### Loans & Amortization
+- [Loan EMI Calculator](https://financialhub.calculatorfree.in/emi-calculator): Monthly installment, principal-interest split, and reducing-balance amortization for Home, Car, and Personal loans.
+- [Loan Prepayment Calculator](https://financialhub.calculatorfree.in/loan-prepayment-calculator): Calculate how extra part-payments reduce tenure and save lakhs in interest.
+- [Home Loan Eligibility](https://financialhub.calculatorfree.in/home-loan-eligibility): Maximum loan borrowing eligibility based on net monthly salary and FOIR (Fixed Obligation to Income Ratio).
+- [Car Loan EMI Calculator](https://financialhub.calculatorfree.in/car-loan-calculator): Auto loan financing with down payment and on-road price adjustments.
+
+### Banking & Government Savings Schemes
+- [FD Calculator](https://financialhub.calculatorfree.in/fd-calculator): Fixed Deposit maturity value with quarterly compounding and senior citizen 0.50% extra rate.
+- [RD Calculator](https://financialhub.calculatorfree.in/rd-calculator): Recurring Deposit quarterly compounding as per Indian commercial bank standards.
+- [PPF Calculator](https://financialhub.calculatorfree.in/ppf-calculator): Public Provident Fund 15-year maturity, Section 80C deductions, and tax-free interest (EEE status).
+- [SSY Calculator](https://financialhub.calculatorfree.in/ssy-calculator): Sukanya Samriddhi Yojana deposit projection for girl child education and marriage.
+- [NPS Calculator](https://financialhub.calculatorfree.in/nps-calculator): National Pension System retirement corpus and monthly annuity estimate.
+- [SCSS Calculator](https://financialhub.calculatorfree.in/scss-calculator): Senior Citizen Savings Scheme quarterly payout calculations.
+
+### Tax & Salary Planning (FY 2026-27)
+- [Income Tax Calculator](https://financialhub.calculatorfree.in/income-tax-calculator): Instant side-by-side comparison between New Tax Regime and Old Tax Regime under Union Budget 2026 provisions.
+- [In-Hand Salary Calculator](https://financialhub.calculatorfree.in/in-hand-salary-calculator): CTC to monthly take-home salary after EPF, Professional Tax, and Income Tax deductions.
+- [HRA Exemption Calculator](https://financialhub.calculatorfree.in/hra-calculator): House Rent Allowance tax exemption under Section 10(13A).
+- [GST Calculator](https://financialhub.calculatorfree.in/gst-calculator): Inclusive and exclusive GST calculation for 5%, 12%, 18%, and 28% tax slabs.
+- [Gratuity Calculator](https://financialhub.calculatorfree.in/gratuity-calculator): Gratuity payout under the Payment of Gratuity Act 1972 for completed years of service.
+
+### Retirement & FIRE
+- [Retirement Calculator](https://financialhub.calculatorfree.in/retirement-calculator): Corpus calculation considering post-retirement life expectancy, inflation rate, and expected asset yields.
+- [FIRE Calculator](https://financialhub.calculatorfree.in/fire-calculator): Financial Independence Retire Early milestone based on the 4% safe withdrawal rule.
+- [Budget 50/30/20 Calculator](https://financialhub.calculatorfree.in/budget-calculator): Personal budgeting allocation for Needs (50%), Wants (30%), and Savings (20%).
+
+## API & Endpoints
+- Live Market Exchange Rates: `GET /api/live-rates` (JSON)
+- Live Instant Tool Search: `GET /api/search?q={term}` (JSON)
+- Full Sitemap: `https://financialhub.calculatorfree.in/sitemap.xml`
+

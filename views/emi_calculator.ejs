@@ -194,28 +194,194 @@
         </div>
     </div>
 
-    <!-- Guide & SEO Accordion -->
+    <!-- Guide, AEO Definitions, Loan Comparison Table & SEO Accordion -->
     <div class="info-accordion mt-5">
+        <!-- E-E-A-T Authority & Editorial Trust Card -->
+        <div class="p-3 mb-4 rounded-3 border" style="background: rgba(13, 110, 253, 0.05); border-color: rgba(13, 110, 253, 0.2) !important;">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <span style="font-size: 1.3rem;">🏦</span>
+                    <div>
+                        <strong class="text-body-emphasis small d-block">RBI Standard Reducing Balance Calculation Engine</strong>
+                        <span class="text-muted" style="font-size: 0.78rem;">Complies with Reserve Bank of India retail lending guidelines and standard amortization schedules (FY 2026-27).</span>
+                    </div>
+                </div>
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1 rounded-pill" style="font-size: 0.75rem;">✓ 100% Private & Verified</span>
+            </div>
+        </div>
+
+        <!-- AEO Quick Definition Box (Targeted for Google AI Overviews & Direct Answers) -->
+        <div class="card p-4 rounded-4 mb-4 border" style="background: var(--bg-card, #0f172a);">
+            <h2 class="h4 fw-bold mb-3" style="color: var(--heading-color, #f8fafc);">What is an Equated Monthly Installment (EMI)?</h2>
+            <p class="lead mb-3 text-secondary" style="font-size: 1.02rem; line-height: 1.7;">
+                An <strong>Equated Monthly Installment (EMI)</strong> is a fixed payment amount made by a borrower to a lender (bank or NBFC) on a specified date of every calendar month until the borrowed loan principal and accrued interest are fully paid off.
+            </p>
+            <p class="text-muted small mb-0">
+                In standard retail loans, each EMI comprises two parts: the <strong>principal portion</strong> and the <strong>interest portion</strong>. During the initial tenure, the interest component forms the bulk of your EMI; as tenure progresses, the principal component increases while the interest portion tapers down.
+            </p>
+        </div>
+
+        <!-- Reducing Balance EMI Mathematical Formula -->
+        <div class="card p-4 rounded-4 mb-4 border" style="background: var(--bg-card, #0f172a);">
+            <h3 class="h5 fw-bold mb-2" style="color: var(--heading-color, #f8fafc);">📐 Reducing Balance EMI Calculation Formula</h3>
+            <p class="small text-muted mb-3">All major banks in India (SBI, HDFC, ICICI, Axis Bank) compute monthly installments using the standardized reducing balance formula:</p>
+            <div class="p-3 rounded-3 font-monospace fw-bold text-primary mb-3 text-center" style="background: rgba(13,110,253,0.08); font-size: 1.1rem; overflow-x: auto;">
+                EMI = [P × R × (1 + R)ᴺ] / [ (1 + R)ᴺ – 1 ]
+            </div>
+            <div class="row g-2 small text-muted">
+                <div class="col-md-4"><strong>P (Principal):</strong> Total loan amount borrowed from the bank.</div>
+                <div class="col-md-4"><strong>R (Monthly Rate):</strong> Annual interest rate divided by 12 and 100 (e.g. 8.5% / 12 / 100).</div>
+                <div class="col-md-4"><strong>N (Tenure):</strong> Total number of monthly installments (Years × 12).</div>
+            </div>
+        </div>
+
+        <!-- Comparison Table: Home Loan vs Car Loan vs Personal Loan -->
+        <div class="card p-4 rounded-4 mb-4 border" style="background: var(--bg-card, #0f172a);">
+            <h3 class="h5 fw-bold mb-3" style="color: var(--heading-color, #f8fafc);">📊 Retail Loan Comparison: Home Loan vs Car Loan vs Personal Loan</h3>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle mb-0 text-center" style="font-size: 0.85rem;">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-start">Loan Parameter</th>
+                            <th>Home Loan</th>
+                            <th>Car / Auto Loan</th>
+                            <th>Personal Loan</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-muted">
+                        <tr>
+                            <td class="text-start fw-semibold text-body-emphasis">Typical Interest Rate</td>
+                            <td>8.35% – 9.50% p.a.</td>
+                            <td>8.75% – 10.50% p.a.</td>
+                            <td>10.50% – 16.00% p.a.</td>
+                        </tr>
+                        <tr>
+                            <td class="text-start fw-semibold text-body-emphasis">Maximum Tenure</td>
+                            <td>Up to 30 Years</td>
+                            <td>Up to 7–8 Years</td>
+                            <td>Up to 5 Years</td>
+                        </tr>
+                        <tr>
+                            <td class="text-start fw-semibold text-body-emphasis">Collateral / Security</td>
+                            <td>Mortgage on property</td>
+                            <td>Hypothecation of vehicle</td>
+                            <td>None (Unsecured)</td>
+                        </tr>
+                        <tr>
+                            <td class="text-start fw-semibold text-body-emphasis">Tax Deductions (Old Regime)</td>
+                            <td>Sec 24(b) ₹2 Lakh + Sec 80C</td>
+                            <td>None (Unless business asset)</td>
+                            <td>None (Unless used for home/biz)</td>
+                        </tr>
+                        <tr>
+                            <td class="text-start fw-semibold text-body-emphasis">Prepayment Penalty</td>
+                            <td>Zero (On floating rate)</td>
+                            <td>0% – 5% (Bank policy)</td>
+                            <td>2% – 5% depending on bank</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FAQ Accordion Section -->
+        <h3 class="h4 fw-bold mt-5 mb-3" style="color: var(--heading-color, #f8fafc);">❓ Frequently Asked Questions (EMI FAQs)</h3>
         <div class="accordion" id="calculatorInfoAccordion">
             <div class="accordion-item">
-                <h2 class="accordion-header" id="headingOne">
+                <h4 class="accordion-header" id="headingOne">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true">
-                        How EMI is Calculated
+                        How can I reduce my monthly loan EMI?
                     </button>
-                </h2>
+                </h4>
                 <div id="collapseOne" class="accordion-collapse collapse show">
-                    <div class="accordion-body">
-                        <p>EMI is computed using the standard reducing balance formula:</p>
-                        <code>EMI = [P × R × (1 + R)^N] / [(1 + R)^N – 1]</code>
-                        <ul class="mt-2">
-                            <li><strong>P</strong> = Principal loan amount borrowed.</li>
-                            <li><strong>R</strong> = Monthly interest rate (Annual rate / 12 / 100).</li>
-                            <li><strong>N</strong> = Number of monthly installments.</li>
-                        </ul>
+                    <div class="accordion-body text-muted">
+                        You can lower your EMI by: (1) Increasing your loan tenure (though this increases total interest paid), (2) Making a higher upfront down payment to reduce the borrowed principal, (3) Negotiating a lower interest rate based on a good CIBIL credit score (750+), or (4) Transferring your outstanding loan to another lender with lower interest via our <a href="/loan-transfer-calculator" class="text-primary fw-semibold">Loan Balance Transfer Calculator</a>.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h4 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                        Does making loan prepayments really save interest?
+                    </button>
+                </h4>
+                <div id="collapseTwo" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        Yes, substantially! Making periodic prepayments directly reduces the loan principal balance. Since subsequent interest is calculated solely on the reduced principal, even paying just <strong>one extra EMI per year</strong> can reduce a 20-year home loan by 3 to 4 years and save lakhs in cumulative interest. Use our <a href="/loan-prepayment-calculator" class="text-primary fw-semibold">Loan Prepayment Calculator</a> to simulate your exact savings.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h4 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                        What is the difference between Flat Interest Rate and Reducing Balance Rate?
+                    </button>
+                </h4>
+                <div id="collapseThree" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        In a <strong>Flat Interest Rate</strong>, interest is calculated on the full original principal for the entire duration, making it significantly more expensive (a 9% flat rate is equivalent to approximately 16% reducing rate!). In contrast, our calculator uses the <strong>Reducing Balance Rate</strong>, where interest is calculated each month only on the remaining unpaid principal.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h4 class="accordion-header" id="headingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour">
+                        Are there any foreclosure or prepayment charges on home loans?
+                    </button>
+                </h4>
+                <div id="collapseFour" class="accordion-collapse collapse">
+                    <div class="accordion-body text-muted">
+                        As per Reserve Bank of India (RBI) regulations, banks and housing finance companies (HFCs) are strictly prohibited from levying any prepayment or foreclosure penalties on <strong>floating interest rate home loans</strong> sanctioned to individual borrowers.
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Embedded FAQPage JSON-LD for Google Rich Snippets -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+                {
+                    "@type": "Question",
+                    "name": "How can I reduce my monthly loan EMI?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "You can lower your EMI by extending loan tenure, increasing upfront down payment, negotiating a lower interest rate with a high CIBIL score (750+), or opting for a loan balance transfer."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Does making loan prepayments really save interest?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Yes. Prepayments directly cut down principal debt, reducing the base on which future interest is calculated. Even one extra EMI annually can shave 3 to 4 years off a 20-year home loan."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "What is the difference between Flat Interest Rate and Reducing Balance Rate?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Flat rates charge interest on the total original principal for the entire loan period. Reducing balance rates charge interest only on the outstanding principal balance each month, resulting in much lower total interest."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Are there any foreclosure or prepayment charges on home loans?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Under RBI guidelines, lenders cannot charge prepayment or foreclosure penalties on floating-rate retail home loans taken by individuals."
+                    }
+                }
+            ]
+        }
+        </script>
+
         <%- include('partials/ad_unit') %>
     </div>
 </div>

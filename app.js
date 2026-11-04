@@ -18,15 +18,12 @@ const {
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
 
-// --- SEO Schema Generator (JSON-LD) for 1M+ Clicks ---
-function generateSchema(title, description, url, isApp = true, category = null) {
+// --- SEO Schema Generator (JSON-LD) for Maximum SERP Trust & Rich Snippets ---
+function generateSchema(title, description, url, isApp = true, category = null, faqs = []) {
     const baseUrl = 'https://financialhub.calculatorfree.in';
     const fullUrl = `${baseUrl}${url}`;
-    const cleanTitle = title.split(' — ')[0].split(' - ')[0].trim();
+    const cleanTitle = title.split(' — ')[0].split(' - ')[0].replace(/^Free\s+/i, '').trim();
 
     const breadcrumbs = [
         { "@type": "ListItem", "position": 1, "name": "Home", "item": baseUrl }
@@ -63,7 +60,10 @@ function generateSchema(title, description, url, isApp = true, category = null) 
                 "name": "FinancialHub",
                 "url": baseUrl,
                 "logo": `${baseUrl}/icons/icon-512x512.png`,
-                "description": "India's premier financial calculation and wealth intelligence platform with 330+ free tools."
+                "description": "India's premier financial calculation and wealth intelligence platform with 330+ free tools.",
+                "sameAs": [
+                    "https://www.calculatorfree.in"
+                ]
             },
             {
                 "@type": "WebSite",
@@ -94,18 +94,19 @@ function generateSchema(title, description, url, isApp = true, category = null) 
             "operatingSystem": "All",
             "browserRequirements": "Requires JavaScript. Requires HTML5.",
             "applicationCategory": "FinanceApplication",
+            "applicationSubCategory": "FinancialCalculator",
             "offers": {
                 "@type": "Offer",
                 "price": "0",
                 "priceCurrency": "INR"
             },
-            "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": "4.9",
-                "reviewCount": "14850",
-                "bestRating": "5",
-                "worstRating": "1"
-            },
+            "featureList": [
+                "Real-time instant calculation",
+                "Interactive visual charts",
+                "Amortization & compounding breakdown schedule",
+                "PDF & Excel statement export",
+                "100% Client-side privacy"
+            ],
             "description": description,
             "inLanguage": "en-IN"
         });
@@ -120,14 +121,61 @@ function generateSchema(title, description, url, isApp = true, category = null) 
         });
     }
 
+    // Dynamic FAQ Schema for Google Rich Snippets
+    if (faqs && Array.isArray(faqs) && faqs.length > 0) {
+        schema["@graph"].push({
+            "@type": "FAQPage",
+            "@id": `${fullUrl}/#faq`,
+            "mainEntity": faqs.map(faq => ({
+                "@type": "Question",
+                "name": faq.question || faq.q,
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": faq.answer || faq.a
+                }
+            }))
+        });
+    }
+
     return JSON.stringify(schema);
 }
 
-// --- Dynamic Robots.txt ---
+// --- Dynamic Robots.txt with Generative AI / GEO Bots Permission ---
 app.get('/robots.txt', (req, res) => {
     const robotsTxt = `User-agent: *
 Allow: /
 Disallow: /api/
+
+# AI Search & Answer Engines (GEO Optimization)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
 
 # Host & Sitemap
 Host: https://financialhub.calculatorfree.in
@@ -137,7 +185,7 @@ Sitemap: https://financialhub.calculatorfree.in/sitemap.xml
     res.send(robotsTxt);
 });
 
-// --- Dynamic Sitemap (All 330+ Calculators & Categories) ---
+// --- Dynamic Sitemap (All 330+ Calculators & Categories with Today's Date) ---
 app.get('/sitemap.xml', (req, res) => {
     const base = 'https://financialhub.calculatorfree.in';
     const today = new Date().toISOString().split('T')[0];
@@ -186,6 +234,10 @@ app.get('/sitemap.xml', (req, res) => {
     });
     res.send(xml);
 });
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 // --- In-Memory Live Rates Cache & Fetcher ---
 let liveRatesCache = {
@@ -398,9 +450,28 @@ app.get('/:slug', (req, res, next) => {
     };
 
     const catObj = categories.find(c => c.id === calcObj.category);
-    const title = `${calcObj.title} (FY 2026-27) — Formula, Chart & Schedule | FinancialHub`;
-    const desc = `${calcObj.desc} Free online ${calcObj.title.toLowerCase()} with live interactive charts, yearly breakdown schedule, formula breakdown, and instant PDF/Excel export.`;
+    const title = `Free ${calcObj.title} (FY 2026-27): Calculate Returns, Tax & Schedule | FinancialHub`;
+    const desc = `Calculate your ${calcObj.title.toLowerCase()} accurately with our free online tool. Includes interactive compounding charts, year-by-year amortization schedule, formula breakdown, and instant PDF/Excel export (FY 2026-27).`;
     const relatedCalcs = getCalculatorsByCategory(calcObj.category).filter(c => c.slug !== slug).slice(0, 6);
+
+    const defaultFaqs = [
+        {
+            question: `How is the calculation performed in the ${calcObj.title}?`,
+            answer: `Our engine computes results using standardized actuarial algorithms factoring in periodic compounding intervals aligned with RBI, SEBI, and CBDT benchmarks.`
+        },
+        {
+            question: `Are my financial numbers safe and private?`,
+            answer: `Yes, 100%! All calculations execute strictly client-side inside your browser. No financial data, salary info, or investment numbers are ever uploaded or transmitted to any server.`
+        },
+        {
+            question: `Can I download the detailed amortization schedule in PDF and Excel?`,
+            answer: `Yes. Simply click the "Download PDF Report" or "Export Excel/CSV" button in the Action Toolbar to save complete year-by-year schedules.`
+        },
+        {
+            question: `Is this updated for the latest FY 2026-27 tax rules?`,
+            answer: `Yes, all calculations reflect the latest Union Budget provisions including revised New Tax Regime slab rates, standard deductions, and capital gains rules.`
+        }
+    ];
 
     const viewData = {
         title,
@@ -410,7 +481,8 @@ app.get('/:slug', (req, res, next) => {
         calc: calcObj,
         category: catObj,
         relatedCalcs,
-        schema: generateSchema(title, desc, `/${slug}`, true, catObj)
+        faqs: defaultFaqs,
+        schema: generateSchema(title, desc, `/${slug}`, true, catObj, defaultFaqs)
     };
 
     if (customExists) {
