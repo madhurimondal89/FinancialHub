@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -86,7 +86,8 @@
     <script>
         (function() {
             const saved = localStorage.getItem('fh-theme') || 'dark';
-            if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
+            document.documentElement.setAttribute('data-theme', saved);
+            document.documentElement.setAttribute('data-bs-theme', saved);
         })();
     </script>
 
@@ -256,6 +257,7 @@
         const html  = document.documentElement;
         const next  = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
         html.setAttribute('data-theme', next);
+        html.setAttribute('data-bs-theme', next);
         localStorage.setItem('fh-theme', next);
         updateToggleUI(next);
     }

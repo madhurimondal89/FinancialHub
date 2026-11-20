@@ -428,6 +428,37 @@ h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     letter-spacing: -0.025em;
     font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* ============================================================
+   BOOTSTRAP 5 THEME INTEGRATION & OVERRIDES
+   Ensure text helpers strictly follow design tokens in both themes
+   ============================================================ */
+.text-body-emphasis {
+    color: var(--text-primary) !important;
+}
+.text-body-secondary {
+    color: var(--text-secondary) !important;
+}
+.text-body {
+    color: var(--text-primary) !important;
+}
+.bg-body-tertiary {
+    background-color: var(--bg-card) !important;
+}
+
+[data-theme="light"] .text-body-emphasis {
+    color: #0f172a !important;
+}
+[data-theme="light"] .text-body-secondary {
+    color: #334155 !important;
+}
+[data-theme="light"] .text-body {
+    color: #0f172a !important;
+}
+[data-theme="light"] .bg-body-tertiary {
+    background-color: #f1f5f9 !important;
 }
 
 /* Tabular Numerics for Financial Calculations (Hallmark F6) */
@@ -2129,6 +2160,18 @@ input[type="range"]::-moz-range-thumb {
     position: relative;
     overflow: hidden;
 }
+.calc-card h3 {
+    color: var(--text-primary) !important;
+}
+.calc-card:hover h3 {
+    color: var(--gold-light) !important;
+}
+[data-theme="light"] .calc-card h3 {
+    color: #0f172a !important;
+}
+[data-theme="light"] .calc-card:hover h3 {
+    color: var(--gold) !important;
+}
 .calc-card:hover {
     transform: translateY(-4px);
     border-color: var(--border-hover);
@@ -2409,12 +2452,18 @@ input[type="range"]::-moz-range-thumb {
     border-color: #cbd5e1;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
+.live-market-card h2 {
+    color: var(--text-primary) !important;
+}
 .rate-tile {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 0.85rem;
     padding: 0.85rem 1rem;
     transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.rate-tile .h5, .rate-tile .text-body-emphasis {
+    color: var(--text-primary) !important;
 }
 .rate-tile:hover {
     transform: translateY(-2px);
