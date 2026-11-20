@@ -151,12 +151,12 @@
         <section class="live-market-card p-4 p-md-4 mb-5 shadow-sm">
             <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-2">
                 <div class="d-flex align-items-center gap-2">
-                    <span class="live-badge-pulse"><span class="pulse-circle"></span> REAL-TIME RATES</span>
-                    <h3 class="h5 fw-bold mb-0 text-body-emphasis">Live Market Intelligence & Forex</h3>
+                    <span class="live-badge-pulse"><span class="pulse-circle"></span> Live Rates</span>
+                    <h2 class="h5 fw-bold mb-0 text-body-emphasis">Live Market Intelligence & Forex</h2>
                 </div>
                 <div class="d-flex align-items-center gap-3">
                     <span class="small text-muted" id="hpLiveTime">Fetching live data...</span>
-                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="refreshLiveMarketRates()">🔄 Refresh</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="refreshLiveMarketRates()">Refresh</button>
                 </div>
             </div>
 
@@ -357,52 +357,65 @@
         <!-- ===== GOAL FINDER WIZARD ===== -->
         <div class="goal-wizard-card rounded-4 p-4 p-md-5 my-5 shadow-sm border position-relative overflow-hidden">
             <div class="goal-wizard-header mb-4">
-                <h3 class="h4 fw-bold text-body-emphasis mb-2">🎯 What is your financial goal today?</h3>
+                <h3 class="h4 fw-bold text-body-emphasis mb-2">What is your financial goal today?</h3>
                 <p class="text-muted small mb-0">Pick your goal — we'll take you to the right calculator instantly.</p>
             </div>
             <div class="row g-3">
                 <div class="col-md-4 col-sm-6">
                     <a href="/sip-calculator" class="btn-goal-card p-3 rounded-3 border d-flex flex-column text-decoration-none h-100">
-                        <span class="fs-3 mb-2">🚀</span>
+                        <span class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-2" style="width:40px;height:40px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                        </span>
                         <span class="fw-bold text-body-emphasis">Build Wealth (SIP)</span>
                         <span class="small text-muted">Target ₹1 Cr+ with mutual funds</span>
                     </a>
                 </div>
                 <div class="col-md-4 col-sm-6">
                     <a href="/emi-calculator" class="btn-goal-card p-3 rounded-3 border d-flex flex-column text-decoration-none h-100">
-                        <span class="fs-3 mb-2">🏠</span>
+                        <span class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-2" style="width:40px;height:40px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        </span>
                         <span class="fw-bold text-body-emphasis">Buy Home or Car</span>
                         <span class="small text-muted">Calculate lowest EMI</span>
                     </a>
                 </div>
                 <div class="col-md-4 col-sm-6">
                     <a href="/income-tax-calculator" class="btn-goal-card p-3 rounded-3 border d-flex flex-column text-decoration-none h-100">
-                        <span class="fs-3 mb-2">🧾</span>
+                        <span class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-2" style="width:40px;height:40px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        </span>
                         <span class="fw-bold text-body-emphasis">Save Income Tax</span>
                         <span class="small text-muted">New vs Old Tax Regime FY 26-27</span>
                     </a>
                 </div>
                 <div class="col-md-4 col-sm-6">
                     <a href="/retirement-calculator" class="btn-goal-card p-3 rounded-3 border d-flex flex-column text-decoration-none h-100">
-                        <span class="fs-3 mb-2">🌴</span>
+                        <span class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-2" style="width:40px;height:40px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        </span>
                         <span class="fw-bold text-body-emphasis">Plan Early Retirement</span>
                         <span class="small text-muted">FIRE & Pension Corpus</span>
                     </a>
                 </div>
                 <div class="col-md-4 col-sm-6">
                     <a href="/loan-prepayment-calculator" class="btn-goal-card p-3 rounded-3 border d-flex flex-column text-decoration-none h-100">
-                        <span class="fs-3 mb-2">⚡</span>
+                        <span class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-2" style="width:40px;height:40px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        </span>
                         <span class="fw-bold text-body-emphasis">Prepay Loan & Save</span>
                         <span class="small text-muted">Cut 5–10 yrs of interest</span>
                     </a>
                 </div>
                 <div class="col-md-4 col-sm-6">
                     <a href="/ssy-calculator" class="btn-goal-card p-3 rounded-3 border d-flex flex-column text-decoration-none h-100">
-                        <span class="fs-3 mb-2">👧</span>
+                        <span class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-3 mb-2" style="width:40px;height:40px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        </span>
                         <span class="fw-bold text-body-emphasis">Daughter's Future (SSY)</span>
                         <span class="small text-muted">Govt 8.2% Tax-Free</span>
                     </a>
                 </div>
+            </div>
         </div>
 
         <!-- ===== SEO EDITORIAL GUIDE & SEARCH AUTHORITY SECTION ===== -->
@@ -415,25 +428,25 @@
             <div class="row g-4 my-2">
                 <div class="col-md-6">
                     <div class="p-3 border rounded-3 bg-body-tertiary h-100">
-                        <h3 class="h6 fw-bold text-primary mb-2">📈 Wealth & Investment Compounding</h3>
+                        <h3 class="h6 fw-bold text-primary mb-2">Wealth & Investment Compounding</h3>
                         <p class="small text-muted mb-0">From monthly SIP to Step-Up SIP and CAGR models, calculate long-term wealth growth across Nifty 50, Mid Cap, and Small Cap mutual funds with annual compounding schedules.</p>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="p-3 border rounded-3 bg-body-tertiary h-100">
-                        <h3 class="h6 fw-bold text-primary mb-2">🧾 Tax Planning (FY 2026-27)</h3>
+                        <h3 class="h6 fw-bold text-primary mb-2">Tax Planning (FY 2026-27)</h3>
                         <p class="small text-muted mb-0">Compare New vs Old Tax Regime, calculate 44ADA freelance presumptive tax, assess Section 112A 12.5% LTCG capital gains, and optimize take-home CTC salaries with ₹75,000 standard deductions.</p>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="p-3 border rounded-3 bg-body-tertiary h-100">
-                        <h3 class="h6 fw-bold text-primary mb-2">🏠 Loans & Debt Management</h3>
+                        <h3 class="h6 fw-bold text-primary mb-2">Loans & Debt Management</h3>
                         <p class="small text-muted mb-0">Simulate home loan and car loan EMIs, evaluate 1-extra EMI prepayment savings, compare balance transfer interest cuts, and optimize multi-card debt avalanche payoff schedules.</p>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="p-3 border rounded-3 bg-body-tertiary h-100">
-                        <h3 class="h6 fw-bold text-primary mb-2">🎯 FIRE & Early Retirement</h3>
+                        <h3 class="h6 fw-bold text-primary mb-2">FIRE & Early Retirement</h3>
                         <p class="small text-muted mb-0">Plan Coast FIRE, Lean FIRE, and Fat FIRE milestones, calculate NPS Tier-1 & Tier-2 pension growth, and model 4% safe withdrawal rate (SWR) survival through market cycles.</p>
                     </div>
                 </div>
